@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyMaster — Learn Python the Fun Way</title>
+  <meta name="description" content="Master Python from basics to advanced with interactive, gamified lessons. Write real code, earn XP, and track your progress." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Monaco Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar"></aside>
+
+    <!-- Topbar -->
+    <header id="topbar" class="topbar"></header>
+
+    <!-- Page Content -->
+    <main id="main-content" class="main-content">
+      <div class="loading-screen" id="loading-screen">
+        <div class="loading-logo">🐍</div>
+        <h2 class="loading-title">PyMaster</h2>
+        <p class="loading-subtitle">Loading your Python journey...</p>
+        <div class="loading-bar">
+          <div class="loading-bar-fill"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Progress Panel -->
+    <aside id="right-panel" class="right-panel"></aside>
+  </div>
+
+  <!-- Modal Container -->
+  <div id="modal-root"></div>
+
+  <!-- App JS -->
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

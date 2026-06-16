@@ -1,0 +1,17 @@
+{
+  "name": "pymaster",
+  "version": "1.0.0",
+  "description": "PyMaster — Gamified Python Learning Platform",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "firebase": "^12.15.0"
+  }
+}
