@@ -27,6 +27,10 @@ export function renderTopbar(container, state) {
   const rawState = state.getRawState();
   const username = rawState.username || 'Learner';
   const avatarLetter = username.charAt(0).toUpperCase();
+  const photoURL = state.getPhotoURL();
+  const avatarHTML = photoURL
+    ? `<img src="${photoURL}" class="topbar-avatar-img" alt="${username}" referrerpolicy="no-referrer">`
+    : avatarLetter;
 
   // Apply topbar class
   if (!container.classList.contains('topbar')) {
@@ -55,7 +59,7 @@ export function renderTopbar(container, state) {
 
     <!-- Profile Avatar -->
     <div class="topbar-avatar" title="${username}" data-stat="avatar">
-      ${avatarLetter}
+      ${avatarHTML}
     </div>
   `;
 }
@@ -88,6 +92,23 @@ export function updateTopbar(state) {
   _updateValue(streakEl, String(streak));
   _updateValue(xpEl, _formatNumber(xp));
   _updateValue(gemsEl, _formatNumber(gems));
+
+  // Update avatar if needed
+  const avatarEl = container.querySelector('[data-stat="avatar"]');
+  if (avatarEl) {
+    const rawState = state.getRawState();
+    const username = rawState.username || 'Learner';
+    const avatarLetter = username.charAt(0).toUpperCase();
+    const photoURL = state.getPhotoURL();
+    const avatarHTML = photoURL
+      ? `<img src="${photoURL}" class="topbar-avatar-img" alt="${username}" referrerpolicy="no-referrer">`
+      : avatarLetter;
+
+    if (avatarEl.getAttribute('title') !== username || avatarEl.innerHTML.trim() !== avatarHTML.trim()) {
+      avatarEl.setAttribute('title', username);
+      avatarEl.innerHTML = avatarHTML;
+    }
+  }
 }
 
 /* --------------------------------------------------------------------------

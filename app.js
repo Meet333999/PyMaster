@@ -321,7 +321,8 @@ async function init() {
     if (user) {
       console.log('👤 User logged in:', user.email);
       const displayName = user.displayName || user.email.split('@')[0];
-      await gameState.setUserId(user.uid, displayName);
+      const photoURL = user.photoURL || null;
+      await gameState.setUserId(user.uid, displayName, photoURL);
     } else {
       console.log('👤 User logged out');
       await gameState.setUserId(null);

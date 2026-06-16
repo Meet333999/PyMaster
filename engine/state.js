@@ -32,6 +32,7 @@ function createDefaultState() {
 
     // Profile
     username: 'Learner',
+    photoURL: null,
     joinedDate: new Date().toISOString(),
 
     // Stats
@@ -127,11 +128,20 @@ class GameState {
    * If logging out, resets to default state.
    * @param {string | null} userId
    * @param {string | null} [username]
+   * @param {string | null} [photoURL]
    */
-  async setUserId(userId, username = null) {
+  async setUserId(userId, username = null, photoURL = null) {
     if (this._userId === userId) {
+      let changed = false;
       if (userId && username && this._state.username !== username) {
         this._state.username = username;
+        changed = true;
+      }
+      if (userId && photoURL && this._state.photoURL !== photoURL) {
+        this._state.photoURL = photoURL;
+        changed = true;
+      }
+      if (changed) {
         this.save();
         this.emit();
       }
@@ -143,6 +153,9 @@ class GameState {
     if (userId) {
       if (username) {
         this._state.username = username;
+      }
+      if (photoURL) {
+        this._state.photoURL = photoURL;
       }
       await this.syncFromFirebase();
     } else {
@@ -262,6 +275,9 @@ class GameState {
     if (remote.username && remote.username !== 'Learner') {
       this._state.username = remote.username;
     }
+    if (remote.photoURL) {
+      this._state.photoURL = remote.photoURL;
+    }
     if (remote.joinedDate) {
       this._state.joinedDate = remote.joinedDate;
     }
@@ -284,6 +300,14 @@ class GameState {
    */
   getUserId() {
     return this._userId;
+  }
+
+  /**
+   * Get the current authenticated user's profile photo URL.
+   * @returns {string|null}
+   */
+  getPhotoURL() {
+    return this._state.photoURL || null;
   }
 
   /**

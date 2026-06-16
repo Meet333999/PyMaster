@@ -208,6 +208,11 @@ function renderStatsPanel(container, gameState, curriculum) {
   const completionPercent = totalLessons > 0 ? Math.round((stats.completedLessons / totalLessons) * 100) : 0;
   const username = gameState.getRawState().username || 'Learner';
 
+  const photoURL = gameState.getPhotoURL();
+  const avatarHTML = photoURL
+    ? `<img src="${photoURL}" class="profile-avatar-large-img" alt="${username}" referrerpolicy="no-referrer">`
+    : `<span>🐍</span>`;
+
   const achievements = getAchievements(stats);
 
   container.innerHTML = `
@@ -215,7 +220,7 @@ function renderStatsPanel(container, gameState, curriculum) {
       <!-- Profile Header -->
       <div class="profile-header-card">
         <div class="profile-avatar-large">
-          <span>🐍</span>
+          ${avatarHTML}
         </div>
         <div class="profile-info">
           <h1 class="profile-name">${username}</h1>
