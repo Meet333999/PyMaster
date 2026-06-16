@@ -2002,7 +2002,7 @@ input, textarea, select { font-family: inherit; }
     font-size: 10px;
   }
 
-  .right-panel { display: none; }
+  .right-panel { display: none !important; }
 
   .main-content {
     padding: var(--space-lg);
