@@ -397,6 +397,8 @@ function _translateFirebaseError(code) {
       return 'Email/password accounts are not enabled in this project.';
     case 'auth/popup-blocked':
       return 'The sign-in popup was blocked by the browser. Please allow popups for this site.';
+    case 'auth/unauthorized-domain':
+      return 'This domain is not authorized for Google Sign-In. Please add this Vercel domain (py-master-by-meet.vercel.app) to the "Authorized domains" list in your Firebase Console (Authentication > Settings).';
     default:
       return code || 'An error occurred during authentication. Please try again.';
   }
