@@ -1,6 +1,4 @@
-// ========================================
-// Quiz View — Standalone MCQ Quiz Page
-// ========================================
+import { icon } from './icons.js';
 
 export function renderQuizView(container, lesson, section, chapter, callbacks) {
   const { onComplete, onBack } = callbacks;
@@ -34,7 +32,7 @@ export function renderQuizView(container, lesson, section, chapter, callbacks) {
             </div>
 
             <div class="quiz-question-card">
-              <div class="quiz-question-icon">❓</div>
+              <div class="quiz-question-icon">${icon('terminal', 32)}</div>
               <p class="quiz-question">${quiz.question}</p>
 
               <div class="quiz-options">
@@ -53,7 +51,7 @@ export function renderQuizView(container, lesson, section, chapter, callbacks) {
 
               ${quizAnswered ? `
                 <div class="quiz-explanation visible">
-                  <div class="explanation-icon">${selectedOption === quiz.correct ? '🎉' : '💡'}</div>
+                  <div class="explanation-icon">${selectedOption === quiz.correct ? icon('award', 18) : icon('lightbulb', 18)}</div>
                   <p>${selectedOption === quiz.correct ? 'Correct! ' : 'Not quite. '}${quiz.explanation || ''}</p>
                 </div>
               ` : ''}

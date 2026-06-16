@@ -11,7 +11,7 @@ export const curriculum = {
     {
       id: 's1',
       title: 'Python Fundamentals',
-      icon: '🐍',
+      icon: 'terminal',
       description: 'Learn the basics of Python programming',
       chapters: [
         {
@@ -571,7 +571,7 @@ F-strings can contain any valid Python expression inside the curly braces — va
     {
       id: 's2',
       title: 'Operators & Expressions',
-      icon: '🔢',
+      icon: 'code',
       description: 'Master arithmetic, comparison, and logical operators',
       chapters: [
         {
@@ -891,7 +891,7 @@ All arithmetic operators have compound versions:
     {
       id: 's3',
       title: 'Control Flow',
-      icon: '🔀',
+      icon: 'git-branch',
       description: 'Master if/else statements, loops, and program flow',
       chapters: [
         {
@@ -953,7 +953,7 @@ All arithmetic operators have compound versions:
     {
       id: 's4',
       title: 'Data Structures',
-      icon: '📦',
+      icon: 'package',
       description: 'Master lists, tuples, dictionaries, sets, and string methods',
       chapters: [
         {
@@ -1018,7 +1018,7 @@ All arithmetic operators have compound versions:
     {
       id: 's5',
       title: 'Functions',
-      icon: '⚙️',
+      icon: 'settings',
       description: 'Learn to write reusable functions with parameters and return values',
       chapters: [
         {
@@ -1069,7 +1069,7 @@ All arithmetic operators have compound versions:
     // SECTIONS 6-10 (Compact format)
     // =============================================
     {
-      id: 's6', title: 'Modules & File Handling', icon: '📁', description: 'Import modules and work with files',
+      id: 's6', title: 'Modules & File Handling', icon: 'file-code', description: 'Import modules and work with files',
       chapters: [
         { id: 's6c1', title: 'Importing Modules', lessons: [
           { id: 's6c1l1', type: 'theory', title: 'The import Statement', xp: 10, difficulty: 'medium', theory: { tldr: 'import loads external modules. import math gives access to math.sqrt(), math.pi, etc.', content: `Modules are files containing Python code that you can **reuse** in your programs. Python comes with a rich **standard library** of modules. Use \`import\` to load them.\n\nCommon modules include \`math\` (math functions), \`random\` (random numbers), \`datetime\` (dates/times), and \`os\` (operating system).`, codeExample: `import math\nprint(math.sqrt(16))    # 4.0\nprint(math.pi)          # 3.14159...\n\nimport random\nprint(random.randint(1, 10))  # Random 1-10\n\nfrom math import sqrt, pi\nprint(sqrt(25))         # 5.0 (no math. prefix)` }, quiz: { question: 'What does "from math import sqrt" do?', options: ['Imports the entire math module', 'Imports only the sqrt function', 'Creates a new function called sqrt', 'Renames the math module'], correct: 1, explanation: '"from math import sqrt" imports only the sqrt function, letting you use it without the math. prefix.' } },
@@ -1084,7 +1084,7 @@ All arithmetic operators have compound versions:
       ]
     },
     {
-      id: 's7', title: 'Object-Oriented Programming', icon: '🏗️', description: 'Master classes, objects, and OOP concepts',
+      id: 's7', title: 'Object-Oriented Programming', icon: 'cpu', description: 'Master classes, objects, and OOP concepts',
       chapters: [
         { id: 's7c1', title: 'Classes & Objects', lessons: [
           { id: 's7c1l1', type: 'theory', title: 'Creating Classes', xp: 10, difficulty: 'medium', theory: { tldr: 'Classes are blueprints for objects. Define with class Name: and create objects with Name().', content: `A **class** is a blueprint for creating objects. Think of it like a cookie cutter — the class defines the shape, and each object (cookie) is an instance created from it.\n\nThe \`__init__\` method is a special **constructor** that runs when you create a new object. \`self\` refers to the current object instance.`, codeExample: `class Dog:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n    \n    def bark(self):\n        print(f"{self.name} says: Woof!")\n\n# Create objects\nmy_dog = Dog("Rex", 3)\nprint(my_dog.name)    # Rex\nmy_dog.bark()         # Rex says: Woof!` }, quiz: { question: 'What does __init__ do?', options: ['Deletes the object', 'Initializes a new object', 'Imports modules', 'Creates a copy'], correct: 1, explanation: '__init__ is the constructor method that initializes a new object when it\'s created.' } },
@@ -1099,7 +1099,7 @@ All arithmetic operators have compound versions:
       ]
     },
     {
-      id: 's8', title: 'Advanced Python', icon: '🚀', description: 'Decorators, generators, comprehensions, and more',
+      id: 's8', title: 'Advanced Python', icon: 'rocket', description: 'Decorators, generators, comprehensions, and more',
       chapters: [
         { id: 's8c1', title: 'List Comprehensions', lessons: [
           { id: 's8c1l1', type: 'theory', title: 'List Comprehensions', xp: 10, difficulty: 'hard', theory: { tldr: 'List comprehensions create lists in one line: [expression for item in iterable if condition]', content: `List comprehensions provide a concise way to create lists. Instead of a for loop with append, you can do it in one line!\n\nSyntax: \`[expression for item in iterable if condition]\`. The \`if\` part is optional.`, codeExample: `# Traditional way\nsquares = []\nfor x in range(5):\n    squares.append(x ** 2)\n\n# List comprehension\nsquares = [x ** 2 for x in range(5)]\nprint(squares)  # [0, 1, 4, 9, 16]\n\n# With condition\nevens = [x for x in range(10) if x % 2 == 0]\nprint(evens)    # [0, 2, 4, 6, 8]` }, quiz: { question: 'What does [x*2 for x in range(4)] produce?', options: ['[0, 2, 4, 6]', '[2, 4, 6, 8]', '[0, 1, 2, 3]', '[1, 2, 3, 4]'], correct: 0, explanation: 'range(4) gives 0,1,2,3. Multiplied by 2: 0,2,4,6.' } },
@@ -1119,7 +1119,7 @@ All arithmetic operators have compound versions:
       ]
     },
     {
-      id: 's9', title: 'Professional Python', icon: '💼', description: 'Regular expressions, collections, and datetime',
+      id: 's9', title: 'Professional Python', icon: 'award', description: 'Regular expressions, collections, and datetime',
       chapters: [
         { id: 's9c1', title: 'Regular Expressions', lessons: [
           { id: 's9c1l1', type: 'theory', title: 'Regex Basics', xp: 10, difficulty: 'hard', theory: { tldr: 'Regular expressions (regex) find patterns in text. Use re module: re.search(), re.findall(), re.sub().', content: `Regular expressions are powerful tools for finding **patterns** in text. Python's \`re\` module provides regex support.\n\nCommon patterns:\n- \`\\d\`: Any digit (0-9)\n- \`\\w\`: Any word character (letter, digit, underscore)\n- \`.\`: Any character\n- \`*\`: Zero or more\n- \`+\`: One or more\n- \`[abc]\`: Any of a, b, or c`, codeExample: `import re\n\ntext = "My email is user@example.com"\n\n# Search for a pattern\nmatch = re.search(r'\\w+@\\w+\\.\\w+', text)\nif match:\n    print(match.group())  # user@example.com\n\n# Find all numbers\nnumbers = re.findall(r'\\d+', "I have 3 cats and 2 dogs")\nprint(numbers)  # ['3', '2']` }, quiz: { question: 'What does \\d match?', options: ['Any letter', 'Any digit', 'Any space', 'Any character'], correct: 1, explanation: '\\d matches any digit character (0-9).' } },
@@ -1139,7 +1139,7 @@ All arithmetic operators have compound versions:
       ]
     },
     {
-      id: 's10', title: 'Map, Filter & Reduce', icon: '🔄', description: 'Functional programming tools in Python',
+      id: 's10', title: 'Map, Filter & Reduce', icon: 'refresh', description: 'Functional programming tools in Python',
       chapters: [
         { id: 's10c1', title: 'Map and Filter', lessons: [
           { id: 's10c1l1', type: 'theory', title: 'The map() Function', xp: 10, difficulty: 'hard', theory: { tldr: 'map(func, iterable) applies a function to every item. Returns a map object (convert with list()).', content: `\`map()\` applies a function to every item in an iterable. It's a functional programming tool that replaces simple for loops.\n\nmap returns a map object (lazy), so wrap it in \`list()\` to see results.`, codeExample: `# Double every number\nnumbers = [1, 2, 3, 4, 5]\ndoubled = list(map(lambda x: x * 2, numbers))\nprint(doubled)  # [2, 4, 6, 8, 10]\n\n# Convert strings to int\nstr_nums = ["1", "2", "3"]\nnums = list(map(int, str_nums))\nprint(nums)  # [1, 2, 3]` }, quiz: { question: 'What does map() return?', options: ['A list', 'A map object', 'A dictionary', 'A tuple'], correct: 1, explanation: 'map() returns a lazy map object. Use list() to convert it to a list.' } },

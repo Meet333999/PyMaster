@@ -4,6 +4,7 @@
 
 import { getAllLessons } from '../data/curriculum.js';
 import { auth, googleProvider } from '../engine/firebase-init.js';
+import { icon } from './icons.js';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -39,7 +40,7 @@ function renderAuthForm(container) {
     <div class="page-container auth-page">
       <div class="auth-card">
         <div class="auth-header">
-          <div class="auth-logo">🐍</div>
+          <div class="auth-logo">${icon('terminal', 48)}</div>
           <h1 class="auth-title">Welcome to PyMaster</h1>
           <p class="auth-subtitle">Sign in to save your progress and sync it across devices.</p>
         </div>
@@ -211,7 +212,7 @@ function renderStatsPanel(container, gameState, curriculum) {
   const photoURL = gameState.getPhotoURL();
   const avatarHTML = photoURL
     ? `<img src="${photoURL}" class="profile-avatar-large-img" alt="${username}" referrerpolicy="no-referrer">`
-    : `<span>🐍</span>`;
+    : `<span>${icon('terminal', 48)}</span>`;
 
   const achievements = getAchievements(stats);
 
@@ -243,32 +244,32 @@ function renderStatsPanel(container, gameState, curriculum) {
       <!-- Stats Grid -->
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon">🔥</div>
+          <div class="stat-icon">${icon('flame', 22)}</div>
           <div class="stat-value">${stats.currentStreak}</div>
           <div class="stat-label">Day Streak</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">💎</div>
+          <div class="stat-icon">${icon('gem', 22)}</div>
           <div class="stat-value">${stats.totalXP.toLocaleString()}</div>
           <div class="stat-label">Total XP</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">📚</div>
+          <div class="stat-icon">${icon('book', 22)}</div>
           <div class="stat-value">${stats.completedLessons}</div>
           <div class="stat-label">Lessons Done</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">💰</div>
+          <div class="stat-icon">${icon('coins', 22)}</div>
           <div class="stat-value">${stats.gems}</div>
           <div class="stat-label">Gems</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">⭐</div>
+          <div class="stat-icon">${icon('star', 22)}</div>
           <div class="stat-value">${stats.perfectCount}</div>
           <div class="stat-label">Perfect Runs</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">📈</div>
+          <div class="stat-icon">${icon('trending-up', 22)}</div>
           <div class="stat-value">${stats.longestStreak}</div>
           <div class="stat-label">Best Streak</div>
         </div>
@@ -276,7 +277,7 @@ function renderStatsPanel(container, gameState, curriculum) {
 
       <!-- Progress Overview -->
       <div class="section-card">
-        <h2 class="section-card-title">📊 Course Progress</h2>
+        <h2 class="section-card-title">${icon('bar-chart', 18)} Course Progress</h2>
         <div class="overall-progress">
           <div class="progress-circle-container">
             <svg class="progress-circle" viewBox="0 0 120 120">
@@ -302,7 +303,7 @@ function renderStatsPanel(container, gameState, curriculum) {
             return `
               <div class="section-progress-item">
                 <div class="section-progress-header">
-                  <span class="section-progress-name">${section.icon} ${section.title}</span>
+                  <span class="section-progress-name">${icon(section.icon, 16)} ${section.title}</span>
                   <span class="section-progress-count">${sectionCompleted}/${sectionLessons.length}</span>
                 </div>
                 <div class="goal-progress">
@@ -316,7 +317,7 @@ function renderStatsPanel(container, gameState, curriculum) {
 
       <!-- Achievements -->
       <div class="section-card">
-        <h2 class="section-card-title">🏅 Achievements</h2>
+        <h2 class="section-card-title">${icon('award', 18)} Achievements</h2>
         <div class="achievements-grid">
           ${achievements.map(a => `
             <div class="achievement-badge ${a.unlocked ? '' : 'locked'}">
@@ -346,28 +347,28 @@ function renderStatsPanel(container, gameState, curriculum) {
 
 function getAchievements(stats) {
   return [
-    { icon: '🎯', name: 'First Step', description: 'Complete your first lesson', unlocked: stats.completedLessons >= 1 },
-    { icon: '🔥', name: 'On Fire', description: '3-day streak', unlocked: stats.longestStreak >= 3 },
-    { icon: '⚡', name: 'Week Warrior', description: '7-day streak', unlocked: stats.longestStreak >= 7 },
-    { icon: '💯', name: 'Perfectionist', description: '5 perfect completions', unlocked: stats.perfectCount >= 5 },
-    { icon: '📚', name: 'Bookworm', description: 'Complete 10 lessons', unlocked: stats.completedLessons >= 10 },
-    { icon: '🏆', name: 'Half Way', description: 'Complete 50 lessons', unlocked: stats.completedLessons >= 50 },
-    { icon: '💎', name: 'XP Hunter', description: 'Earn 500 XP', unlocked: stats.totalXP >= 500 },
-    { icon: '🌟', name: 'Rising Star', description: 'Earn 1000 XP', unlocked: stats.totalXP >= 1000 },
-    { icon: '👑', name: 'Python Master', description: 'Complete 100 lessons', unlocked: stats.completedLessons >= 100 },
-    { icon: '🐉', name: 'Legendary', description: 'Earn 5000 XP', unlocked: stats.totalXP >= 5000 },
-    { icon: '💰', name: 'Gem Collector', description: 'Collect 50 gems', unlocked: stats.gems >= 50 },
-    { icon: '🔥', name: 'Unstoppable', description: '30-day streak', unlocked: stats.longestStreak >= 30 },
+    { icon: icon('target', 24), name: 'First Step', description: 'Complete your first lesson', unlocked: stats.completedLessons >= 1 },
+    { icon: icon('flame', 24), name: 'On Fire', description: '3-day streak', unlocked: stats.longestStreak >= 3 },
+    { icon: icon('zap', 24), name: 'Week Warrior', description: '7-day streak', unlocked: stats.longestStreak >= 7 },
+    { icon: icon('check-circle', 24), name: 'Perfectionist', description: '5 perfect completions', unlocked: stats.perfectCount >= 5 },
+    { icon: icon('book', 24), name: 'Bookworm', description: 'Complete 10 lessons', unlocked: stats.completedLessons >= 10 },
+    { icon: icon('trophy', 24), name: 'Half Way', description: 'Complete 50 lessons', unlocked: stats.completedLessons >= 50 },
+    { icon: icon('gem', 24), name: 'XP Hunter', description: 'Earn 500 XP', unlocked: stats.totalXP >= 500 },
+    { icon: icon('sparkle', 24), name: 'Rising Star', description: 'Earn 1000 XP', unlocked: stats.totalXP >= 1000 },
+    { icon: icon('crown', 24), name: 'Python Master', description: 'Complete 100 lessons', unlocked: stats.completedLessons >= 100 },
+    { icon: icon('dragon', 24), name: 'Legendary', description: 'Earn 5000 XP', unlocked: stats.totalXP >= 5000 },
+    { icon: icon('coins', 24), name: 'Gem Collector', description: 'Collect 50 gems', unlocked: stats.gems >= 50 },
+    { icon: icon('flame', 24), name: 'Unstoppable', description: '30-day streak', unlocked: stats.longestStreak >= 30 },
   ];
 }
 
 function getRank(xp) {
-  if (xp >= 5000) return '🐉 Dragon';
-  if (xp >= 3000) return '👑 Master';
-  if (xp >= 1500) return '⭐ Expert';
-  if (xp >= 500) return '🔥 Advanced';
-  if (xp >= 100) return '📘 Intermediate';
-  return '🌱 Beginner';
+  if (xp >= 5000) return 'Dragon';
+  if (xp >= 3000) return 'Master';
+  if (xp >= 1500) return 'Expert';
+  if (xp >= 500) return 'Advanced';
+  if (xp >= 100) return 'Intermediate';
+  return 'Beginner';
 }
 
 function getJoinDate() {

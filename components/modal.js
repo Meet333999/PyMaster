@@ -4,6 +4,8 @@
    confetti effects, animated XP display, and smooth transitions.
    ========================================================================== */
 
+import { icon } from './icons.js';
+
 /** Container element for the modal (appended to body) */
 let _modalRoot = null;
 
@@ -29,11 +31,11 @@ export function showCompletionModal(lessonTitle, xpEarned, onContinue) {
       <div class="modal-content">
         ${confettiHTML}
 
-        <div class="modal-title">🎉 Lesson Complete!</div>
+        <div class="modal-title">${icon('award', 24)} Lesson Complete!</div>
         <div class="modal-body">${_escapeHtml(lessonTitle)}</div>
 
         <div class="xp-earned">
-          <span>⚡</span>
+          <span>${icon('zap', 18)}</span>
           <span>+${xpEarned} XP</span>
         </div>
 
@@ -52,17 +54,18 @@ export function showCompletionModal(lessonTitle, xpEarned, onContinue) {
  *
  * @param {string} title       — achievement title
  * @param {string} description — achievement description
- * @param {string} icon        — emoji icon for the achievement
+ * @param {string} [achievementIcon] — SVG icon string for the achievement
  */
-export function showAchievementModal(title, description, icon = '🏆') {
+export function showAchievementModal(title, description, achievementIcon = '') {
   const confettiHTML = _generateConfetti(20);
+  const displayIcon = achievementIcon || icon('award', 48);
 
   const html = `
     <div class="modal-overlay" data-modal-overlay>
       <div class="modal-content">
         ${confettiHTML}
 
-        <div style="font-size: 3rem; margin-bottom: 16px; line-height: 1;">${icon}</div>
+        <div style="display: flex; justify-content: center; margin-bottom: 16px; line-height: 1; color: var(--color-warning);">${displayIcon}</div>
         <div class="modal-title">Achievement Unlocked!</div>
         <div class="modal-body">
           <strong>${_escapeHtml(title)}</strong><br>
@@ -170,9 +173,9 @@ function _showModal(html, onContinue) {
  */
 function _generateConfetti(count) {
   const colors = [
-    '#29ABE2', '#10b981', '#f59e0b', '#ef4444', '#a855f7',
-    '#6dd5fa', '#34d399', '#fbbf24', '#f87171', '#c084fc',
-    '#06b6d4', '#f472b6', '#facc15',
+    '#00e5ff', '#00e5a0', '#ffb300', '#ff3b5c', '#7b2ff7',
+    '#33ecff', '#34d399', '#fbbf24', '#ff6b8a', '#a855f7',
+    '#06d6e0', '#f472b6', '#facc15',
   ];
 
   let html = '';

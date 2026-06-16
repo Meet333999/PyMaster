@@ -3,6 +3,8 @@
    Displays streak, XP, gems, and profile avatar in the top bar.
    ========================================================================== */
 
+import { icon } from './icons.js';
+
 /** Element ID used for targeted updates */
 const TOPBAR_ID = 'pymaster-topbar';
 
@@ -41,19 +43,19 @@ export function renderTopbar(container, state) {
   container.innerHTML = `
     <!-- Streak -->
     <div class="topbar-stat streak-fire" title="Current streak">
-      <span class="icon">🔥</span>
+      <span class="icon">${icon('flame', 16)}</span>
       <span class="value" data-stat="streak">${streak}</span>
     </div>
 
     <!-- XP -->
     <div class="topbar-stat xp-display" title="Total XP earned">
-      <span class="icon">💎</span>
+      <span class="icon">${icon('gem', 16)}</span>
       <span class="value" data-stat="xp">${_formatNumber(xp)}</span>
     </div>
 
     <!-- Gems -->
     <div class="topbar-stat gems-display" title="Gems balance">
-      <span class="icon">💰</span>
+      <span class="icon">${icon('coins', 16)}</span>
       <span class="value" data-stat="gems">${_formatNumber(gems)}</span>
     </div>
 

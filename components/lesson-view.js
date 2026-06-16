@@ -1,6 +1,4 @@
-// ========================================
-// Lesson View — Theory + Quiz Panel
-// ========================================
+import { icon } from './icons.js';
 
 export function renderLessonView(container, lesson, section, chapter, callbacks) {
   const { onComplete, onBack } = callbacks;
@@ -166,7 +164,7 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
   function renderCompletePanel() {
     return `
       <div class="complete-panel">
-        <div class="complete-icon">📖</div>
+        <div class="complete-icon">${icon('book', 48)}</div>
         <h3>Theory Lesson</h3>
         <p>Read the theory on the left, then mark this lesson as complete.</p>
         <button class="btn-primary btn-large" id="lesson-complete-btn">

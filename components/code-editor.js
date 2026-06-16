@@ -2,6 +2,8 @@
 // Code Editor — Monaco Editor Wrapper
 // ========================================
 
+import { icon } from './icons.js';
+
 let editorInstance = null;
 
 export function createCodeEditor(container, initialCode = '', options = {}) {
@@ -11,7 +13,7 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
     <div class="editor-container">
       <div class="editor-header">
         <div class="editor-tab active">
-          <span class="editor-tab-icon">🐍</span>
+          <span class="editor-tab-icon">${icon('terminal', 14)}</span>
           <span>Python</span>
         </div>
         <div class="editor-actions">

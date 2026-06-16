@@ -18,6 +18,7 @@ import { renderPracticePage } from './components/practice-page.js';
 import { showCompletionModal } from './components/modal.js';
 import { auth } from './engine/firebase-init.js';
 import { onAuthStateChanged } from 'firebase/auth';
+import { icon } from './components/icons.js';
 
 // ---- App State ----
 const app = {
@@ -205,23 +206,29 @@ function handleLessonComplete(lesson, isPerfect = false) {
 
 // ---- Leaderboard Page (simulated) ----
 function renderLeaderboardPage(container) {
+  const photoURL = gameState.getPhotoURL();
+  const username = gameState.getRawState().username || 'Learner';
+  const youAvatar = photoURL
+    ? `<img src="${photoURL}" class="topbar-avatar-img" alt="${username}" referrerpolicy="no-referrer">`
+    : username.charAt(0).toUpperCase();
+
   const leaderboardData = [
-    { rank: 1, name: 'PythonWizard', xp: 12450, avatar: '🧙' },
-    { rank: 2, name: 'CodeNinja', xp: 11200, avatar: '🥷' },
-    { rank: 3, name: 'ByteMaster', xp: 10800, avatar: '💻' },
-    { rank: 4, name: 'AlgoQueen', xp: 9500, avatar: '👑' },
-    { rank: 5, name: 'DebugHero', xp: 8900, avatar: '🦸' },
-    { rank: 6, name: 'LoopLord', xp: 8200, avatar: '🔄' },
-    { rank: 7, name: 'SyntaxStar', xp: 7600, avatar: '⭐' },
-    { rank: 8, name: 'DataDragon', xp: 7100, avatar: '🐉' },
-    { rank: 9, name: 'FuncFox', xp: 6500, avatar: '🦊' },
-    { rank: 10, name: 'You', xp: gameState.getXP(), avatar: '🐍', isUser: true },
+    { rank: 1, name: 'PythonWizard', xp: 12450, avatar: 'P' },
+    { rank: 2, name: 'CodeNinja', xp: 11200, avatar: 'C' },
+    { rank: 3, name: 'ByteMaster', xp: 10800, avatar: 'B' },
+    { rank: 4, name: 'AlgoQueen', xp: 9500, avatar: 'A' },
+    { rank: 5, name: 'DebugHero', xp: 8900, avatar: 'D' },
+    { rank: 6, name: 'LoopLord', xp: 8200, avatar: 'L' },
+    { rank: 7, name: 'SyntaxStar', xp: 7600, avatar: 'S' },
+    { rank: 8, name: 'DataDragon', xp: 7100, avatar: 'D' },
+    { rank: 9, name: 'FuncFox', xp: 6500, avatar: 'F' },
+    { rank: 10, name: 'You', xp: gameState.getXP(), avatar: youAvatar, isUser: true },
   ].sort((a, b) => b.xp - a.xp).map((e, i) => ({ ...e, rank: i + 1 }));
 
   container.innerHTML = `
     <div class="page-container">
       <div class="page-header">
-        <h1 class="page-title">🏆 Leaderboard</h1>
+        <h1 class="page-title">${icon('trophy', 20)} Leaderboard</h1>
         <p class="page-subtitle">This week's top Python learners</p>
       </div>
 
@@ -283,14 +290,14 @@ function initMonaco() {
           { token: 'operator', foreground: '56B6C2' },
         ],
         colors: {
-          'editor.background': '#1a1b2e',
-          'editor.foreground': '#e2e8f0',
-          'editorLineNumber.foreground': '#4a5568',
-          'editorLineNumber.activeForeground': '#29ABE2',
-          'editor.lineHighlightBackground': '#2d2e4a',
-          'editor.selectionBackground': '#29ABE244',
-          'editorCursor.foreground': '#29ABE2',
-          'editorWidget.background': '#252640',
+          'editor.background': '#0a0a1a',
+          'editor.foreground': '#e0e6f0',
+          'editorLineNumber.foreground': '#3a4058',
+          'editorLineNumber.activeForeground': '#00e5ff',
+          'editor.lineHighlightBackground': '#1a1a35',
+          'editor.selectionBackground': '#00e5ff44',
+          'editorCursor.foreground': '#00e5ff',
+          'editorWidget.background': '#111125',
         },
       });
 
@@ -357,10 +364,24 @@ async function init() {
     navigate(parseRoute());
   });
 
+  // Generate loading particles for depth
+  const particlesContainer = document.getElementById('loading-particles');
+  if (particlesContainer) {
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'loading-particle';
+      p.style.left = `${Math.random() * 100}vw`;
+      p.style.top = `${Math.random() * 100}vh`;
+      p.style.animationDelay = `${Math.random() * 4}s`;
+      p.style.animationDuration = `${3 + Math.random() * 3}s`;
+      particlesContainer.appendChild(p);
+    }
+  }
+
   // Hide loading screen and render initial route
   const loadingScreen = document.getElementById('loading-screen');
   if (loadingScreen) {
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 1200));
     loadingScreen.classList.add('fade-out');
     await new Promise((r) => setTimeout(r, 300));
   }

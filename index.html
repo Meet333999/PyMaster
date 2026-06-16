@@ -31,11 +31,33 @@
     <!-- Page Content -->
     <main id="main-content" class="main-content">
       <div class="loading-screen" id="loading-screen">
-        <div class="loading-logo">🐍</div>
-        <h2 class="loading-title">PyMaster</h2>
-        <p class="loading-subtitle">Loading your Python journey...</p>
-        <div class="loading-bar">
-          <div class="loading-bar-fill"></div>
+        <div class="loading-particles" id="loading-particles"></div>
+        <div class="loading-content">
+          <div class="loading-logo">
+            <svg viewBox="0 0 80 80" width="80" height="80" class="loading-svg-icon">
+              <defs>
+                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00e5ff"/>
+                  <stop offset="100%" stop-color="#7b2ff7"/>
+                </linearGradient>
+              </defs>
+              <rect x="8" y="12" width="64" height="56" rx="8" fill="none" stroke="url(#logoGrad)" stroke-width="3"/>
+              <text x="18" y="50" font-family="'JetBrains Mono', monospace" font-size="28" font-weight="700" fill="url(#logoGrad)">&gt;_</text>
+              <line x1="48" y1="30" x2="62" y2="44" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+              <line x1="62" y1="44" x2="48" y2="58" stroke="#7b2ff7" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+            </svg>
+          </div>
+          <h2 class="loading-title">
+            <span class="loading-title-py">Py</span><span class="loading-title-master">Master</span>
+          </h2>
+          <p class="loading-subtitle">
+            <span class="loading-typewriter">Initializing Python environment</span><span class="loading-cursor">|</span>
+          </p>
+          <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
+            <div class="loading-bar-glow"></div>
+          </div>
+          <div class="loading-status">Loading modules...</div>
         </div>
       </div>
     </main>

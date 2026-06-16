@@ -3,6 +3,7 @@
 // ========================================
 
 import { getAllLessons } from '../data/curriculum.js';
+import { icon } from './icons.js';
 
 export function renderJourneyMap(container, curriculum, gameState, onLessonClick) {
   const allLessons = getAllLessons();
@@ -49,7 +50,7 @@ function renderSections(sections, allLessons, completedLessons, firstUncompleted
       // Section/Chapter header
       html += `
         <div class="section-header">
-          <span class="section-icon">${section.icon}</span>
+          <span class="section-icon">${icon(section.icon, 20)}</span>
           <div>
             <div style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 500;">Section ${sIdx + 1}, Chapter ${cIdx + 1}</div>
             <div>${chapter.title}</div>

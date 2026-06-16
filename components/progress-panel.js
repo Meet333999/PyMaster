@@ -3,6 +3,8 @@
    Displays promo card, leaderboard preview, and daily goals.
    ========================================================================== */
 
+import { icon } from './icons.js';
+
 /** Element ID for targeted updates */
 const PANEL_ID = 'pymaster-progress-panel';
 
@@ -87,10 +89,10 @@ export function updateProgressPanel(state) {
 function _renderPromoCard() {
   return `
     <div class="promo-card">
-      <div class="promo-title">🚀 Get More</div>
+      <div class="promo-title">${icon('rocket', 16)} Get More</div>
       <div class="promo-desc">Unlock all lessons, remove ads, and get unlimited hints.</div>
       <button class="btn-pro" aria-label="Upgrade to Pro">
-        ⭐ GO PRO
+        ${icon('star', 16)} GO PRO
       </button>
     </div>
   `;
@@ -115,7 +117,7 @@ function _renderLeaderboard() {
 
   return `
     <div class="leaderboard-card">
-      <div class="card-title">🏆 Leaderboard</div>
+      <div class="card-title">${icon('trophy', 16)} Leaderboard</div>
       ${entriesHTML}
     </div>
   `;
@@ -129,11 +131,11 @@ function _renderLeaderboard() {
 function _renderDailyGoals(goals) {
   return `
     <div class="daily-goals-card">
-      <div class="card-title">📋 Daily Goals</div>
+      <div class="card-title">${icon('clipboard', 16)} Daily Goals</div>
 
-      ${_renderGoalItem('perfect', '🎯 Get 2 perfect completions', goals.perfectCompletions)}
-      ${_renderGoalItem('exercise', '💻 Complete 4 exercises', goals.exercises)}
-      ${_renderGoalItem('xp', '⚡ Earn 60 XP', goals.xp)}
+      ${_renderGoalItem('perfect', `${icon('target', 14)} Get 2 perfect completions`, goals.perfectCompletions)}
+      ${_renderGoalItem('exercise', `${icon('code', 14)} Complete 4 exercises`, goals.exercises)}
+      ${_renderGoalItem('xp', `${icon('zap', 14)} Earn 60 XP`, goals.xp)}
     </div>
   `;
 }

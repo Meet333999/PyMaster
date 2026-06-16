@@ -7,12 +7,14 @@
  * Navigation items configuration.
  * Each entry defines a route, icon, and label for the sidebar.
  */
+import { icon } from './icons.js';
+
 const NAV_ITEMS = [
-  { route: 'journey',     icon: '🗺️', label: 'Journey' },
-  { route: 'practice',    icon: '💻', label: 'Practice' },
-  { route: 'goals',       icon: '🎯', label: 'Goals' },
-  { route: 'leaderboard', icon: '🏆', label: 'Leaderboard' },
-  { route: 'profile',     icon: '👤', label: 'Profile' },
+  { route: 'journey',     icon: icon('map', 20),     label: 'Journey' },
+  { route: 'practice',    icon: icon('code', 20),    label: 'Practice' },
+  { route: 'goals',       icon: icon('target', 20),  label: 'Goals' },
+  { route: 'leaderboard', icon: icon('trophy', 20),  label: 'Leaderboard' },
+  { route: 'profile',     icon: icon('user', 20),    label: 'Profile' },
 ];
 
 /**
@@ -47,7 +49,7 @@ export function renderSidebar(container, currentRoute, onNavigate) {
   // Render full sidebar
   container.innerHTML = `
     <a href="#" class="sidebar-logo" aria-label="PyMaster Home">
-      <span class="logo-icon">🐍</span>
+      <span class="logo-icon">${icon('terminal', 22)}</span>
       <span class="logo-text">PyMaster</span>
     </a>
 

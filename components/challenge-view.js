@@ -6,6 +6,7 @@ import { createCodeEditor, getEditorValue, setEditorValue } from './code-editor.
 import { runPython, isPyodideReady } from '../engine/pyodide-runner.js';
 import { runAllTests } from '../engine/validator.js';
 import { gameState } from '../engine/state.js';
+import { icon } from './icons.js';
 
 export function renderChallengeView(container, lesson, section, chapter, callbacks) {
   const { onComplete, onBack } = callbacks;
@@ -42,7 +43,7 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
         <div class="challenge-body">
           <div class="challenge-section">
             <h3 class="challenge-section-title">
-              <span class="section-icon">🏆</span> Challenge
+              <span class="section-icon">${icon('trophy', 16)}</span> Challenge
             </h3>
             <div class="challenge-description">
               ${formatDescription(challenge.description)}
@@ -60,7 +61,7 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
           <!-- Hints Section -->
           <div class="hints-section">
             <h3 class="challenge-section-title">
-              <span class="section-icon">💡</span> Hints
+              <span class="section-icon">${icon('lightbulb', 16)}</span> Hints
             </h3>
             <div class="hints-list" id="hints-list">
               ${challenge.hints.map((hint, idx) => `
@@ -266,13 +267,13 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
       }
     }
     // All hints open
-    consoleOutput = '💡 All hints have been revealed. Try using them to solve the challenge!';
+    consoleOutput = 'All hints have been revealed. Try using them to solve the challenge!';
     activeTab = 'console';
     updateTabs();
   }
 
   function handleExplain() {
-    consoleOutput = `📝 Challenge Explanation:\n\n${challenge.description}\n\n💡 Tip: Check the hints section for step-by-step guidance.`;
+    consoleOutput = `Challenge Explanation:\n\n${challenge.description}\n\nTip: Check the hints section for step-by-step guidance.`;
     activeTab = 'console';
     updateTabs();
   }
@@ -319,7 +320,7 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
         ${testResults.map((result, idx) => `
           <div class="test-result ${result.passed ? 'pass' : 'fail'}">
             <div class="test-result-header">
-              <span class="test-result-icon">${result.passed ? '✅' : '❌'}</span>
+              <span class="test-result-icon">${result.passed ? icon('check-circle', 16) : icon('x-circle', 16)}</span>
               <span class="test-result-label">Test ${idx + 1}</span>
             </div>
             <div class="test-result-body">
