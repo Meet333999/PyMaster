@@ -70,6 +70,7 @@ class GameState {
     /** @type {string|null} */
     this._userId = null;
     this._isSyncing = false;
+    this._needsSync = false;
 
     // Load persisted state
     this.load();
@@ -178,9 +179,16 @@ class GameState {
    * Push current state to Firebase.
    */
   async syncToFirebase() {
-    if (!this._userId || this._isSyncing) return;
+    if (!this._userId) return;
+
+    if (this._isSyncing) {
+      this._needsSync = true;
+      return;
+    }
 
     this._isSyncing = true;
+    this._needsSync = false;
+
     try {
       const docRef = doc(db, 'users', this._userId);
       await setDoc(docRef, this._state);
@@ -188,6 +196,10 @@ class GameState {
       console.error('[PyMaster] Error syncing to Firebase:', err);
     } finally {
       this._isSyncing = false;
+      // If another save occurred during the write, trigger another sync immediately
+      if (this._needsSync) {
+        this.syncToFirebase();
+      }
     }
   }
 
@@ -272,6 +284,32 @@ class GameState {
    */
   getUserId() {
     return this._userId;
+  }
+
+  /**
+   * Check if the game state is currently writing or scheduled to write to Firestore.
+   * @returns {boolean}
+   */
+  isSyncing() {
+    return this._isSyncing || this._needsSync;
+  }
+
+  /**
+   * Returns a promise that resolves once all pending Firestore writes have completed.
+   * @returns {Promise<void>}
+   */
+  waitForSync() {
+    if (!this.isSyncing()) return Promise.resolve();
+    return new Promise((resolve) => {
+      const check = () => {
+        if (!this.isSyncing()) {
+          resolve();
+        } else {
+          setTimeout(check, 50);
+        }
+      };
+      check();
+    });
   }
 
   /* ── Progress ── */

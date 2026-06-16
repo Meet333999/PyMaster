@@ -41,8 +41,12 @@ function parseRoute() {
 // ---- Router ----
 async function navigate(route) {
   if (typeof route === 'string') {
-    // Update the hash and trigger a full page refresh
+    // Update the hash
     window.location.hash = route;
+    // Wait for any pending game state sync to complete before reloading!
+    if (gameState.isSyncing()) {
+      await gameState.waitForSync();
+    }
     window.location.reload();
     return;
   }
