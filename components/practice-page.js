@@ -3,10 +3,16 @@
 // ========================================
 
 import { getAllLessons } from '../data/curriculum.js';
+import { getAllSQLLessons } from '../data/sql-curriculum.js';
 import { icon } from './icons.js';
 
+let activeTab = 'python'; // 'python' | 'sql'
+
 export function renderPracticePage(container, curriculum, gameState, onLessonClick) {
-  const allLessons = getAllLessons();
+  const pythonLessons = getAllLessons();
+  const sqlLessons = getAllSQLLessons();
+
+  const allLessons = activeTab === 'sql' ? sqlLessons : pythonLessons;
   const challenges = allLessons.filter(l => l.type === 'challenge');
   const completedLessons = gameState.getCompletedLessons();
 
@@ -20,11 +26,28 @@ export function renderPracticePage(container, curriculum, gameState, onLessonCli
     ...shuffleArray(completedChallenges).slice(0, 3),
   ];
 
+  const handleChallengeClick = (lessonId) => {
+    const isSql = lessonId.startsWith('sql_');
+    onLessonClick(lessonId, isSql);
+  };
+
   container.innerHTML = `
     <div class="page-container">
       <div class="page-header">
         <h1 class="page-title">${icon('code', 20)} Practice</h1>
-        <p class="page-subtitle">Sharpen your Python skills with random challenges</p>
+        <p class="page-subtitle">Sharpen your ${activeTab === 'sql' ? 'SQL' : 'Python'} skills with random challenges</p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="practice-tabs-container">
+        <div class="practice-tabs">
+          <button class="practice-tab ${activeTab === 'python' ? 'active' : ''}" id="tab-practice-python">
+            <span class="tab-icon">${icon('terminal', 14)}</span> Python
+          </button>
+          <button class="practice-tab ${activeTab === 'sql' ? 'active' : ''}" id="tab-practice-sql">
+            <span class="tab-icon">${icon('database', 14)}</span> SQL
+          </button>
+        </div>
       </div>
 
       <!-- Quick Stats -->
@@ -103,8 +126,18 @@ export function renderPracticePage(container, curriculum, gameState, onLessonCli
   container.querySelectorAll('.practice-card').forEach(card => {
     card.addEventListener('click', () => {
       const lessonId = card.dataset.lessonId;
-      if (lessonId) onLessonClick(lessonId);
+      if (lessonId) handleChallengeClick(lessonId);
     });
+  });
+
+  container.querySelector('#tab-practice-python')?.addEventListener('click', () => {
+    activeTab = 'python';
+    renderPracticePage(container, curriculum, gameState, onLessonClick);
+  });
+
+  container.querySelector('#tab-practice-sql')?.addEventListener('click', () => {
+    activeTab = 'sql';
+    renderPracticePage(container, curriculum, gameState, onLessonClick);
   });
 
   container.querySelector('#btn-refresh-practice')?.addEventListener('click', () => {

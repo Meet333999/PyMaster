@@ -4,12 +4,15 @@
 
 import { gameState } from './engine/state.js';
 import { initPyodide } from './engine/pyodide-runner.js';
+import { initSQL } from './engine/sql-runner.js';
 import { curriculum, getAllLessons, getLessonById, getChapterForLesson, getSectionForLesson } from './data/curriculum.js';
+import { sqlCurriculum, getAllSQLLessons, getSQLLessonById, getSQLChapterForLesson, getSQLSectionForLesson } from './data/sql-curriculum.js';
 import { renderSidebar } from './components/sidebar.js';
 import { renderTopbar, updateTopbar } from './components/topbar.js';
 import { renderJourneyMap } from './components/journey-map.js';
 import { renderLessonView } from './components/lesson-view.js';
 import { renderChallengeView } from './components/challenge-view.js';
+import { renderSQLChallengeView } from './components/sql-challenge-view.js';
 import { renderQuizView } from './components/quiz-view.js';
 import { renderProgressPanel, updateProgressPanel } from './components/progress-panel.js';
 import { renderProfilePage } from './components/profile-page.js';
@@ -67,7 +70,7 @@ async function navigate(route) {
     renderSidebar(document.getElementById('sidebar'), page, (r) => navigate(r));
 
     // Show/hide right panel based on route and collapse grid column
-    const showRightPanel = page === 'journey';
+    const showRightPanel = page === 'journey' || page === 'sql-journey';
     const appContainer = document.getElementById('app');
     if (appContainer) {
       if (showRightPanel) {
@@ -97,6 +100,12 @@ async function navigate(route) {
       case 'journey':
         renderJourneyMap(mainContent, curriculum, gameState, (lessonId) => {
           navigate(`lesson/${lessonId}`);
+        });
+        break;
+
+      case 'sql-journey':
+        renderJourneyMap(mainContent, sqlCurriculum, gameState, (lessonId) => {
+          navigate(`sql-lesson/${lessonId}`);
         });
         break;
 
@@ -133,9 +142,46 @@ async function navigate(route) {
         break;
       }
 
+      case 'sql-lesson': {
+        if (!param) {
+          window.location.hash = 'sql-journey';
+          return;
+        }
+        const lesson = getSQLLessonById(param);
+        if (!lesson) {
+          window.location.hash = 'sql-journey';
+          return;
+        }
+
+        const chapter = getSQLChapterForLesson(param);
+        const section = getSQLSectionForLesson(param);
+
+        if (lesson.type === 'theory') {
+          renderLessonView(mainContent, lesson, section, chapter, {
+            onComplete: () => handleLessonComplete(lesson),
+            onBack: () => navigate('sql-journey'),
+          });
+        } else if (lesson.type === 'challenge') {
+          renderSQLChallengeView(mainContent, lesson, section, chapter, {
+            onComplete: (isPerfect) => handleLessonComplete(lesson, isPerfect),
+            onBack: () => navigate('sql-journey'),
+          });
+        } else if (lesson.type === 'quiz') {
+          renderQuizView(mainContent, lesson, section, chapter, {
+            onComplete: () => handleLessonComplete(lesson),
+            onBack: () => navigate('sql-journey'),
+          });
+        }
+        break;
+      }
+
       case 'practice':
-        renderPracticePage(mainContent, curriculum, gameState, (lessonId) => {
-          navigate(`lesson/${lessonId}`);
+        renderPracticePage(mainContent, curriculum, gameState, (lessonId, isSql) => {
+          if (isSql) {
+            navigate(`sql-lesson/${lessonId}`);
+          } else {
+            navigate(`lesson/${lessonId}`);
+          }
         });
         break;
 
@@ -166,7 +212,20 @@ async function navigate(route) {
 
 // ---- Lesson Complete Handler ----
 function handleLessonComplete(lesson, isPerfect = false) {
+  const isSql = lesson.id.startsWith('sql_');
   const wasAlreadyCompleted = gameState.isLessonCompleted(lesson.id);
+
+  const allLessons = isSql ? getAllSQLLessons() : getAllLessons();
+  const currentIndex = allLessons.findIndex((l) => l.id === lesson.id);
+  const nextLesson = allLessons[currentIndex + 1];
+
+  const handleNextNavigation = () => {
+    if (nextLesson) {
+      navigate(isSql ? `sql-lesson/${nextLesson.id}` : `lesson/${nextLesson.id}`);
+    } else {
+      navigate(isSql ? 'sql-journey' : 'journey');
+    }
+  };
 
   if (!wasAlreadyCompleted) {
     gameState.completeLesson(lesson.id, lesson.xp, isPerfect);
@@ -174,30 +233,11 @@ function handleLessonComplete(lesson, isPerfect = false) {
     showCompletionModal(
       lesson.title,
       lesson.xp,
-      () => {
-        // Navigate to next lesson or back to journey
-        const allLessons = getAllLessons();
-        const currentIndex = allLessons.findIndex((l) => l.id === lesson.id);
-        const nextLesson = allLessons[currentIndex + 1];
-
-        if (nextLesson) {
-          navigate(`lesson/${nextLesson.id}`);
-        } else {
-          navigate('journey');
-        }
-      }
+      handleNextNavigation
     );
   } else {
     // Already completed — just go to next
-    const allLessons = getAllLessons();
-    const currentIndex = allLessons.findIndex((l) => l.id === lesson.id);
-    const nextLesson = allLessons[currentIndex + 1];
-
-    if (nextLesson) {
-      navigate(`lesson/${nextLesson.id}`);
-    } else {
-      navigate('journey');
-    }
+    handleNextNavigation();
   }
 
   // Update right panel and topbar
@@ -357,6 +397,11 @@ async function init() {
   initPyodide().then(() => {
     app.pyodideReady = true;
     console.log('✅ Pyodide ready');
+  });
+
+  // Init SQL in background
+  initSQL().then(() => {
+    console.log('✅ SQL ready');
   });
 
   // Listen for hash changes

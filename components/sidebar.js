@@ -10,11 +10,12 @@
 import { icon } from './icons.js';
 
 const NAV_ITEMS = [
-  { route: 'journey',     icon: icon('map', 20),     label: 'Journey' },
-  { route: 'practice',    icon: icon('code', 20),    label: 'Practice' },
-  { route: 'goals',       icon: icon('target', 20),  label: 'Goals' },
-  { route: 'leaderboard', icon: icon('trophy', 20),  label: 'Leaderboard' },
-  { route: 'profile',     icon: icon('user', 20),    label: 'Profile' },
+  { route: 'journey',     icon: icon('map', 20),      label: 'Python' },
+  { route: 'sql-journey', icon: icon('database', 20),  label: 'SQL' },
+  { route: 'practice',    icon: icon('code', 20),      label: 'Practice' },
+  { route: 'goals',       icon: icon('target', 20),    label: 'Goals' },
+  { route: 'leaderboard', icon: icon('trophy', 20),    label: 'Leaderboard' },
+  { route: 'profile',     icon: icon('user', 20),      label: 'Profile' },
 ];
 
 /**

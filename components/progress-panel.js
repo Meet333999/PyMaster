@@ -4,6 +4,8 @@
    ========================================================================== */
 
 import { icon } from './icons.js';
+import { getAllLessons } from '../data/curriculum.js';
+import { getAllSQLLessons } from '../data/sql-curriculum.js';
 
 /** Element ID for targeted updates */
 const PANEL_ID = 'pymaster-progress-panel';
@@ -38,11 +40,53 @@ export function renderProgressPanel(container, state) {
   container.id = PANEL_ID;
 
   const dailyGoals = state.getDailyGoals();
+  const completedLessonsSet = state.getCompletedLessons();
+  const completedPython = [...completedLessonsSet].filter(id => !id.startsWith('sql_')).length;
+  const completedSQL = [...completedLessonsSet].filter(id => id.startsWith('sql_')).length;
+
+  const totalPython = getAllLessons().length;
+  const totalSQL = getAllSQLLessons().length;
+
+  const pythonPercent = totalPython > 0 ? Math.round((completedPython / totalPython) * 100) : 0;
+  const sqlPercent = totalSQL > 0 ? Math.round((completedSQL / totalSQL) * 100) : 0;
 
   container.innerHTML = `
     <div class="progress-panel">
       <!-- ── Promo Card ── -->
       ${_renderPromoCard()}
+
+      <!-- ── Course Progress ── -->
+      <div class="progress-card course-progress-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+        <div class="card-title" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.95rem; color: var(--color-text-muted);">
+          ${icon('bar-chart', 16)} Course Progress
+        </div>
+        
+        <!-- Python -->
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
+            <span style="color: var(--color-primary); display: flex; align-items: center; gap: 4px; font-weight: 500;">
+              ${icon('terminal', 12)} Python
+            </span>
+            <span style="color: var(--color-text-muted); font-size: 0.8rem;">${completedPython}/${totalPython} (${pythonPercent}%)</span>
+          </div>
+          <div style="background: var(--color-background); border-radius: 4px; height: 6px; overflow: hidden; width: 100%;">
+            <div style="background: var(--color-primary); height: 100%; border-radius: 4px; width: ${pythonPercent}%;"></div>
+          </div>
+        </div>
+
+        <!-- SQL -->
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
+            <span style="color: #00e5ff; display: flex; align-items: center; gap: 4px; font-weight: 500;">
+              ${icon('database', 12)} SQL
+            </span>
+            <span style="color: var(--color-text-muted); font-size: 0.8rem;">${completedSQL}/${totalSQL} (${sqlPercent}%)</span>
+          </div>
+          <div style="background: var(--color-background); border-radius: 4px; height: 6px; overflow: hidden; width: 100%;">
+            <div style="background: #00e5ff; height: 100%; border-radius: 4px; width: ${sqlPercent}%;"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- ── Leaderboard ── -->
       ${_renderLeaderboard()}

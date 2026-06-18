@@ -3,6 +3,7 @@
 // ==========================================================================
 
 import { getAllLessons } from '../data/curriculum.js';
+import { sqlCurriculum, getAllSQLLessons } from '../data/sql-curriculum.js';
 import { auth, googleProvider } from '../engine/firebase-init.js';
 import { icon } from './icons.js';
 import { 
@@ -204,9 +205,20 @@ function renderAuthForm(container) {
 
 function renderStatsPanel(container, gameState, curriculum) {
   const stats = gameState.getStats();
-  const allLessons = getAllLessons();
-  const totalLessons = allLessons.length;
-  const completionPercent = totalLessons > 0 ? Math.round((stats.completedLessons / totalLessons) * 100) : 0;
+  
+  const allPythonLessons = getAllLessons();
+  const totalPythonLessons = allPythonLessons.length;
+  
+  const allSQLLessons = getAllSQLLessons();
+  const totalSQLLessons = allSQLLessons.length;
+
+  const completedLessonsSet = gameState.getCompletedLessons();
+  const completedPythonLessons = [...completedLessonsSet].filter(id => !id.startsWith('sql_')).length;
+  const completedSQLLessons = [...completedLessonsSet].filter(id => id.startsWith('sql_')).length;
+
+  const pythonCompletionPercent = totalPythonLessons > 0 ? Math.round((completedPythonLessons / totalPythonLessons) * 100) : 0;
+  const sqlCompletionPercent = totalSQLLessons > 0 ? Math.round((completedSQLLessons / totalSQLLessons) * 100) : 0;
+  
   const username = gameState.getRawState().username || 'Learner';
 
   const photoURL = gameState.getPhotoURL();
@@ -225,7 +237,7 @@ function renderStatsPanel(container, gameState, curriculum) {
         </div>
         <div class="profile-info">
           <h1 class="profile-name">${username}</h1>
-          <p class="profile-subtitle">Learning Python since ${getJoinDate()}</p>
+          <p class="profile-subtitle">Learning Python & SQL since ${getJoinDate()}</p>
           <div class="profile-badges">
             <span class="profile-level">Level ${Math.floor(stats.totalXP / 100) + 1}</span>
             <span class="profile-rank">${getRank(stats.totalXP)}</span>
@@ -278,24 +290,56 @@ function renderStatsPanel(container, gameState, curriculum) {
       <!-- Progress Overview -->
       <div class="section-card">
         <h2 class="section-card-title">${icon('bar-chart', 18)} Course Progress</h2>
-        <div class="overall-progress">
-          <div class="progress-circle-container">
-            <svg class="progress-circle" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-surface)" stroke-width="10"/>
-              <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-primary)" stroke-width="10"
-                      stroke-dasharray="${2 * Math.PI * 52}"
-                      stroke-dashoffset="${2 * Math.PI * 52 * (1 - completionPercent / 100)}"
-                      stroke-linecap="round" transform="rotate(-90 60 60)"/>
-            </svg>
-            <span class="progress-circle-text">${completionPercent}%</span>
+        
+        <div class="course-progress-split" style="display: flex; gap: 32px; justify-content: space-around; flex-wrap: wrap; margin-bottom: 24px;">
+          <!-- Python Progress -->
+          <div class="overall-progress" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 0; min-width: 200px;">
+            <h3 style="margin: 0; color: var(--color-primary); font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
+              ${icon('terminal', 16)} Python
+            </h3>
+            <div class="progress-circle-container">
+              <svg class="progress-circle" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-surface)" stroke-width="10"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-primary)" stroke-width="10"
+                        stroke-dasharray="${2 * Math.PI * 52}"
+                        stroke-dashoffset="${2 * Math.PI * 52 * (1 - pythonCompletionPercent / 100)}"
+                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              </svg>
+              <span class="progress-circle-text">${pythonCompletionPercent}%</span>
+            </div>
+            <div class="progress-details">
+              <p><strong>${completedPythonLessons}</strong> of <strong>${totalPythonLessons}</strong> lessons</p>
+            </div>
           </div>
-          <div class="progress-details">
-            <p><strong>${stats.completedLessons}</strong> of <strong>${totalLessons}</strong> lessons completed</p>
+
+          <!-- SQL Progress -->
+          <div class="overall-progress" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 0; min-width: 200px;">
+            <h3 style="margin: 0; color: #00e5ff; font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
+              ${icon('database', 16)} SQL
+            </h3>
+            <div class="progress-circle-container">
+              <svg class="progress-circle" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-surface)" stroke-width="10"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#00e5ff" stroke-width="10"
+                        stroke-dasharray="${2 * Math.PI * 52}"
+                        stroke-dashoffset="${2 * Math.PI * 52 * (1 - sqlCompletionPercent / 100)}"
+                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              </svg>
+              <span class="progress-circle-text">${sqlCompletionPercent}%</span>
+            </div>
+            <div class="progress-details">
+              <p><strong>${completedSQLLessons}</strong> of <strong>${totalSQLLessons}</strong> lessons</p>
+            </div>
           </div>
         </div>
 
-        <!-- Per-section progress bars -->
-        <div class="section-progress-list">
+        <div style="border-top: 1px solid var(--color-border); margin: 24px 0;"></div>
+        
+        <!-- Per-section progress bars for Python -->
+        <h3 class="section-card-subtitle" style="margin-top: 16px; margin-bottom: 12px; font-size: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px;">
+          ${icon('terminal', 14)} Python Breakdown
+        </h3>
+        <div class="section-progress-list" style="margin-bottom: 32px;">
           ${curriculum.sections.map((section, idx) => {
             const sectionLessons = section.chapters.reduce((acc, ch) => acc.concat(ch.lessons), []);
             const sectionCompleted = sectionLessons.filter(l => gameState.isLessonCompleted(l.id)).length;
@@ -308,6 +352,29 @@ function renderStatsPanel(container, gameState, curriculum) {
                 </div>
                 <div class="goal-progress">
                   <div class="goal-progress-fill" style="width: ${sectionPercent}%"></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- Per-section progress bars for SQL -->
+        <h3 class="section-card-subtitle" style="margin-top: 24px; margin-bottom: 12px; font-size: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px;">
+          ${icon('database', 14)} SQL Breakdown
+        </h3>
+        <div class="section-progress-list">
+          ${sqlCurriculum.sections.map((section, idx) => {
+            const sectionLessons = section.chapters.reduce((acc, ch) => acc.concat(ch.lessons), []);
+            const sectionCompleted = sectionLessons.filter(l => gameState.isLessonCompleted(l.id)).length;
+            const sectionPercent = sectionLessons.length > 0 ? Math.round((sectionCompleted / sectionLessons.length) * 100) : 0;
+            return `
+              <div class="section-progress-item">
+                <div class="section-progress-header">
+                  <span class="section-progress-name">${icon(section.icon, 16)} ${section.title}</span>
+                  <span class="section-progress-count">${sectionCompleted}/${sectionLessons.length}</span>
+                </div>
+                <div class="goal-progress">
+                  <div class="goal-progress-fill" style="width: ${sectionPercent}%; background: #00e5ff; box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);"></div>
                 </div>
               </div>
             `;

@@ -9,12 +9,16 @@ let editorInstance = null;
 export function createCodeEditor(container, initialCode = '', options = {}) {
   const editorId = 'monaco-editor-' + Date.now();
 
+  const editorLanguage = options.language || 'python';
+  const editorTabLabel = options.tabLabel || 'Python';
+  const editorTabIcon = editorLanguage === 'sql' ? icon('database', 14) : icon('terminal', 14);
+
   container.innerHTML = `
     <div class="editor-container">
       <div class="editor-header">
         <div class="editor-tab active">
-          <span class="editor-tab-icon">${icon('terminal', 14)}</span>
-          <span>Python</span>
+          <span class="editor-tab-icon">${editorTabIcon}</span>
+          <span>${editorTabLabel}</span>
         </div>
         <div class="editor-actions">
           <button class="editor-action-btn" id="btn-copy-code" title="Copy code">
@@ -47,7 +51,7 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
           </svg>
-          Run Code
+          ${editorLanguage === 'sql' ? 'Run Query' : 'Run Code'}
         </button>
       </div>
     </div>
@@ -64,7 +68,7 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
 
     editorInstance = monaco.editor.create(editorContainer, {
       value: initialCode,
-      language: 'python',
+      language: editorLanguage,
       theme: 'pymaster-dark',
       minimap: { enabled: false },
       fontSize: 14,

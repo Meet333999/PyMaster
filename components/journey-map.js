@@ -2,11 +2,15 @@
 // Journey Map — Snake-like Progression Path
 // ========================================
 
-import { getAllLessons } from '../data/curriculum.js';
 import { icon } from './icons.js';
 
 export function renderJourneyMap(container, curriculum, gameState, onLessonClick) {
-  const allLessons = getAllLessons();
+  const allLessons = [];
+  for (const section of curriculum.sections) {
+    for (const chapter of section.chapters) {
+      allLessons.push(...chapter.lessons);
+    }
+  }
   const completedLessons = gameState.getCompletedLessons();
 
   // Find the first uncompleted lesson
