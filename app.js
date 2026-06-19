@@ -5,8 +5,7 @@
 import { gameState } from './engine/state.js';
 import { initPyodide } from './engine/pyodide-runner.js';
 import { initSQL } from './engine/sql-runner.js';
-import { curriculum, getAllLessons, getLessonById, getChapterForLesson, getSectionForLesson } from './data/curriculum.js';
-import { sqlCurriculum, getAllSQLLessons, getSQLLessonById, getSQLChapterForLesson, getSQLSectionForLesson } from './data/sql-curriculum.js';
+
 import { renderSidebar } from './components/sidebar.js';
 import { renderTopbar, updateTopbar } from './components/topbar.js';
 import { renderJourneyMap } from './components/journey-map.js';
@@ -70,7 +69,7 @@ async function navigate(route) {
     renderSidebar(document.getElementById('sidebar'), page, (r) => navigate(r));
 
     // Show/hide right panel based on route and collapse grid column
-    const showRightPanel = page === 'journey' || page === 'sql-journey';
+    const showRightPanel = page === 'journey' || page === 'sql-journey' || page === 'dsa-journey';
     const appContainer = document.getElementById('app');
     if (appContainer) {
       if (showRightPanel) {
@@ -79,9 +78,11 @@ async function navigate(route) {
         appContainer.classList.add('no-right-panel');
       }
     }
-    rightPanel.style.display = showRightPanel ? 'block' : 'none';
-    if (showRightPanel) {
-      renderProgressPanel(rightPanel, gameState);
+    if (rightPanel) {
+      rightPanel.style.display = showRightPanel ? 'block' : 'none';
+      if (showRightPanel) {
+        renderProgressPanel(rightPanel, gameState);
+      }
     }
 
     // Clear main content with fade transition
@@ -97,23 +98,36 @@ async function navigate(route) {
 
     // Render the right view
     switch (page) {
-      case 'journey':
+      case 'journey': {
+        const { curriculum } = await import('./data/curriculum.js');
         renderJourneyMap(mainContent, curriculum, gameState, (lessonId) => {
           navigate(`lesson/${lessonId}`);
         });
         break;
+      }
 
-      case 'sql-journey':
+      case 'sql-journey': {
+        const { sqlCurriculum } = await import('./data/sql-curriculum.js');
         renderJourneyMap(mainContent, sqlCurriculum, gameState, (lessonId) => {
           navigate(`sql-lesson/${lessonId}`);
         });
         break;
+      }
+
+      case 'dsa-journey': {
+        const { dsaCurriculum } = await import('./data/dsa-curriculum.js');
+        renderJourneyMap(mainContent, dsaCurriculum, gameState, (lessonId) => {
+          navigate(`dsa-lesson/${lessonId}`);
+        });
+        break;
+      }
 
       case 'lesson': {
         if (!param) {
           window.location.hash = 'journey';
           return;
         }
+        const { getLessonById, getChapterForLesson, getSectionForLesson } = await import('./data/curriculum.js');
         const lesson = getLessonById(param);
         if (!lesson) {
           window.location.hash = 'journey';
@@ -147,6 +161,7 @@ async function navigate(route) {
           window.location.hash = 'sql-journey';
           return;
         }
+        const { getSQLLessonById, getSQLChapterForLesson, getSQLSectionForLesson } = await import('./data/sql-curriculum.js');
         const lesson = getSQLLessonById(param);
         if (!lesson) {
           window.location.hash = 'sql-journey';
@@ -175,15 +190,49 @@ async function navigate(route) {
         break;
       }
 
-      case 'practice':
-        renderPracticePage(mainContent, curriculum, gameState, (lessonId, isSql) => {
-          if (isSql) {
-            navigate(`sql-lesson/${lessonId}`);
-          } else {
-            navigate(`lesson/${lessonId}`);
-          }
+      case 'dsa-lesson': {
+        if (!param) {
+          window.location.hash = 'dsa-journey';
+          return;
+        }
+        const { getDSALessonById, getDSAChapterForLesson, getDSASectionForLesson } = await import('./data/dsa-curriculum.js');
+        const lesson = getDSALessonById(param);
+        if (!lesson) {
+          window.location.hash = 'dsa-journey';
+          return;
+        }
+
+        const chapter = getDSAChapterForLesson(param);
+        const section = getDSASectionForLesson(param);
+
+        if (lesson.type === 'theory') {
+          renderLessonView(mainContent, lesson, section, chapter, {
+            onComplete: () => handleLessonComplete(lesson),
+            onBack: () => navigate('dsa-journey'),
+          });
+        } else if (lesson.type === 'challenge') {
+          renderChallengeView(mainContent, lesson, section, chapter, {
+            onComplete: (isPerfect) => handleLessonComplete(lesson, isPerfect),
+            onBack: () => navigate('dsa-journey'),
+          });
+        } else if (lesson.type === 'quiz') {
+          renderQuizView(mainContent, lesson, section, chapter, {
+            onComplete: () => handleLessonComplete(lesson),
+            onBack: () => navigate('dsa-journey'),
+          });
+        }
+        break;
+      }
+
+      case 'practice': {
+        const { curriculum } = await import('./data/curriculum.js');
+        renderPracticePage(mainContent, curriculum, gameState, (lessonId, isSql, isDsa) => {
+          if (isDsa) navigate(`dsa-lesson/${lessonId}`);
+          else if (isSql) navigate(`sql-lesson/${lessonId}`);
+          else navigate(`lesson/${lessonId}`);
         });
         break;
+      }
 
       case 'goals':
         renderGoalsPage(mainContent, gameState);
@@ -193,9 +242,11 @@ async function navigate(route) {
         renderLeaderboardPage(mainContent);
         break;
 
-      case 'profile':
+      case 'profile': {
+        const { curriculum } = await import('./data/curriculum.js');
         renderProfilePage(mainContent, gameState, curriculum);
         break;
+      }
 
       default:
         window.location.hash = 'journey';
@@ -213,17 +264,30 @@ async function navigate(route) {
 // ---- Lesson Complete Handler ----
 function handleLessonComplete(lesson, isPerfect = false) {
   const isSql = lesson.id.startsWith('sql_');
+  const isDsa = lesson.id.startsWith('dsa_');
   const wasAlreadyCompleted = gameState.isLessonCompleted(lesson.id);
 
-  const allLessons = isSql ? getAllSQLLessons() : getAllLessons();
+  const allLessons = isDsa ? getAllDSALessons() : (isSql ? getAllSQLLessons() : getAllLessons());
   const currentIndex = allLessons.findIndex((l) => l.id === lesson.id);
   const nextLesson = allLessons[currentIndex + 1];
 
   const handleNextNavigation = () => {
     if (nextLesson) {
-      navigate(isSql ? `sql-lesson/${nextLesson.id}` : `lesson/${nextLesson.id}`);
+      if (isDsa) {
+        navigate(`dsa-lesson/${nextLesson.id}`);
+      } else if (isSql) {
+        navigate(`sql-lesson/${nextLesson.id}`);
+      } else {
+        navigate(`lesson/${nextLesson.id}`);
+      }
     } else {
-      navigate(isSql ? 'sql-journey' : 'journey');
+      if (isDsa) {
+        navigate('dsa-journey');
+      } else if (isSql) {
+        navigate('sql-journey');
+      } else {
+        navigate('journey');
+      }
     }
   };
 

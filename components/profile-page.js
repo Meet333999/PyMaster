@@ -4,6 +4,7 @@
 
 import { getAllLessons } from '../data/curriculum.js';
 import { sqlCurriculum, getAllSQLLessons } from '../data/sql-curriculum.js';
+import { dsaCurriculum, getAllDSALessons } from '../data/dsa-curriculum.js';
 import { auth, googleProvider } from '../engine/firebase-init.js';
 import { icon } from './icons.js';
 import { 
@@ -212,12 +213,17 @@ function renderStatsPanel(container, gameState, curriculum) {
   const allSQLLessons = getAllSQLLessons();
   const totalSQLLessons = allSQLLessons.length;
 
+  const allDSALessons = getAllDSALessons();
+  const totalDSALessons = allDSALessons.length;
+
   const completedLessonsSet = gameState.getCompletedLessons();
-  const completedPythonLessons = [...completedLessonsSet].filter(id => !id.startsWith('sql_')).length;
+  const completedPythonLessons = [...completedLessonsSet].filter(id => !id.startsWith('sql_') && !id.startsWith('dsa_')).length;
   const completedSQLLessons = [...completedLessonsSet].filter(id => id.startsWith('sql_')).length;
+  const completedDSALessons = [...completedLessonsSet].filter(id => id.startsWith('dsa_')).length;
 
   const pythonCompletionPercent = totalPythonLessons > 0 ? Math.round((completedPythonLessons / totalPythonLessons) * 100) : 0;
   const sqlCompletionPercent = totalSQLLessons > 0 ? Math.round((completedSQLLessons / totalSQLLessons) * 100) : 0;
+  const dsaCompletionPercent = totalDSALessons > 0 ? Math.round((completedDSALessons / totalDSALessons) * 100) : 0;
   
   const username = gameState.getRawState().username || 'Learner';
 
@@ -237,7 +243,7 @@ function renderStatsPanel(container, gameState, curriculum) {
         </div>
         <div class="profile-info">
           <h1 class="profile-name">${username}</h1>
-          <p class="profile-subtitle">Learning Python & SQL since ${getJoinDate()}</p>
+          <p class="profile-subtitle">Learning Python, SQL & DSA since ${getJoinDate()}</p>
           <div class="profile-badges">
             <span class="profile-level">Level ${Math.floor(stats.totalXP / 100) + 1}</span>
             <span class="profile-rank">${getRank(stats.totalXP)}</span>
@@ -331,6 +337,26 @@ function renderStatsPanel(container, gameState, curriculum) {
               <p><strong>${completedSQLLessons}</strong> of <strong>${totalSQLLessons}</strong> lessons</p>
             </div>
           </div>
+
+          <!-- DSA Progress -->
+          <div class="overall-progress" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 0; min-width: 200px;">
+            <h3 style="margin: 0; color: #a855f7; font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
+              ${icon('git-branch', 16)} DSA
+            </h3>
+            <div class="progress-circle-container">
+              <svg class="progress-circle" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-surface)" stroke-width="10"/>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#a855f7" stroke-width="10"
+                        stroke-dasharray="${2 * Math.PI * 52}"
+                        stroke-dashoffset="${2 * Math.PI * 52 * (1 - dsaCompletionPercent / 100)}"
+                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              </svg>
+              <span class="progress-circle-text">${dsaCompletionPercent}%</span>
+            </div>
+            <div class="progress-details">
+              <p><strong>${completedDSALessons}</strong> of <strong>${totalDSALessons}</strong> lessons</p>
+            </div>
+          </div>
         </div>
 
         <div style="border-top: 1px solid var(--color-border); margin: 24px 0;"></div>
@@ -375,6 +401,31 @@ function renderStatsPanel(container, gameState, curriculum) {
                 </div>
                 <div class="goal-progress">
                   <div class="goal-progress-fill" style="width: ${sectionPercent}%; background: #00e5ff; box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);"></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div style="border-top: 1px solid var(--color-border); margin: 24px 0;"></div>
+        
+        <!-- Per-section progress bars for DSA -->
+        <h3 class="section-card-subtitle" style="margin-top: 24px; margin-bottom: 12px; font-size: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px;">
+          ${icon('git-branch', 14)} DSA Breakdown
+        </h3>
+        <div class="section-progress-list">
+          ${dsaCurriculum.sections.map((section, idx) => {
+            const sectionLessons = section.chapters.reduce((acc, ch) => acc.concat(ch.lessons), []);
+            const sectionCompleted = sectionLessons.filter(l => gameState.isLessonCompleted(l.id)).length;
+            const sectionPercent = sectionLessons.length > 0 ? Math.round((sectionCompleted / sectionLessons.length) * 100) : 0;
+            return `
+              <div class="section-progress-item">
+                <div class="section-progress-header">
+                  <span class="section-progress-name">${icon(section.icon, 16)} ${section.title}</span>
+                  <span class="section-progress-count">${sectionCompleted}/${sectionLessons.length}</span>
+                </div>
+                <div class="goal-progress">
+                  <div class="goal-progress-fill" style="width: ${sectionPercent}%; background: #a855f7; box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);"></div>
                 </div>
               </div>
             `;

@@ -4,15 +4,24 @@
 
 import { getAllLessons } from '../data/curriculum.js';
 import { getAllSQLLessons } from '../data/sql-curriculum.js';
+import { getAllDSALessons } from '../data/dsa-curriculum.js';
 import { icon } from './icons.js';
 
-let activeTab = 'python'; // 'python' | 'sql'
+let activeTab = 'python'; // 'python' | 'sql' | 'dsa'
 
 export function renderPracticePage(container, curriculum, gameState, onLessonClick) {
   const pythonLessons = getAllLessons();
   const sqlLessons = getAllSQLLessons();
+  const dsaLessons = getAllDSALessons();
 
-  const allLessons = activeTab === 'sql' ? sqlLessons : pythonLessons;
+  let allLessons;
+  if (activeTab === 'sql') {
+    allLessons = sqlLessons;
+  } else if (activeTab === 'dsa') {
+    allLessons = dsaLessons;
+  } else {
+    allLessons = pythonLessons;
+  }
   const challenges = allLessons.filter(l => l.type === 'challenge');
   const completedLessons = gameState.getCompletedLessons();
 
@@ -28,14 +37,15 @@ export function renderPracticePage(container, curriculum, gameState, onLessonCli
 
   const handleChallengeClick = (lessonId) => {
     const isSql = lessonId.startsWith('sql_');
-    onLessonClick(lessonId, isSql);
+    const isDsa = lessonId.startsWith('dsa_');
+    onLessonClick(lessonId, isSql, isDsa);
   };
 
   container.innerHTML = `
     <div class="page-container">
       <div class="page-header">
         <h1 class="page-title">${icon('code', 20)} Practice</h1>
-        <p class="page-subtitle">Sharpen your ${activeTab === 'sql' ? 'SQL' : 'Python'} skills with random challenges</p>
+        <p class="page-subtitle">Sharpen your ${activeTab === 'sql' ? 'SQL' : (activeTab === 'dsa' ? 'DSA' : 'Python')} skills with random challenges</p>
       </div>
 
       <!-- Tab Switcher -->
@@ -46,6 +56,9 @@ export function renderPracticePage(container, curriculum, gameState, onLessonCli
           </button>
           <button class="practice-tab ${activeTab === 'sql' ? 'active' : ''}" id="tab-practice-sql">
             <span class="tab-icon">${icon('database', 14)}</span> SQL
+          </button>
+          <button class="practice-tab ${activeTab === 'dsa' ? 'active' : ''}" id="tab-practice-dsa">
+            <span class="tab-icon">${icon('git-branch', 14)}</span> DSA
           </button>
         </div>
       </div>
@@ -137,6 +150,11 @@ export function renderPracticePage(container, curriculum, gameState, onLessonCli
 
   container.querySelector('#tab-practice-sql')?.addEventListener('click', () => {
     activeTab = 'sql';
+    renderPracticePage(container, curriculum, gameState, onLessonClick);
+  });
+
+  container.querySelector('#tab-practice-dsa')?.addEventListener('click', () => {
+    activeTab = 'dsa';
     renderPracticePage(container, curriculum, gameState, onLessonClick);
   });
 

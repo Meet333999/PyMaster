@@ -6,6 +6,7 @@
 import { icon } from './icons.js';
 import { getAllLessons } from '../data/curriculum.js';
 import { getAllSQLLessons } from '../data/sql-curriculum.js';
+import { getAllDSALessons } from '../data/dsa-curriculum.js';
 
 /** Element ID for targeted updates */
 const PANEL_ID = 'pymaster-progress-panel';
@@ -41,14 +42,17 @@ export function renderProgressPanel(container, state) {
 
   const dailyGoals = state.getDailyGoals();
   const completedLessonsSet = state.getCompletedLessons();
-  const completedPython = [...completedLessonsSet].filter(id => !id.startsWith('sql_')).length;
+  const completedPython = [...completedLessonsSet].filter(id => !id.startsWith('sql_') && !id.startsWith('dsa_')).length;
   const completedSQL = [...completedLessonsSet].filter(id => id.startsWith('sql_')).length;
+  const completedDSA = [...completedLessonsSet].filter(id => id.startsWith('dsa_')).length;
 
   const totalPython = getAllLessons().length;
   const totalSQL = getAllSQLLessons().length;
+  const totalDSA = getAllDSALessons().length;
 
   const pythonPercent = totalPython > 0 ? Math.round((completedPython / totalPython) * 100) : 0;
   const sqlPercent = totalSQL > 0 ? Math.round((completedSQL / totalSQL) * 100) : 0;
+  const dsaPercent = totalDSA > 0 ? Math.round((completedDSA / totalDSA) * 100) : 0;
 
   container.innerHTML = `
     <div class="progress-panel">
@@ -75,7 +79,7 @@ export function renderProgressPanel(container, state) {
         </div>
 
         <!-- SQL -->
-        <div>
+        <div style="margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
             <span style="color: #00e5ff; display: flex; align-items: center; gap: 4px; font-weight: 500;">
               ${icon('database', 12)} SQL
@@ -84,6 +88,19 @@ export function renderProgressPanel(container, state) {
           </div>
           <div style="background: var(--color-background); border-radius: 4px; height: 6px; overflow: hidden; width: 100%;">
             <div style="background: #00e5ff; height: 100%; border-radius: 4px; width: ${sqlPercent}%;"></div>
+          </div>
+        </div>
+
+        <!-- DSA -->
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
+            <span style="color: #a855f7; display: flex; align-items: center; gap: 4px; font-weight: 500;">
+              ${icon('git-branch', 12)} DSA
+            </span>
+            <span style="color: var(--color-text-muted); font-size: 0.8rem;">${completedDSA}/${totalDSA} (${dsaPercent}%)</span>
+          </div>
+          <div style="background: var(--color-background); border-radius: 4px; height: 6px; overflow: hidden; width: 100%;">
+            <div style="background: #a855f7; height: 100%; border-radius: 4px; width: ${dsaPercent}%;"></div>
           </div>
         </div>
       </div>
