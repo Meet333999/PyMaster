@@ -1,22 +1,20 @@
 /* ==========================================================================
-   PyMaster — Sidebar Navigation Component
-   Renders the left sidebar with logo and navigation items.
+   PyMaster — Skeuomorphic Sidebar Hardware Rack
+   Renders the left hardware strip with tactile push-buttons, channel LEDs,
+   and mechanical depression feedback.
    ========================================================================== */
 
-/**
- * Navigation items configuration.
- * Each entry defines a route, icon, and label for the sidebar.
- */
 import { icon } from './icons.js';
+import { playSound } from '../engine/haptics.js';
 
 const NAV_ITEMS = [
-  { route: 'journey',     icon: icon('map', 20),      label: 'Python' },
-  { route: 'sql-journey', icon: icon('database', 20),  label: 'SQL' },
-  { route: 'dsa-journey', icon: icon('git-branch', 20), label: 'DSA' },
-  { route: 'practice',    icon: icon('code', 20),      label: 'Practice' },
-  { route: 'goals',       icon: icon('target', 20),    label: 'Goals' },
-  { route: 'leaderboard', icon: icon('trophy', 20),    label: 'Leaderboard' },
-  { route: 'profile',     icon: icon('user', 20),      label: 'Profile' },
+  { route: 'journey',     icon: icon('terminal', 18),   label: 'Python',    tag: 'CH-1' },
+  { route: 'sql-journey', icon: icon('database', 18),   label: 'SQL',       tag: 'CH-2' },
+  { route: 'dsa-journey', icon: icon('git-branch', 18), label: 'DSA',       tag: 'CH-3' },
+  { route: 'practice',    icon: icon('code', 18),       label: 'Practice',  tag: 'PRAC' },
+  { route: 'goals',       icon: icon('target', 18),     label: 'Goals',     tag: 'GOAL' },
+  { route: 'leaderboard', icon: icon('activity', 18),   label: 'Telemetry', tag: 'DIAG' },
+  { route: 'profile',     icon: icon('user', 18),       label: 'Profile',   tag: 'USER' },
 ];
 
 /**
@@ -27,12 +25,8 @@ const NAV_ITEMS = [
  * @param {Function}   onNavigate   — callback invoked with the route string on click
  */
 export function renderSidebar(container, currentRoute, onNavigate) {
-  if (!container) {
-    console.error('[Sidebar] Container element is required.');
-    return;
-  }
+  if (!container) return;
 
-  // Build nav items HTML
   const navItemsHTML = NAV_ITEMS.map((item) => {
     const isActive = currentRoute === item.route;
     return `
@@ -40,59 +34,79 @@ export function renderSidebar(container, currentRoute, onNavigate) {
         class="sidebar-item ${isActive ? 'active' : ''}"
         data-route="${item.route}"
         aria-label="${item.label}"
-        title="${item.label}"
+        title="${item.label} (${item.tag})"
       >
+        <span class="channel-status-led ${isActive ? 'active' : ''}"></span>
         <span class="sidebar-icon">${item.icon}</span>
         <span class="sidebar-label">${item.label}</span>
+        <span class="sidebar-tag">${item.tag}</span>
       </button>
     `;
   }).join('');
 
-  // Render full sidebar
   container.innerHTML = `
-    <a href="#" class="sidebar-logo" aria-label="PyMaster Home">
-      <span class="logo-icon">${icon('terminal', 22)}</span>
-      <span class="logo-text">PyMaster</span>
-    </a>
+    <!-- Top Faceplate with Screws -->
+    <div class="sidebar-rack-head">
+      <div class="mounting-screw top-left" aria-hidden="true"></div>
+      <a href="#" class="sidebar-logo" aria-label="PyMaster Console">
+        <span class="logo-icon-box">
+          ${icon('power', 18)}
+        </span>
+        <div class="logo-text-group">
+          <span class="logo-text">PYMASTER</span>
+          <span class="logo-subtext">CONSOLE DECK</span>
+        </div>
+      </a>
+      <div class="mounting-screw top-right" aria-hidden="true"></div>
+    </div>
 
-    <nav class="sidebar-nav" aria-label="Main navigation">
+    <!-- Recessed Channel Strip -->
+    <nav class="sidebar-nav" aria-label="Hardware Channel Selectors">
+      <div class="rack-channel-header">ROUTING MATRIX</div>
       ${navItemsHTML}
     </nav>
+
+    <!-- Bottom Chassis Plate -->
+    <div class="sidebar-rack-foot">
+      <div class="mounting-screw bottom-left" aria-hidden="true"></div>
+      <div class="chassis-spec-label">REV 2.4 // 64-BIT WASM</div>
+      <div class="mounting-screw bottom-right" aria-hidden="true"></div>
+    </div>
   `;
 
-  // Apply sidebar class if not already present
   if (!container.classList.contains('sidebar')) {
     container.classList.add('sidebar');
   }
 
-  // ── Event delegation for nav clicks ──
+  // Event delegation for nav clicks with audio click feedback
   const nav = container.querySelector('.sidebar-nav');
   if (nav) {
     nav.addEventListener('click', (e) => {
-      // Find the closest sidebar-item from the click target
       const item = e.target.closest('.sidebar-item');
       if (!item) return;
 
       const route = item.dataset.route;
       if (!route) return;
 
-      // Update active state visually
+      playSound('click');
+
       nav.querySelectorAll('.sidebar-item').forEach((el) => {
         el.classList.toggle('active', el === item);
+        const led = el.querySelector('.channel-status-led');
+        if (led) led.classList.toggle('active', el === item);
       });
 
-      // Notify the app
       if (typeof onNavigate === 'function') {
         onNavigate(route);
       }
     });
   }
 
-  // ── Logo click → navigate to journey ──
   const logo = container.querySelector('.sidebar-logo');
   if (logo) {
     logo.addEventListener('click', (e) => {
       e.preventDefault();
+      playSound('click');
       if (typeof onNavigate === 'function') {
         onNavigate('journey');
       }

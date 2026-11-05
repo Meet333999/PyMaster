@@ -1,26 +1,16 @@
 /* ==========================================================================
-   PyMaster — Right Sidebar Progress Panel
-   Displays promo card, leaderboard preview, and daily goals.
+   PyMaster — Skeuomorphic Right Progress Deck & Hardware Telemetry
+   Features realistic rotary dials, vertical meters, engine diagnostics,
+   and daily objectives. Zero fake bots or marketing promo cards.
    ========================================================================== */
 
 import { icon } from './icons.js';
 import { getAllLessons } from '../data/curriculum.js';
 import { getAllSQLLessons } from '../data/sql-curriculum.js';
 import { getAllDSALessons } from '../data/dsa-curriculum.js';
+import { playSound } from '../engine/haptics.js';
 
-/** Element ID for targeted updates */
 const PANEL_ID = 'pymaster-progress-panel';
-
-/**
- * Fake leaderboard data for the preview.
- */
-const LEADERBOARD_DATA = [
-  { name: 'AlexPython',   xp: 12_450, avatar: 'A' },
-  { name: 'CodeNinja42',  xp: 10_280, avatar: 'C' },
-  { name: 'PySherlock',   xp: 9_730,  avatar: 'P' },
-  { name: 'DevDynamo',    xp: 8_510,  avatar: 'D' },
-  { name: 'ByteMaster',   xp: 7_920,  avatar: 'B' },
-];
 
 /**
  * Render the progress panel into the given container.
@@ -29,10 +19,7 @@ const LEADERBOARD_DATA = [
  * @param {import('../engine/state.js').GameState} state — game state instance
  */
 export function renderProgressPanel(container, state) {
-  if (!container) {
-    console.error('[ProgressPanel] Container element is required.');
-    return;
-  }
+  if (!container) return;
 
   if (!container.classList.contains('right-panel')) {
     container.classList.add('right-panel');
@@ -46,215 +33,204 @@ export function renderProgressPanel(container, state) {
   const completedSQL = [...completedLessonsSet].filter(id => id.startsWith('sql_')).length;
   const completedDSA = [...completedLessonsSet].filter(id => id.startsWith('dsa_')).length;
 
-  const totalPython = getAllLessons().length;
-  const totalSQL = getAllSQLLessons().length;
-  const totalDSA = getAllDSALessons().length;
+  const totalPython = getAllLessons().length || 1;
+  const totalSQL = getAllSQLLessons().length || 1;
+  const totalDSA = getAllDSALessons().length || 1;
 
-  const pythonPercent = totalPython > 0 ? Math.round((completedPython / totalPython) * 100) : 0;
-  const sqlPercent = totalSQL > 0 ? Math.round((completedSQL / totalSQL) * 100) : 0;
-  const dsaPercent = totalDSA > 0 ? Math.round((completedDSA / totalDSA) * 100) : 0;
+  const totalLessons = totalPython + totalSQL + totalDSA;
+  const totalCompleted = completedPython + completedSQL + completedDSA;
+  const masterPercent = Math.min(100, Math.round((totalCompleted / totalLessons) * 100));
+
+  const pythonPercent = Math.min(100, Math.round((completedPython / totalPython) * 100));
+  const sqlPercent = Math.min(100, Math.round((completedSQL / totalSQL) * 100));
+  const dsaPercent = Math.min(100, Math.round((completedDSA / totalDSA) * 100));
+
+  // Calculate knob rotation angle (-135deg to +135deg)
+  const knobAngle = -135 + (masterPercent / 100) * 270;
 
   container.innerHTML = `
-    <div class="progress-panel">
-      <!-- ── Promo Card ── -->
-      ${_renderPromoCard()}
-
-      <!-- ── Course Progress ── -->
-      <div class="progress-card course-progress-card" style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-        <div class="card-title" style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.95rem; color: var(--color-text-muted);">
-          ${icon('bar-chart', 16)} Course Progress
+    <div class="progress-panel-rack">
+      <!-- ── Hardware Header Faceplate ── -->
+      <div class="rack-unit-header">
+        <div class="mounting-screw top-left" aria-hidden="true"></div>
+        <div class="rack-unit-title">
+          <span class="rack-unit-id-badge">TELEMETRY</span>
+          <span class="rack-unit-name">SYSTEM DIAGNOSTICS</span>
         </div>
-        
-        <!-- Python -->
-        <div style="margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
-            <span style="color: var(--color-primary); display: flex; align-items: center; gap: 4px; font-weight: 500;">
-              ${icon('terminal', 12)} Python
-            </span>
-            <span style="color: var(--color-text-muted); font-size: 0.8rem;">${completedPython}/${totalPython} (${pythonPercent}%)</span>
-          </div>
-          <div style="background: var(--color-background); border-radius: 4px; height: 6px; overflow: hidden; width: 100%;">
-            <div style="background: var(--color-primary); height: 100%; border-radius: 4px; width: ${pythonPercent}%;"></div>
-          </div>
+        <div class="mounting-screw top-right" aria-hidden="true"></div>
+      </div>
+
+      <!-- ── Module 1: Rotary Master Progress Dial (Like the LEVEL knob in ref image) ── -->
+      <div class="hardware-module-card rotary-master-module">
+        <div class="module-title-bar">
+          <span class="module-tag">SYS-LVL</span>
+          <span class="module-heading">CURRICULUM MASTERY</span>
         </div>
 
-        <!-- SQL -->
-        <div style="margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
-            <span style="color: #00e5ff; display: flex; align-items: center; gap: 4px; font-weight: 500;">
-              ${icon('database', 12)} SQL
-            </span>
-            <span style="color: var(--color-text-muted); font-size: 0.8rem;">${completedSQL}/${totalSQL} (${sqlPercent}%)</span>
+        <div class="knob-assembly">
+          <!-- Stepped Radial Tick Marks -->
+          <div class="knob-ticks-ring" aria-hidden="true">
+            <span class="tick tick-min">0%</span>
+            <span class="tick tick-mid">50%</span>
+            <span class="tick tick-max">100%</span>
           </div>
-          <div style="background: var(--color-background); border-radius: 4px; height: 6px; overflow: hidden; width: 100%;">
-            <div style="background: #00e5ff; height: 100%; border-radius: 4px; width: ${sqlPercent}%;"></div>
+
+          <!-- Rotary Knob Body -->
+          <div class="skeuo-knob knob-large" id="master-progress-knob" style="--rotation: ${knobAngle}deg;" title="Overall Mastery: ${masterPercent}%">
+            <div class="knob-face">
+              <div class="knob-notch"></div>
+            </div>
           </div>
+
+          <!-- Readout Bezel -->
+          <div class="knob-readout-bezel">
+            <span class="knob-readout-val">${masterPercent}</span>
+            <span class="knob-readout-unit">%</span>
+          </div>
+          <div class="knob-label-sub">TOTAL COMPLETION</div>
+        </div>
+      </div>
+
+      <!-- ── Module 2: Channel Level Faders / VU Meters (Python, SQL, DSA) ── -->
+      <div class="hardware-module-card channel-meters-module">
+        <div class="module-title-bar">
+          <span class="module-tag">CH-METERS</span>
+          <span class="module-heading">MODULE PROGRESS</span>
         </div>
 
-        <!-- DSA -->
-        <div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
-            <span style="color: #a855f7; display: flex; align-items: center; gap: 4px; font-weight: 500;">
-              ${icon('git-branch', 12)} DSA
-            </span>
-            <span style="color: var(--color-text-muted); font-size: 0.8rem;">${completedDSA}/${totalDSA} (${dsaPercent}%)</span>
+        <div class="channel-strips-rack">
+          <!-- Channel 1: Python -->
+          <div class="channel-strip">
+            <div class="strip-header">
+              <span class="strip-channel-name">CH 1: PYTHON</span>
+              <span class="strip-val">${completedPython}/${totalPython}</span>
+            </div>
+            <div class="strip-vu-track">
+              <div class="strip-vu-fill" style="width: ${pythonPercent}%;"></div>
+            </div>
+            <div class="strip-scale">
+              <span>-24</span><span>-12</span><span>-6</span><span>0dB</span>
+            </div>
           </div>
-          <div style="background: var(--color-background); border-radius: 4px; height: 6px; overflow: hidden; width: 100%;">
-            <div style="background: #a855f7; height: 100%; border-radius: 4px; width: ${dsaPercent}%;"></div>
+
+          <!-- Channel 2: SQL -->
+          <div class="channel-strip">
+            <div class="strip-header">
+              <span class="strip-channel-name">CH 2: SQL</span>
+              <span class="strip-val">${completedSQL}/${totalSQL}</span>
+            </div>
+            <div class="strip-vu-track">
+              <div class="strip-vu-fill" style="width: ${sqlPercent}%;"></div>
+            </div>
+            <div class="strip-scale">
+              <span>-24</span><span>-12</span><span>-6</span><span>0dB</span>
+            </div>
+          </div>
+
+          <!-- Channel 3: DSA -->
+          <div class="channel-strip">
+            <div class="strip-header">
+              <span class="strip-channel-name">CH 3: DSA</span>
+              <span class="strip-val">${completedDSA}/${totalDSA}</span>
+            </div>
+            <div class="strip-vu-track">
+              <div class="strip-vu-fill" style="width: ${dsaPercent}%;"></div>
+            </div>
+            <div class="strip-scale">
+              <span>-24</span><span>-12</span><span>-6</span><span>0dB</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- ── Leaderboard ── -->
-      ${_renderLeaderboard()}
+      <!-- ── Module 3: Daily Objectives (Real State) ── -->
+      <div class="hardware-module-card daily-goals-module">
+        <div class="module-title-bar">
+          <span class="module-tag">OBJECTIVES</span>
+          <span class="module-heading">DAILY BENCHMARKS</span>
+        </div>
 
-      <!-- ── Daily Goals ── -->
-      ${_renderDailyGoals(dailyGoals)}
+        <div class="daily-goals-rack">
+          ${_renderGoalItem('perfect', 'Perfect Executions (1st Try)', dailyGoals.perfectCompletions)}
+          ${_renderGoalItem('exercise', 'Challenges Solved Today', dailyGoals.exercises)}
+          ${_renderGoalItem('xp', 'Target Daily XP Points', dailyGoals.xp)}
+        </div>
+      </div>
+
+      <!-- ── Module 4: Engine Status Diagnostics ── -->
+      <div class="hardware-module-card engine-diag-module">
+        <div class="module-title-bar">
+          <span class="module-tag">RUNTIME</span>
+          <span class="module-heading">ENGINE STATUS</span>
+        </div>
+
+        <div class="runtime-specs-grid">
+          <div class="spec-row">
+            <span class="spec-led status-green" title="Active"></span>
+            <span class="spec-name">Pyodide 0.24.1</span>
+            <span class="spec-value">WASM // OK</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-led status-green" title="Active"></span>
+            <span class="spec-name">SQLite3 Core</span>
+            <span class="spec-value">IN-MEMORY</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-led status-green" title="Active"></span>
+            <span class="spec-name">State Storage</span>
+            <span class="spec-value">SYNC ACTIVE</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Rack Footplate ── -->
+      <div class="rack-unit-footer">
+        <div class="mounting-screw bottom-left" aria-hidden="true"></div>
+        <div class="rack-unit-serial">UNIT S/N: PM-9082-HW</div>
+        <div class="mounting-screw bottom-right" aria-hidden="true"></div>
+      </div>
     </div>
   `;
+
+  // Attach interactive click on master knob
+  const knob = container.querySelector('#master-progress-knob');
+  if (knob) {
+    knob.addEventListener('click', () => {
+      playSound('knob');
+      knob.classList.add('knob-spin-pulse');
+      setTimeout(() => knob.classList.remove('knob-spin-pulse'), 400);
+    });
+  }
 }
 
 /**
- * Update the progress panel without a full re-render.
- * Currently re-renders the daily goals section only.
- *
+ * Update the progress panel without full re-render.
  * @param {import('../engine/state.js').GameState} state
  */
 export function updateProgressPanel(state) {
   const panel = document.getElementById(PANEL_ID);
   if (!panel) return;
 
-  const goalsCard = panel.querySelector('.daily-goals-card');
-  if (!goalsCard) {
-    // Fallback to full re-render
-    renderProgressPanel(panel, state);
-    return;
-  }
-
-  const dailyGoals = state.getDailyGoals();
-
-  // Update each goal's progress bar and counter
-  _updateGoalItem(goalsCard, 'perfect', dailyGoals.perfectCompletions);
-  _updateGoalItem(goalsCard, 'exercise', dailyGoals.exercises);
-  _updateGoalItem(goalsCard, 'xp', dailyGoals.xp);
+  // Perform full re-render to keep all dials, meters, and goals in sync
+  renderProgressPanel(panel, state);
 }
 
-/* --------------------------------------------------------------------------
-   Sub-Renderers
-   -------------------------------------------------------------------------- */
+function _renderGoalItem(id, title, goal) {
+  const current = goal.current || 0;
+  const target = goal.target || 1;
+  const isComplete = current >= target;
+  const percent = Math.min(100, Math.round((current / target) * 100));
 
-/**
- * Render the GO PRO promo card.
- * @returns {string} HTML
- */
-function _renderPromoCard() {
   return `
-    <div class="promo-card">
-      <div class="promo-title">${icon('rocket', 16)} Get More</div>
-      <div class="promo-desc">Unlock all lessons, remove ads, and get unlimited hints.</div>
-      <button class="btn-pro" aria-label="Upgrade to Pro">
-        ${icon('star', 16)} GO PRO
-      </button>
-    </div>
-  `;
-}
-
-/**
- * Render the leaderboard preview card.
- * @returns {string} HTML
- */
-function _renderLeaderboard() {
-  const entriesHTML = LEADERBOARD_DATA.map((entry, i) => {
-    const rankDisplay = i + 1;
-    return `
-      <div class="leaderboard-entry">
-        <span class="rank">${rankDisplay}</span>
-        <div class="lb-avatar">${entry.avatar}</div>
-        <span class="lb-name">${entry.name}</span>
-        <span class="lb-xp">${entry.xp.toLocaleString()} XP</span>
+    <div class="hardware-goal-item ${isComplete ? 'completed' : ''}" data-goal="${id}">
+      <div class="goal-header-row">
+        <span class="goal-led ${isComplete ? 'status-green' : 'status-idle'}"></span>
+        <span class="goal-title">${title}</span>
+        <span class="goal-numbers">${current}/${target}</span>
       </div>
-    `;
-  }).join('');
-
-  return `
-    <div class="leaderboard-card">
-      <div class="card-title">${icon('trophy', 16)} Leaderboard</div>
-      ${entriesHTML}
-    </div>
-  `;
-}
-
-/**
- * Render the daily goals card with progress bars.
- * @param {{ perfectCompletions: {current:number,target:number}, exercises: {current:number,target:number}, xp: {current:number,target:number} }} goals
- * @returns {string} HTML
- */
-function _renderDailyGoals(goals) {
-  return `
-    <div class="daily-goals-card">
-      <div class="card-title">${icon('clipboard', 16)} Daily Goals</div>
-
-      ${_renderGoalItem('perfect', `${icon('target', 14)} Get 2 perfect completions`, goals.perfectCompletions)}
-      ${_renderGoalItem('exercise', `${icon('code', 14)} Complete 4 exercises`, goals.exercises)}
-      ${_renderGoalItem('xp', `${icon('zap', 14)} Earn 60 XP`, goals.xp)}
-    </div>
-  `;
-}
-
-/**
- * Render a single goal item with a progress bar.
- * @param {string} type
- * @param {string} label
- * @param {{ current: number, target: number }} goal
- * @returns {string} HTML
- */
-function _renderGoalItem(type, label, goal) {
-  const percent = Math.min((goal.current / goal.target) * 100, 100);
-  const isComplete = goal.current >= goal.target;
-
-  return `
-    <div class="goal-item" data-goal-type="${type}">
-      <div class="goal-header">
-        <span class="goal-label">${label}</span>
-        <span class="goal-count" data-goal-count="${type}">${goal.current}/${goal.target}</span>
-      </div>
-      <div class="goal-progress">
-        <div
-          class="goal-progress-fill ${isComplete ? 'complete' : ''}"
-          data-goal-fill="${type}"
-          style="width: ${percent}%"
-        ></div>
+      <div class="goal-slot-track">
+        <div class="goal-slot-fill" style="width: ${percent}%;"></div>
       </div>
     </div>
   `;
-}
-
-/* --------------------------------------------------------------------------
-   Update Helpers
-   -------------------------------------------------------------------------- */
-
-/**
- * Update a single goal item's progress bar and count text.
- * @param {HTMLElement} container
- * @param {string} type
- * @param {{ current: number, target: number }} goal
- */
-function _updateGoalItem(container, type, goal) {
-  const countEl = container.querySelector(`[data-goal-count="${type}"]`);
-  const fillEl  = container.querySelector(`[data-goal-fill="${type}"]`);
-
-  if (countEl) {
-    countEl.textContent = `${goal.current}/${goal.target}`;
-  }
-
-  if (fillEl) {
-    const percent = Math.min((goal.current / goal.target) * 100, 100);
-    fillEl.style.width = `${percent}%`;
-
-    if (goal.current >= goal.target) {
-      fillEl.classList.add('complete');
-    } else {
-      fillEl.classList.remove('complete');
-    }
-  }
 }

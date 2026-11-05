@@ -1,8 +1,11 @@
-// ========================================
-// Code Editor — Monaco Editor Wrapper
-// ========================================
+// ==========================================================================
+// PyMaster — Skeuomorphic Code Editor Console
+// Monaco wrapper with dual skeuomorphic light/dark themes and tactile controls
+// ==========================================================================
 
 import { icon } from './icons.js';
+import { getCurrentTheme } from '../engine/theme.js';
+import { playSound } from '../engine/haptics.js';
 
 let editorInstance = null;
 
@@ -10,58 +13,65 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
   const editorId = 'monaco-editor-' + Date.now();
 
   const editorLanguage = options.language || 'python';
-  const editorTabLabel = options.tabLabel || 'Python';
+  const editorTabLabel = options.tabLabel || (editorLanguage === 'sql' ? 'SQL' : 'Python');
   const editorTabIcon = editorLanguage === 'sql' ? icon('database', 14) : icon('terminal', 14);
 
+  const currentTheme = getCurrentTheme();
+  const monacoThemeName = currentTheme === 'light' ? 'pymaster-skeuo-light' : 'pymaster-skeuo-dark';
+
   container.innerHTML = `
-    <div class="editor-container">
+    <div class="editor-container hardware-chassis-panel">
+      <!-- Hardware Rack Header Strip -->
       <div class="editor-header">
-        <div class="editor-tab active">
-          <span class="editor-tab-icon">${editorTabIcon}</span>
-          <span>${editorTabLabel}</span>
+        <div class="editor-tabs-group">
+          <div class="editor-tab active">
+            <span class="editor-tab-icon">${editorTabIcon}</span>
+            <span class="editor-tab-text">${editorTabLabel} EXEC</span>
+            <span class="tab-active-dot"></span>
+          </div>
         </div>
+
         <div class="editor-actions">
-          <button class="editor-action-btn" id="btn-copy-code" title="Copy code">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
+          <button class="tactile-icon-btn" id="btn-copy-code" title="Copy code to clipboard">
+            ${icon('clipboard', 14)}
           </button>
-          <button class="editor-action-btn" id="btn-reset-code" title="Reset code">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="1 4 1 10 7 10"></polyline>
-              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-            </svg>
+          <button class="tactile-icon-btn" id="btn-reset-code" title="Reset buffer to template">
+            ${icon('refresh', 14)}
           </button>
         </div>
       </div>
-      <div class="editor-body" id="${editorId}"></div>
+
+      <!-- Recessed Editor Bezel Cavity -->
+      <div class="editor-bezel-well">
+        <div class="editor-body" id="${editorId}"></div>
+      </div>
+
+      <!-- Bottom Hardware Execution Toolbar -->
       <div class="editor-toolbar">
-        ${options.showAskAI !== false ? `
-          <button class="btn-ask-ai" id="btn-ask-ai">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            Ask AI
+        <div class="editor-specs-pill">
+          <span class="spec-dot pulse-blue"></span>
+          <span class="spec-txt">${editorLanguage.toUpperCase()} 3.11 WASM</span>
+        </div>
+
+        <div class="editor-buttons-rack">
+          <button class="tactile-run-btn" id="btn-run-code">
+            <span class="run-led-diode"></span>
+            <span class="run-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </span>
+            <span class="run-label">${editorLanguage === 'sql' ? 'EXECUTE QUERY' : 'EXECUTE CODE'}</span>
+            <span class="run-shortcut">Ctrl+↵</span>
           </button>
-        ` : ''}
-        <button class="btn-run" id="btn-run-code">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-          ${editorLanguage === 'sql' ? 'Run Query' : 'Run Code'}
-        </button>
+        </div>
       </div>
     </div>
   `;
 
-  // Try to create Monaco editor
   const editorContainer = document.getElementById(editorId);
 
   if (typeof monaco !== 'undefined') {
-    // Destroy previous instance
     if (editorInstance) {
       editorInstance.dispose();
     }
@@ -69,7 +79,7 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
     editorInstance = monaco.editor.create(editorContainer, {
       value: initialCode,
       language: editorLanguage,
-      theme: 'pymaster-dark',
+      theme: monacoThemeName,
       minimap: { enabled: false },
       fontSize: 14,
       fontFamily: "'JetBrains Mono', monospace",
@@ -96,7 +106,6 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
       },
     });
 
-    // Automatically lay out editor when container size changes to prevent misplaced cursor
     if (typeof ResizeObserver !== 'undefined') {
       const resizeObserver = new ResizeObserver(() => {
         if (editorInstance) {
@@ -107,7 +116,6 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
       editorInstance._resizeObserver = resizeObserver;
     }
 
-    // Trigger layout recalculation once web fonts (like JetBrains Mono) are loaded to prevent misplaced cursor
     if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         if (editorInstance) {
@@ -116,12 +124,20 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
       });
     }
 
-    // Trigger change callback
     editorInstance.onDidChangeModelContent(() => {
       if (typeof options.onChange === 'function') {
         options.onChange(editorInstance.getValue());
       }
     });
+
+    // Theme change listener
+    const onThemeChange = (e) => {
+      const theme = e.detail?.theme || getCurrentTheme();
+      monaco.editor.setTheme(theme === 'light' ? 'pymaster-skeuo-light' : 'pymaster-skeuo-dark');
+    };
+    window.addEventListener('pymaster-theme-changed', onThemeChange);
+    editorInstance._themeListener = onThemeChange;
+
   } else {
     // Fallback: use textarea
     editorContainer.innerHTML = `
@@ -132,7 +148,6 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
                 autocapitalize="off">${escapeHtml(initialCode)}</textarea>
     `;
 
-    // Handle Tab key in textarea
     const textarea = document.getElementById('fallback-textarea');
     textarea.addEventListener('keydown', (e) => {
       if (e.key === 'Tab') {
@@ -144,7 +159,6 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
       }
     });
 
-    // Handle typing in textarea
     textarea.addEventListener('input', () => {
       if (typeof options.onChange === 'function') {
         options.onChange(textarea.value);
@@ -156,11 +170,12 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
   const copyBtn = container.querySelector('#btn-copy-code');
   if (copyBtn) {
     copyBtn.addEventListener('click', () => {
+      playSound('click');
       const code = getEditorValue();
       navigator.clipboard.writeText(code).then(() => {
         copyBtn.innerHTML = '✓';
         setTimeout(() => {
-          copyBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+          copyBtn.innerHTML = icon('clipboard', 14);
         }, 1500);
       });
     });
@@ -170,6 +185,7 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
   const resetBtn = container.querySelector('#btn-reset-code');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
+      playSound('switch');
       setEditorValue(initialCode);
     });
   }
@@ -200,6 +216,9 @@ export function setEditorValue(code) {
 
 export function disposeEditor() {
   if (editorInstance) {
+    if (editorInstance._themeListener) {
+      window.removeEventListener('pymaster-theme-changed', editorInstance._themeListener);
+    }
     if (editorInstance._resizeObserver) {
       editorInstance._resizeObserver.disconnect();
     }

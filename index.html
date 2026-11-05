@@ -3,13 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PyMaster — Learn Python & SQL the Fun Way</title>
-  <meta name="description" content="Master Python and SQL from basics to advanced with interactive, gamified lessons. Write real code, earn XP, and track your progress." />
+  <title>PyMaster — Technical Hardware Console & Learning Environment</title>
+  <meta name="description" content="Technical programming console for Python, SQL, and Data Structures. Interactive code execution with dual-mode hardware skeuomorphism." />
 
-  <!-- Google Fonts -->
+  <!-- Prevent Theme Flash -->
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('pymaster_theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Monaco Editor -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
@@ -25,47 +39,23 @@
 </head>
 <body>
   <div id="app" class="app-container">
-    <!-- Sidebar -->
+    <!-- Left Hardware Strip -->
     <aside id="sidebar" class="sidebar"></aside>
 
-    <!-- Topbar -->
+    <!-- Top Hardware Header Deck -->
     <header id="topbar" class="topbar"></header>
 
-    <!-- Page Content -->
+    <!-- Main Workspace Chassis -->
     <main id="main-content" class="main-content">
+      <!-- Simple Black & White Lottie Loading Animation -->
       <div class="loading-screen" id="loading-screen">
-        <div class="loading-particles" id="loading-particles"></div>
-        <div class="loading-content">
-          <div class="loading-logo">
-            <svg viewBox="0 0 80 80" width="80" height="80" class="loading-svg-icon">
-              <defs>
-                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#00e5ff"/>
-                  <stop offset="100%" stop-color="#7b2ff7"/>
-                </linearGradient>
-              </defs>
-              <rect x="8" y="12" width="64" height="56" rx="8" fill="none" stroke="url(#logoGrad)" stroke-width="3"/>
-              <text x="18" y="50" font-family="'JetBrains Mono', monospace" font-size="28" font-weight="700" fill="url(#logoGrad)">&gt;_</text>
-              <line x1="48" y1="30" x2="62" y2="44" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-              <line x1="62" y1="44" x2="48" y2="58" stroke="#7b2ff7" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-            </svg>
-          </div>
-          <h2 class="loading-title">
-            <span class="loading-title-py">Py</span><span class="loading-title-master">Master</span>
-          </h2>
-          <p class="loading-subtitle">
-            <span class="loading-typewriter">Initializing Python environment</span><span class="loading-cursor">|</span>
-          </p>
-          <div class="loading-bar">
-            <div class="loading-bar-fill"></div>
-            <div class="loading-bar-glow"></div>
-          </div>
-          <div class="loading-status">Loading modules...</div>
+        <div class="loading-content-lottie">
+          <div class="lottie-player-wrapper" id="lottie-loader"></div>
         </div>
       </div>
     </main>
 
-    <!-- Right Progress Panel -->
+    <!-- Right Hardware Progress Deck -->
     <aside id="right-panel" class="right-panel"></aside>
   </div>
 

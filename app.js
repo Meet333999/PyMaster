@@ -1,10 +1,15 @@
 // ========================================
 // PyMaster — Main App Router & Controller
+// Skeuomorphic Dual-Mode System Engine
 // ========================================
 
 import { gameState } from './engine/state.js';
 import { initPyodide } from './engine/pyodide-runner.js';
 import { initSQL } from './engine/sql-runner.js';
+import { getInitialTheme, getCurrentTheme, setTheme } from './engine/theme.js';
+import { getAllLessons } from './data/curriculum.js';
+import { getAllSQLLessons } from './data/sql-curriculum.js';
+import { getAllDSALessons } from './data/dsa-curriculum.js';
 
 import { renderSidebar } from './components/sidebar.js';
 import { renderTopbar, updateTopbar } from './components/topbar.js';
@@ -17,10 +22,13 @@ import { renderProgressPanel, updateProgressPanel } from './components/progress-
 import { renderProfilePage } from './components/profile-page.js';
 import { renderGoalsPage } from './components/goals-page.js';
 import { renderPracticePage } from './components/practice-page.js';
-import { showCompletionModal } from './components/modal.js';
+import { renderTelemetryPage } from './components/telemetry-page.js';
+import { showCompletionModal, hideModal } from './components/modal.js';
 import { auth } from './engine/firebase-init.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import { icon } from './components/icons.js';
+import lottie from 'lottie-web/build/player/lottie_light.js';
+import loadingAnimData from './data/loading-animation.json';
 
 // ---- App State ----
 const app = {
@@ -30,6 +38,7 @@ const app = {
   pyodideReady: false,
   navId: 0,
 };
+window.__app = app;
 
 // ---- Route Parser ----
 function parseRoute() {
@@ -44,9 +53,7 @@ function parseRoute() {
 // ---- Router ----
 async function navigate(route) {
   if (typeof route === 'string') {
-    // Update the hash
     window.location.hash = route;
-    // Wait for any pending game state sync to complete before reloading!
     if (gameState.isSyncing()) {
       await gameState.waitForSync();
     }
@@ -54,9 +61,9 @@ async function navigate(route) {
     return;
   }
 
-  // Increment navigation ID and capture a local snapshot of this active navigation task
   app.navId++;
   const currentNavId = app.navId;
+  hideModal();
 
   try {
     const { page, param } = route || parseRoute();
@@ -87,9 +94,8 @@ async function navigate(route) {
 
     // Clear main content with fade transition
     mainContent.classList.add('fade-out');
-    await new Promise((r) => setTimeout(r, 150));
+    await new Promise((r) => setTimeout(r, 120));
 
-    // If a newer navigation was requested while we were waiting for the fade-out, abort this one!
     if (currentNavId !== app.navId) {
       return;
     }
@@ -137,21 +143,23 @@ async function navigate(route) {
         const chapter = getChapterForLesson(param);
         const section = getSectionForLesson(param);
 
+        const allLessons = getAllLessons();
+        const currentIndex = allLessons.findIndex((l) => l.id === param);
+        const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+
+        const callbacks = {
+          onComplete: (isPerfect) => handleLessonComplete(lesson, isPerfect),
+          onPrevious: prevLesson ? () => navigate(`lesson/${prevLesson.id}`) : null,
+          onBack: () => navigate('journey'),
+          hasPrevious: Boolean(prevLesson),
+        };
+
         if (lesson.type === 'theory') {
-          renderLessonView(mainContent, lesson, section, chapter, {
-            onComplete: () => handleLessonComplete(lesson),
-            onBack: () => navigate('journey'),
-          });
+          renderLessonView(mainContent, lesson, section, chapter, callbacks);
         } else if (lesson.type === 'challenge') {
-          renderChallengeView(mainContent, lesson, section, chapter, {
-            onComplete: (isPerfect) => handleLessonComplete(lesson, isPerfect),
-            onBack: () => navigate('journey'),
-          });
+          renderChallengeView(mainContent, lesson, section, chapter, callbacks);
         } else if (lesson.type === 'quiz') {
-          renderQuizView(mainContent, lesson, section, chapter, {
-            onComplete: () => handleLessonComplete(lesson),
-            onBack: () => navigate('journey'),
-          });
+          renderQuizView(mainContent, lesson, section, chapter, callbacks);
         }
         break;
       }
@@ -171,21 +179,23 @@ async function navigate(route) {
         const chapter = getSQLChapterForLesson(param);
         const section = getSQLSectionForLesson(param);
 
+        const allLessons = getAllSQLLessons();
+        const currentIndex = allLessons.findIndex((l) => l.id === param);
+        const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+
+        const callbacks = {
+          onComplete: (isPerfect) => handleLessonComplete(lesson, isPerfect),
+          onPrevious: prevLesson ? () => navigate(`sql-lesson/${prevLesson.id}`) : null,
+          onBack: () => navigate('sql-journey'),
+          hasPrevious: Boolean(prevLesson),
+        };
+
         if (lesson.type === 'theory') {
-          renderLessonView(mainContent, lesson, section, chapter, {
-            onComplete: () => handleLessonComplete(lesson),
-            onBack: () => navigate('sql-journey'),
-          });
+          renderLessonView(mainContent, lesson, section, chapter, callbacks);
         } else if (lesson.type === 'challenge') {
-          renderSQLChallengeView(mainContent, lesson, section, chapter, {
-            onComplete: (isPerfect) => handleLessonComplete(lesson, isPerfect),
-            onBack: () => navigate('sql-journey'),
-          });
+          renderSQLChallengeView(mainContent, lesson, section, chapter, callbacks);
         } else if (lesson.type === 'quiz') {
-          renderQuizView(mainContent, lesson, section, chapter, {
-            onComplete: () => handleLessonComplete(lesson),
-            onBack: () => navigate('sql-journey'),
-          });
+          renderQuizView(mainContent, lesson, section, chapter, callbacks);
         }
         break;
       }
@@ -205,21 +215,23 @@ async function navigate(route) {
         const chapter = getDSAChapterForLesson(param);
         const section = getDSASectionForLesson(param);
 
+        const allLessons = getAllDSALessons();
+        const currentIndex = allLessons.findIndex((l) => l.id === param);
+        const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+
+        const callbacks = {
+          onComplete: (isPerfect) => handleLessonComplete(lesson, isPerfect),
+          onPrevious: prevLesson ? () => navigate(`dsa-lesson/${prevLesson.id}`) : null,
+          onBack: () => navigate('dsa-journey'),
+          hasPrevious: Boolean(prevLesson),
+        };
+
         if (lesson.type === 'theory') {
-          renderLessonView(mainContent, lesson, section, chapter, {
-            onComplete: () => handleLessonComplete(lesson),
-            onBack: () => navigate('dsa-journey'),
-          });
+          renderLessonView(mainContent, lesson, section, chapter, callbacks);
         } else if (lesson.type === 'challenge') {
-          renderChallengeView(mainContent, lesson, section, chapter, {
-            onComplete: (isPerfect) => handleLessonComplete(lesson, isPerfect),
-            onBack: () => navigate('dsa-journey'),
-          });
+          renderChallengeView(mainContent, lesson, section, chapter, callbacks);
         } else if (lesson.type === 'quiz') {
-          renderQuizView(mainContent, lesson, section, chapter, {
-            onComplete: () => handleLessonComplete(lesson),
-            onBack: () => navigate('dsa-journey'),
-          });
+          renderQuizView(mainContent, lesson, section, chapter, callbacks);
         }
         break;
       }
@@ -239,7 +251,8 @@ async function navigate(route) {
         break;
 
       case 'leaderboard':
-        renderLeaderboardPage(mainContent);
+        // Routed to authentic Hardware Telemetry & Performance Benchmarks
+        renderTelemetryPage(mainContent, gameState);
         break;
 
       case 'profile': {
@@ -293,74 +306,15 @@ function handleLessonComplete(lesson, isPerfect = false) {
 
   if (!wasAlreadyCompleted) {
     gameState.completeLesson(lesson.id, lesson.xp, isPerfect);
-
-    showCompletionModal(
-      lesson.title,
-      lesson.xp,
-      handleNextNavigation
-    );
-  } else {
-    // Already completed — just go to next
-    handleNextNavigation();
   }
 
-  // Update right panel and topbar
+  showCompletionModal(
+    lesson.title,
+    lesson.xp,
+    handleNextNavigation
+  );
+
   updateTopbar(gameState);
-}
-
-// ---- Leaderboard Page (simulated) ----
-function renderLeaderboardPage(container) {
-  const photoURL = gameState.getPhotoURL();
-  const username = gameState.getRawState().username || 'Learner';
-  const youAvatar = photoURL
-    ? `<img src="${photoURL}" class="topbar-avatar-img" alt="${username}" referrerpolicy="no-referrer">`
-    : username.charAt(0).toUpperCase();
-
-  const leaderboardData = [
-    { rank: 1, name: 'PythonWizard', xp: 12450, avatar: 'P' },
-    { rank: 2, name: 'CodeNinja', xp: 11200, avatar: 'C' },
-    { rank: 3, name: 'ByteMaster', xp: 10800, avatar: 'B' },
-    { rank: 4, name: 'AlgoQueen', xp: 9500, avatar: 'A' },
-    { rank: 5, name: 'DebugHero', xp: 8900, avatar: 'D' },
-    { rank: 6, name: 'LoopLord', xp: 8200, avatar: 'L' },
-    { rank: 7, name: 'SyntaxStar', xp: 7600, avatar: 'S' },
-    { rank: 8, name: 'DataDragon', xp: 7100, avatar: 'D' },
-    { rank: 9, name: 'FuncFox', xp: 6500, avatar: 'F' },
-    { rank: 10, name: 'You', xp: gameState.getXP(), avatar: youAvatar, isUser: true },
-  ].sort((a, b) => b.xp - a.xp).map((e, i) => ({ ...e, rank: i + 1 }));
-
-  container.innerHTML = `
-    <div class="page-container">
-      <div class="page-header">
-        <h1 class="page-title">${icon('trophy', 20)} Leaderboard</h1>
-        <p class="page-subtitle">This week's top Python learners</p>
-      </div>
-
-      <div class="leaderboard-full">
-        <div class="leaderboard-podium">
-          ${leaderboardData.slice(0, 3).map((entry, i) => `
-            <div class="podium-entry podium-${i + 1} ${entry.isUser ? 'is-user' : ''}">
-              <div class="podium-avatar">${entry.avatar}</div>
-              <div class="podium-name">${entry.name}</div>
-              <div class="podium-xp">${entry.xp.toLocaleString()} XP</div>
-              <div class="podium-rank">#${entry.rank}</div>
-            </div>
-          `).join('')}
-        </div>
-
-        <div class="leaderboard-list">
-          ${leaderboardData.slice(3).map((entry) => `
-            <div class="leaderboard-row ${entry.isUser ? 'is-user' : ''}">
-              <span class="lb-rank">${entry.rank}</span>
-              <span class="lb-avatar">${entry.avatar}</span>
-              <span class="lb-name">${entry.name}</span>
-              <span class="lb-xp">${entry.xp.toLocaleString()} XP</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    </div>
-  `;
 }
 
 // ---- Monaco Editor Init ----
@@ -379,31 +333,62 @@ function initMonaco() {
     });
 
     require(['vs/editor/editor.main'], function () {
-      // Define custom dark theme matching our design
-      monaco.editor.defineTheme('pymaster-dark', {
+      // 1. Skeuomorphic Dark Theme (Matte Obsidian)
+      monaco.editor.defineTheme('pymaster-skeuo-dark', {
         base: 'vs-dark',
         inherit: true,
         rules: [
-          { token: 'comment', foreground: '6A737D', fontStyle: 'italic' },
-          { token: 'keyword', foreground: 'C678DD' },
-          { token: 'string', foreground: '98C379' },
-          { token: 'number', foreground: 'D19A66' },
-          { token: 'type', foreground: 'E5C07B' },
-          { token: 'function', foreground: '61AFEF' },
-          { token: 'variable', foreground: 'E06C75' },
-          { token: 'operator', foreground: '56B6C2' },
+          { token: 'comment', foreground: '606977', fontStyle: 'italic' },
+          { token: 'keyword', foreground: 'f0f3f6', fontStyle: 'bold' },
+          { token: 'string', foreground: '10b981' },
+          { token: 'number', foreground: '38bdf8' },
+          { token: 'type', foreground: 'cbd5e1' },
+          { token: 'function', foreground: 'ffffff', fontStyle: 'bold' },
+          { token: 'variable', foreground: 'e2e8f0' },
+          { token: 'operator', foreground: '94a3b8' },
         ],
         colors: {
-          'editor.background': '#0a0a1a',
-          'editor.foreground': '#e0e6f0',
-          'editorLineNumber.foreground': '#3a4058',
-          'editorLineNumber.activeForeground': '#00e5ff',
-          'editor.lineHighlightBackground': '#1a1a35',
-          'editor.selectionBackground': '#00e5ff44',
-          'editorCursor.foreground': '#00e5ff',
-          'editorWidget.background': '#111125',
+          'editor.background': '#131518',
+          'editor.foreground': '#f0f3f6',
+          'editorLineNumber.foreground': '#404652',
+          'editorLineNumber.activeForeground': '#38bdf8',
+          'editor.lineHighlightBackground': '#1b1e24',
+          'editor.selectionBackground': '#2563eb44',
+          'editorCursor.foreground': '#38bdf8',
+          'editorWidget.background': '#181b20',
+          'editorWidget.border': '#2a303c',
         },
       });
+
+      // 2. Skeuomorphic Light Theme (Matte Studio White)
+      monaco.editor.defineTheme('pymaster-skeuo-light', {
+        base: 'vs',
+        inherit: true,
+        rules: [
+          { token: 'comment', foreground: '6b7280', fontStyle: 'italic' },
+          { token: 'keyword', foreground: '0f172a', fontStyle: 'bold' },
+          { token: 'string', foreground: '047857' },
+          { token: 'number', foreground: '1d4ed8' },
+          { token: 'type', foreground: '334155' },
+          { token: 'function', foreground: '111827', fontStyle: 'bold' },
+          { token: 'variable', foreground: '1f2937' },
+          { token: 'operator', foreground: '475569' },
+        ],
+        colors: {
+          'editor.background': '#f4f6fa',
+          'editor.foreground': '#111827',
+          'editorLineNumber.foreground': '#94a3b8',
+          'editorLineNumber.activeForeground': '#1d4ed8',
+          'editor.lineHighlightBackground': '#e8edf5',
+          'editor.selectionBackground': '#2563eb25',
+          'editorCursor.foreground': '#1d4ed8',
+          'editorWidget.background': '#eef1f6',
+          'editorWidget.border': '#cbd5e1',
+        },
+      });
+
+      const currentTheme = getCurrentTheme();
+      monaco.editor.setTheme(currentTheme === 'light' ? 'pymaster-skeuo-light' : 'pymaster-skeuo-dark');
 
       app.monacoReady = true;
       resolve(true);
@@ -413,6 +398,10 @@ function initMonaco() {
 
 // ---- App Init ----
 async function init() {
+  // Sync theme
+  const initialTheme = getInitialTheme();
+  setTheme(initialTheme);
+
   // Load state
   gameState.load();
   gameState.checkStreak();
@@ -423,26 +412,26 @@ async function init() {
     updateTopbar(gameState);
     if (app.currentRoute === 'profile') {
       const mainContent = document.getElementById('main-content');
-      renderProfilePage(mainContent, gameState, curriculum);
+      import('./data/curriculum.js').then(({ curriculum }) => {
+        renderProfilePage(mainContent, gameState, curriculum);
+      });
     }
   });
 
   // Listen for auth state changes
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      console.log('👤 User logged in:', user.email);
       const displayName = user.displayName || user.email.split('@')[0];
       const photoURL = user.photoURL || null;
       await gameState.setUserId(user.uid, displayName, photoURL);
     } else {
-      console.log('👤 User logged out');
       await gameState.setUserId(null);
     }
   });
 
   // Delegate avatar click to navigate to profile page
   document.getElementById('topbar')?.addEventListener('click', (e) => {
-    const avatar = e.target.closest('.topbar-avatar');
+    const avatar = e.target.closest('.topbar-avatar-dial');
     if (avatar) {
       navigate('profile');
     }
@@ -454,7 +443,7 @@ async function init() {
 
   // Init Monaco Editor
   initMonaco().then((ready) => {
-    if (ready) console.log('✅ Monaco Editor ready');
+    if (ready) console.log('✅ Monaco Skeuomorphic Editor ready');
   });
 
   // Init Pyodide in background
@@ -468,35 +457,38 @@ async function init() {
     console.log('✅ SQL ready');
   });
 
+  // Initialize simple black and white Lottie loading animation
+  const lottieContainer = document.getElementById('lottie-loader');
+  let animInstance = null;
+  if (lottieContainer) {
+    animInstance = lottie.loadAnimation({
+      container: lottieContainer,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      animationData: loadingAnimData,
+    });
+  }
+
   // Listen for hash changes
   window.addEventListener('hashchange', () => {
     navigate(parseRoute());
   });
 
-  // Generate loading particles for depth
-  const particlesContainer = document.getElementById('loading-particles');
-  if (particlesContainer) {
-    for (let i = 0; i < 25; i++) {
-      const p = document.createElement('div');
-      p.className = 'loading-particle';
-      p.style.left = `${Math.random() * 100}vw`;
-      p.style.top = `${Math.random() * 100}vh`;
-      p.style.animationDelay = `${Math.random() * 4}s`;
-      p.style.animationDuration = `${3 + Math.random() * 3}s`;
-      particlesContainer.appendChild(p);
-    }
-  }
-
-  // Hide loading screen and render initial route
+  // Hide loading screen smoothly
   const loadingScreen = document.getElementById('loading-screen');
   if (loadingScreen) {
     await new Promise((r) => setTimeout(r, 1200));
-    loadingScreen.classList.add('fade-out');
+    loadingScreen.style.opacity = '0';
     await new Promise((r) => setTimeout(r, 300));
+    loadingScreen.style.display = 'none';
+    if (animInstance) {
+      animInstance.destroy();
+    }
   }
 
   navigate(parseRoute());
 }
 
-// ---- Start App ----
+// Start App
 document.addEventListener('DOMContentLoaded', init);

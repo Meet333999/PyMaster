@@ -1,8 +1,10 @@
 // ========================================
-// Journey Map — Snake-like Progression Path
+// Journey Map — Industrial Patch-Bay Progression Path
+// Skeuomorphic patch sockets, bus traces, and status LEDs
 // ========================================
 
 import { icon } from './icons.js';
+import { playSound } from '../engine/haptics.js';
 
 export function renderJourneyMap(container, curriculum, gameState, onLessonClick) {
   const allLessons = [];
@@ -25,13 +27,14 @@ export function renderJourneyMap(container, curriculum, gameState, onLessonClick
     </div>
   `;
 
-  // Add click handlers to nodes
+  // Add click handlers to nodes with mechanical click sound
   container.querySelectorAll('.path-node:not(.locked)').forEach(node => {
     node.addEventListener('click', () => {
       const lessonId = node.dataset.lessonId;
       if (lessonId) {
+        playSound('click');
         node.classList.add('node-press');
-        setTimeout(() => onLessonClick(lessonId), 200);
+        setTimeout(() => onLessonClick(lessonId), 180);
       }
     });
   });
@@ -48,23 +51,35 @@ export function renderJourneyMap(container, curriculum, gameState, onLessonClick
 function renderSections(sections, allLessons, completedLessons, firstUncompletedIdx) {
   let html = '';
   let globalLessonIdx = 0;
+  let totalChapters = 0;
+  sections.forEach(s => { totalChapters += s.chapters.length; });
+  let chapterIndex = 0;
 
   sections.forEach((section, sIdx) => {
     section.chapters.forEach((chapter, cIdx) => {
-      // Section/Chapter header
-      html += `
-        <div class="section-header">
-          <span class="section-icon">${icon(section.icon, 20)}</span>
-          <div>
-            <div style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 500;">Section ${sIdx + 1}, Chapter ${cIdx + 1}</div>
-            <div>${chapter.title}</div>
-          </div>
-          <span class="section-meta">${chapter.lessons.length} lessons</span>
-        </div>
-      `;
+      chapterIndex++;
+      const isChapterDone = chapter.lessons.every(l => completedLessons.has(l.id));
 
-      // Render lesson nodes in snake pattern using .path-row
-      html += `<div class="journey-path">`;
+      html += `
+        <div class="journey-chapter-block" data-section="${sIdx + 1}" data-chapter="${cIdx + 1}">
+          <!-- Stamped Hardware Faceplate Header -->
+          <div class="section-header hardware-faceplate">
+            <div class="faceplate-screw screw-left" aria-hidden="true"></div>
+            <div class="section-icon-box">${icon(section.icon, 18)}</div>
+            <div class="section-info-col">
+              <div class="section-subheading">SECTION ${sIdx + 1} // CHAPTER ${cIdx + 1}</div>
+              <div class="section-title-text">${chapter.title}</div>
+            </div>
+            <div class="section-meta-badge">
+              <span class="meta-led ${isChapterDone ? 'status-green' : 'status-idle'}"></span>
+              <span>${chapter.lessons.length} SOCKETS</span>
+            </div>
+            <div class="faceplate-screw screw-right" aria-hidden="true"></div>
+          </div>
+
+          <!-- Lesson Nodes Path -->
+          <div class="journey-path">
+      `;
 
       chapter.lessons.forEach((lesson, lIdx) => {
         const isCompleted = completedLessons.has(lesson.id);
@@ -72,24 +87,51 @@ function renderSections(sections, allLessons, completedLessons, firstUncompleted
         const isLocked = globalLessonIdx > firstUncompletedIdx;
 
         let stateClass = 'locked';
-        if (isCompleted) stateClass = 'completed';
-        else if (isCurrent) stateClass = 'current';
+        let nodeContent = '';
 
-        // Connector line before each node (except first)
+        if (isCompleted) {
+          stateClass = 'completed';
+          nodeContent = `
+            <div class="socket-inner completed">
+              <span class="socket-diode status-green"></span>
+              <span class="socket-check">✓</span>
+            </div>
+            <span class="node-caption">${lesson.title}</span>
+          `;
+        } else if (isCurrent) {
+          stateClass = 'current';
+          nodeContent = `
+            <div class="socket-inner current">
+              <span class="socket-diode status-blue pulse-blue"></span>
+              <span class="socket-number">${lIdx + 1}</span>
+            </div>
+            <span class="node-caption active">${lesson.title}</span>
+          `;
+        } else {
+          nodeContent = `
+            <div class="socket-inner locked">
+              <span class="socket-lock-icon">${icon('lock', 12)}</span>
+            </div>
+            <span class="node-caption">${lesson.title}</span>
+          `;
+        }
+
+        // Circuit bus connector line before each node (except first)
         if (lIdx > 0) {
           const prevCompleted = completedLessons.has(chapter.lessons[lIdx - 1].id);
           html += `<div class="path-connector-css ${prevCompleted ? 'completed' : ''}"></div>`;
         }
 
-        // Node row using .path-row for the S-curve via nth-child CSS
+        // Node row
         html += `
           <div class="path-row">
             <div class="path-node ${stateClass}"
                  data-lesson-id="${lesson.id}"
-                 title="${lesson.title}"
+                 title="${lesson.title} (${lesson.type.toUpperCase()})"
                  role="button"
                  tabindex="${isLocked ? -1 : 0}"
                  aria-label="${lesson.title} - ${stateClass}">
+              ${nodeContent}
             </div>
           </div>
         `;
@@ -98,6 +140,19 @@ function renderSections(sections, allLessons, completedLessons, firstUncompleted
       });
 
       html += `</div>`; // .journey-path
+
+      // If not the last chapter, render inter-chapter circuit bus conduit
+      if (chapterIndex < totalChapters) {
+        html += `
+          <div class="chapter-interconnect ${isChapterDone ? 'completed' : ''}" aria-hidden="true">
+            <div class="interconnect-line"></div>
+            <div class="interconnect-junction"></div>
+            <div class="interconnect-line"></div>
+          </div>
+        `;
+      }
+
+      html += `</div>`; // .journey-chapter-block
     });
   });
 

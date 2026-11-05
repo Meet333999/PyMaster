@@ -1,5 +1,6 @@
 // ==========================================================================
-// Profile Page — User Auth & Achievements Panel
+// PyMaster — Skeuomorphic Profile Deck & Engineering Identity
+// Physical user credential plate, rotary curriculum dials, and stamped plaques
 // ==========================================================================
 
 import { getAllLessons } from '../data/curriculum.js';
@@ -7,6 +8,7 @@ import { sqlCurriculum, getAllSQLLessons } from '../data/sql-curriculum.js';
 import { dsaCurriculum, getAllDSALessons } from '../data/dsa-curriculum.js';
 import { auth, googleProvider } from '../engine/firebase-init.js';
 import { icon } from './icons.js';
+import { playSound } from '../engine/haptics.js';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -15,14 +17,6 @@ import {
   updateProfile 
 } from 'firebase/auth';
 
-/**
- * Render the Profile page. If the user is logged in, displays their stats,
- * progress, and achievements. Otherwise, renders a premium Sign In / Sign Up portal.
- *
- * @param {HTMLElement} container — DOM element to render into
- * @param {import('../engine/state.js').GameState} gameState — game state instance
- * @param {object} curriculum — curriculum data
- */
 export function renderProfilePage(container, gameState, curriculum) {
   const userId = gameState.getUserId();
 
@@ -34,79 +28,87 @@ export function renderProfilePage(container, gameState, curriculum) {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   1. Auth Form Rendering & Events
+   1. Skeuomorphic Auth Console
    ────────────────────────────────────────────────────────────────────────── */
 
 function renderAuthForm(container) {
   container.innerHTML = `
-    <div class="page-container auth-page">
-      <div class="auth-card">
-        <div class="auth-header">
-          <div class="auth-logo">${icon('terminal', 48)}</div>
-          <h1 class="auth-title">Welcome to PyMaster</h1>
-          <p class="auth-subtitle">Sign in to save your progress and sync it across devices.</p>
+    <div class="page-container auth-page hardware-deck-layout">
+      <div class="auth-card hardware-chassis-panel">
+        <div class="mounting-screw top-left" aria-hidden="true"></div>
+        <div class="mounting-screw top-right" aria-hidden="true"></div>
+
+        <div class="auth-header hardware-header-bar">
+          <div class="unit-status-led" title="Security Subsystem Ready"></div>
+          <div class="auth-title-group">
+            <h1 class="auth-title">OPERATOR ACCESS PORTAL</h1>
+            <p class="auth-subtitle">Synchronize local runtime memory and telemetry records across terminals</p>
+          </div>
         </div>
-        
-        <div class="auth-tabs">
-          <button class="auth-tab active" id="tab-login">Sign In</button>
-          <button class="auth-tab" id="tab-register">Sign Up</button>
+
+        <div class="segmented-pill-container auth-segmented-pill" role="tablist">
+          <button class="segmented-pill-option active" id="tab-login" role="tab">SIGN IN</button>
+          <button class="segmented-pill-option" id="tab-register" role="tab">CREATE OPERATOR</button>
         </div>
-        
+
         <div class="auth-error-container hidden" id="auth-error"></div>
-        
+
         <!-- Sign In Form -->
-        <form class="auth-form" id="form-login">
+        <form class="auth-form skeuo-inset-well" id="form-login">
           <div class="form-group">
-            <label class="form-label" for="login-email">Email Address</label>
-            <input class="form-input" type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
+            <label class="form-label" for="login-email">OPERATOR EMAIL</label>
+            <input class="form-input skeuo-field" type="email" id="login-email" placeholder="engineer@domain.com" required autocomplete="email">
           </div>
           <div class="form-group">
-            <label class="form-label" for="login-password">Password</label>
-            <input class="form-input" type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+            <label class="form-label" for="login-password">ACCESS KEY / PASSWORD</label>
+            <input class="form-input skeuo-field" type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
           </div>
-          <button class="btn-auth-submit" type="submit" id="btn-login-submit">
-            <span>Sign In</span>
+          <button class="tactile-btn btn-auth-submit" type="submit" id="btn-login-submit">
+            <span>AUTHENTICATE OPERATOR</span>
+            <span class="btn-check-icon">→</span>
           </button>
         </form>
-        
-        <!-- Sign Up Form (hidden by default) -->
-        <form class="auth-form hidden" id="form-register">
+
+        <!-- Sign Up Form -->
+        <form class="auth-form skeuo-inset-well hidden" id="form-register">
           <div class="form-group">
-            <label class="form-label" for="register-username">Username</label>
-            <input class="form-input" type="text" id="register-username" placeholder="PythonCoder" required autocomplete="username">
+            <label class="form-label" for="register-username">OPERATOR CALLSIGN / HANDLE</label>
+            <input class="form-input skeuo-field" type="text" id="register-username" placeholder="Developer01" required autocomplete="username">
           </div>
           <div class="form-group">
-            <label class="form-label" for="register-email">Email Address</label>
-            <input class="form-input" type="email" id="register-email" placeholder="you@example.com" required autocomplete="email">
+            <label class="form-label" for="register-email">OPERATOR EMAIL</label>
+            <input class="form-input skeuo-field" type="email" id="register-email" placeholder="engineer@domain.com" required autocomplete="email">
           </div>
           <div class="form-group">
-            <label class="form-label" for="register-password">Password</label>
-            <input class="form-input" type="password" id="register-password" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+            <label class="form-label" for="register-password">MASTER KEY (6+ CHARS)</label>
+            <input class="form-input skeuo-field" type="password" id="register-password" placeholder="••••••••" minlength="6" required autocomplete="new-password">
           </div>
-          <button class="btn-auth-submit" type="submit" id="btn-register-submit">
-            <span>Create Account</span>
+          <button class="tactile-btn btn-auth-submit" type="submit" id="btn-register-submit">
+            <span>PROVISION RECORD</span>
+            <span class="btn-check-icon">→</span>
           </button>
         </form>
-        
+
         <div class="auth-divider">
-          <span>or</span>
+          <span>FEDERATED AUTH</span>
         </div>
-        
-        <!-- Google Sign In -->
-        <button class="btn-google-auth" id="btn-google-auth">
-          <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
-            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-.1.14-.14 3.01l3.01 2.33c1.76-1.61 2.78-3.98 2.78-6.69z"/>
-            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96L1.29 17.37C3.26 21.3 7.31 24 12 24z"/>
-            <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29L1.29 6.7C.46 8.35 0 10.12 0 12s.46 3.65 1.29 5.3l3.98-3.01z"/>
-            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.93 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.7l3.98 3.01C6.22 6.86 8.87 4.75 12 4.75z"/>
+
+        <button class="tactile-btn btn-google-auth" id="btn-google-auth">
+          <svg class="google-icon" viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-.1.14-.14 3.01l3.01 2.33c1.76-1.61 2.78-3.98 2.78-6.69z"/>
+            <path fill="currentColor" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96L1.29 17.37C3.26 21.3 7.31 24 12 24z"/>
+            <path fill="currentColor" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29L1.29 6.7C.46 8.35 0 10.12 0 12s.46 3.65 1.29 5.3l3.98-3.01z"/>
+            <path fill="currentColor" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.93 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.7l3.98 3.01C6.22 6.86 8.87 4.75 12 4.75z"/>
           </svg>
-          <span>Continue with Google</span>
+          <span>Continue via Google SSO</span>
         </button>
+
+        <div class="mounting-screw bottom-left" aria-hidden="true"></div>
+        <div class="mounting-screw bottom-right" aria-hidden="true"></div>
       </div>
     </div>
   `;
 
-  // ---- Form Element Selection ----
   const tabLogin = container.querySelector('#tab-login');
   const tabRegister = container.querySelector('#tab-register');
   const formLogin = container.querySelector('#form-login');
@@ -114,7 +116,6 @@ function renderAuthForm(container) {
   const authError = container.querySelector('#auth-error');
   const btnGoogle = container.querySelector('#btn-google-auth');
 
-  // ---- Form Helper Functions ----
   const showError = (message) => {
     if (authError) {
       authError.textContent = message;
@@ -129,8 +130,8 @@ function renderAuthForm(container) {
     }
   };
 
-  // ---- Tab Swapping Events ----
   tabLogin?.addEventListener('click', () => {
+    playSound('snap');
     tabLogin.classList.add('active');
     tabRegister?.classList.remove('active');
     formLogin?.classList.remove('hidden');
@@ -139,6 +140,7 @@ function renderAuthForm(container) {
   });
 
   tabRegister?.addEventListener('click', () => {
+    playSound('snap');
     tabRegister.classList.add('active');
     tabLogin?.classList.remove('active');
     formRegister?.classList.remove('hidden');
@@ -146,10 +148,10 @@ function renderAuthForm(container) {
     clearError();
   });
 
-  // ---- Form Submission (Email/Password Login) ----
   formLogin?.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearError();
+    playSound('click');
 
     const email = container.querySelector('#login-email').value;
     const password = container.querySelector('#login-password').value;
@@ -164,10 +166,10 @@ function renderAuthForm(container) {
     }
   });
 
-  // ---- Form Submission (Email/Password Register) ----
   formRegister?.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearError();
+    playSound('click');
 
     const username = container.querySelector('#register-username').value;
     const email = container.querySelector('#register-email').value;
@@ -177,7 +179,6 @@ function renderAuthForm(container) {
     try {
       if (submitBtn) submitBtn.disabled = true;
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // Set user display name
       await updateProfile(userCredential.user, { displayName: username });
     } catch (err) {
       if (submitBtn) submitBtn.disabled = false;
@@ -185,9 +186,9 @@ function renderAuthForm(container) {
     }
   });
 
-  // ---- Google Auth Event ----
   btnGoogle?.addEventListener('click', async () => {
     clearError();
+    playSound('click');
     try {
       btnGoogle.disabled = true;
       await signInWithPopup(auth, googleProvider);
@@ -201,247 +202,171 @@ function renderAuthForm(container) {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   2. Stats Panel Rendering & Events
+   2. Skeuomorphic Stats & Operator Dossier
    ────────────────────────────────────────────────────────────────────────── */
 
 function renderStatsPanel(container, gameState, curriculum) {
   const stats = gameState.getStats();
-  
-  const allPythonLessons = getAllLessons();
-  const totalPythonLessons = allPythonLessons.length;
-  
-  const allSQLLessons = getAllSQLLessons();
-  const totalSQLLessons = allSQLLessons.length;
 
+  const allPythonLessons = getAllLessons();
+  const totalPythonLessons = allPythonLessons.length || 1;
+  const allSQLLessons = getAllSQLLessons();
+  const totalSQLLessons = allSQLLessons.length || 1;
   const allDSALessons = getAllDSALessons();
-  const totalDSALessons = allDSALessons.length;
+  const totalDSALessons = allDSALessons.length || 1;
 
   const completedLessonsSet = gameState.getCompletedLessons();
   const completedPythonLessons = [...completedLessonsSet].filter(id => !id.startsWith('sql_') && !id.startsWith('dsa_')).length;
   const completedSQLLessons = [...completedLessonsSet].filter(id => id.startsWith('sql_')).length;
   const completedDSALessons = [...completedLessonsSet].filter(id => id.startsWith('dsa_')).length;
 
-  const pythonCompletionPercent = totalPythonLessons > 0 ? Math.round((completedPythonLessons / totalPythonLessons) * 100) : 0;
-  const sqlCompletionPercent = totalSQLLessons > 0 ? Math.round((completedSQLLessons / totalSQLLessons) * 100) : 0;
-  const dsaCompletionPercent = totalDSALessons > 0 ? Math.round((completedDSALessons / totalDSALessons) * 100) : 0;
-  
-  const username = gameState.getRawState().username || 'Learner';
+  const pythonPct = Math.min(100, Math.round((completedPythonLessons / totalPythonLessons) * 100));
+  const sqlPct = Math.min(100, Math.round((completedSQLLessons / totalSQLLessons) * 100));
+  const dsaPct = Math.min(100, Math.round((completedDSALessons / totalDSALessons) * 100));
 
+  const username = gameState.getRawState().username || 'Learner';
   const photoURL = gameState.getPhotoURL();
   const avatarHTML = photoURL
     ? `<img src="${photoURL}" class="profile-avatar-large-img" alt="${username}" referrerpolicy="no-referrer">`
-    : `<span>${icon('terminal', 48)}</span>`;
+    : `<div class="avatar-letter-large">${username.charAt(0).toUpperCase()}</div>`;
 
   const achievements = getAchievements(stats);
 
   container.innerHTML = `
-    <div class="page-container profile-page">
-      <!-- Profile Header -->
-      <div class="profile-header-card">
-        <div class="profile-avatar-large">
+    <div class="page-container profile-page hardware-deck-layout">
+      <!-- Stamped Operator Identification Plate -->
+      <div class="profile-header-card hardware-chassis-panel">
+        <div class="mounting-screw top-left" aria-hidden="true"></div>
+        <div class="mounting-screw top-right" aria-hidden="true"></div>
+
+        <div class="profile-avatar-bezel">
           ${avatarHTML}
         </div>
-        <div class="profile-info">
+
+        <div class="profile-info-col">
+          <div class="operator-badge-tag">AUTHENTICATED OPERATOR // ID-${stats.userId ? stats.userId.slice(0, 8).toUpperCase() : 'LOCAL'}</div>
           <h1 class="profile-name">${username}</h1>
-          <p class="profile-subtitle">Learning Python, SQL & DSA since ${getJoinDate()}</p>
-          <div class="profile-badges">
-            <span class="profile-level">Level ${Math.floor(stats.totalXP / 100) + 1}</span>
-            <span class="profile-rank">${getRank(stats.totalXP)}</span>
+          <p class="profile-subtitle">RUNTIME COMMISSIONED: ${getJoinDate()}</p>
+          <div class="profile-badges-row">
+            <span class="hardware-pill">LEVEL ${Math.floor(stats.totalXP / 100) + 1}</span>
+            <span class="hardware-pill rank-pill">${getRank(stats.totalXP).toUpperCase()}</span>
           </div>
         </div>
-        <button class="btn-logout" id="btn-logout">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <button class="tactile-btn btn-logout" id="btn-logout" title="Terminate current session">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
-          Log Out
+          <span>LOGOUT</span>
         </button>
+
+        <div class="mounting-screw bottom-left" aria-hidden="true"></div>
+        <div class="mounting-screw bottom-right" aria-hidden="true"></div>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">${icon('flame', 22)}</div>
-          <div class="stat-value">${stats.currentStreak}</div>
-          <div class="stat-label">Day Streak</div>
+      <!-- Hardware Digital Gauge Array -->
+      <div class="profile-stats-grid">
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">ACTIVE STREAK</span>
+          <span class="gauge-digits">${stats.currentStreak}</span>
+          <span class="gauge-unit">DAYS</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">${icon('gem', 22)}</div>
-          <div class="stat-value">${stats.totalXP.toLocaleString()}</div>
-          <div class="stat-label">Total XP</div>
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">LIFETIME XP</span>
+          <span class="gauge-digits status-blue-text">${stats.totalXP.toLocaleString()}</span>
+          <span class="gauge-unit">POINTS</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">${icon('book', 22)}</div>
-          <div class="stat-value">${stats.completedLessons}</div>
-          <div class="stat-label">Lessons Done</div>
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">COMPLETED ROUTINES</span>
+          <span class="gauge-digits">${stats.completedLessons}</span>
+          <span class="gauge-unit">MODULES</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">${icon('coins', 22)}</div>
-          <div class="stat-value">${stats.gems}</div>
-          <div class="stat-label">Gems</div>
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">GEMS RESERVE</span>
+          <span class="gauge-digits">${stats.gems}</span>
+          <span class="gauge-unit">TOKENS</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">${icon('star', 22)}</div>
-          <div class="stat-value">${stats.perfectCount}</div>
-          <div class="stat-label">Perfect Runs</div>
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">PERFECT RUNS</span>
+          <span class="gauge-digits status-green-text">${stats.perfectCount}</span>
+          <span class="gauge-unit">VERIFIED</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">${icon('trending-up', 22)}</div>
-          <div class="stat-value">${stats.longestStreak}</div>
-          <div class="stat-label">Best Streak</div>
-        </div>
-      </div>
-
-      <!-- Progress Overview -->
-      <div class="section-card">
-        <h2 class="section-card-title">${icon('bar-chart', 18)} Course Progress</h2>
-        
-        <div class="course-progress-split" style="display: flex; gap: 32px; justify-content: space-around; flex-wrap: wrap; margin-bottom: 24px;">
-          <!-- Python Progress -->
-          <div class="overall-progress" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 0; min-width: 200px;">
-            <h3 style="margin: 0; color: var(--color-primary); font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
-              ${icon('terminal', 16)} Python
-            </h3>
-            <div class="progress-circle-container">
-              <svg class="progress-circle" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-surface)" stroke-width="10"/>
-                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-primary)" stroke-width="10"
-                        stroke-dasharray="${2 * Math.PI * 52}"
-                        stroke-dashoffset="${2 * Math.PI * 52 * (1 - pythonCompletionPercent / 100)}"
-                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
-              </svg>
-              <span class="progress-circle-text">${pythonCompletionPercent}%</span>
-            </div>
-            <div class="progress-details">
-              <p><strong>${completedPythonLessons}</strong> of <strong>${totalPythonLessons}</strong> lessons</p>
-            </div>
-          </div>
-
-          <!-- SQL Progress -->
-          <div class="overall-progress" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 0; min-width: 200px;">
-            <h3 style="margin: 0; color: #00e5ff; font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
-              ${icon('database', 16)} SQL
-            </h3>
-            <div class="progress-circle-container">
-              <svg class="progress-circle" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-surface)" stroke-width="10"/>
-                <circle cx="60" cy="60" r="52" fill="none" stroke="#00e5ff" stroke-width="10"
-                        stroke-dasharray="${2 * Math.PI * 52}"
-                        stroke-dashoffset="${2 * Math.PI * 52 * (1 - sqlCompletionPercent / 100)}"
-                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
-              </svg>
-              <span class="progress-circle-text">${sqlCompletionPercent}%</span>
-            </div>
-            <div class="progress-details">
-              <p><strong>${completedSQLLessons}</strong> of <strong>${totalSQLLessons}</strong> lessons</p>
-            </div>
-          </div>
-
-          <!-- DSA Progress -->
-          <div class="overall-progress" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 0; min-width: 200px;">
-            <h3 style="margin: 0; color: #a855f7; font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
-              ${icon('git-branch', 16)} DSA
-            </h3>
-            <div class="progress-circle-container">
-              <svg class="progress-circle" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-surface)" stroke-width="10"/>
-                <circle cx="60" cy="60" r="52" fill="none" stroke="#a855f7" stroke-width="10"
-                        stroke-dasharray="${2 * Math.PI * 52}"
-                        stroke-dashoffset="${2 * Math.PI * 52 * (1 - dsaCompletionPercent / 100)}"
-                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
-              </svg>
-              <span class="progress-circle-text">${dsaCompletionPercent}%</span>
-            </div>
-            <div class="progress-details">
-              <p><strong>${completedDSALessons}</strong> of <strong>${totalDSALessons}</strong> lessons</p>
-            </div>
-          </div>
-        </div>
-
-        <div style="border-top: 1px solid var(--color-border); margin: 24px 0;"></div>
-        
-        <!-- Per-section progress bars for Python -->
-        <h3 class="section-card-subtitle" style="margin-top: 16px; margin-bottom: 12px; font-size: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px;">
-          ${icon('terminal', 14)} Python Breakdown
-        </h3>
-        <div class="section-progress-list" style="margin-bottom: 32px;">
-          ${curriculum.sections.map((section, idx) => {
-            const sectionLessons = section.chapters.reduce((acc, ch) => acc.concat(ch.lessons), []);
-            const sectionCompleted = sectionLessons.filter(l => gameState.isLessonCompleted(l.id)).length;
-            const sectionPercent = sectionLessons.length > 0 ? Math.round((sectionCompleted / sectionLessons.length) * 100) : 0;
-            return `
-              <div class="section-progress-item">
-                <div class="section-progress-header">
-                  <span class="section-progress-name">${icon(section.icon, 16)} ${section.title}</span>
-                  <span class="section-progress-count">${sectionCompleted}/${sectionLessons.length}</span>
-                </div>
-                <div class="goal-progress">
-                  <div class="goal-progress-fill" style="width: ${sectionPercent}%"></div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-
-        <!-- Per-section progress bars for SQL -->
-        <h3 class="section-card-subtitle" style="margin-top: 24px; margin-bottom: 12px; font-size: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px;">
-          ${icon('database', 14)} SQL Breakdown
-        </h3>
-        <div class="section-progress-list">
-          ${sqlCurriculum.sections.map((section, idx) => {
-            const sectionLessons = section.chapters.reduce((acc, ch) => acc.concat(ch.lessons), []);
-            const sectionCompleted = sectionLessons.filter(l => gameState.isLessonCompleted(l.id)).length;
-            const sectionPercent = sectionLessons.length > 0 ? Math.round((sectionCompleted / sectionLessons.length) * 100) : 0;
-            return `
-              <div class="section-progress-item">
-                <div class="section-progress-header">
-                  <span class="section-progress-name">${icon(section.icon, 16)} ${section.title}</span>
-                  <span class="section-progress-count">${sectionCompleted}/${sectionLessons.length}</span>
-                </div>
-                <div class="goal-progress">
-                  <div class="goal-progress-fill" style="width: ${sectionPercent}%; background: #00e5ff; box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);"></div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-
-        <div style="border-top: 1px solid var(--color-border); margin: 24px 0;"></div>
-        
-        <!-- Per-section progress bars for DSA -->
-        <h3 class="section-card-subtitle" style="margin-top: 24px; margin-bottom: 12px; font-size: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px;">
-          ${icon('git-branch', 14)} DSA Breakdown
-        </h3>
-        <div class="section-progress-list">
-          ${dsaCurriculum.sections.map((section, idx) => {
-            const sectionLessons = section.chapters.reduce((acc, ch) => acc.concat(ch.lessons), []);
-            const sectionCompleted = sectionLessons.filter(l => gameState.isLessonCompleted(l.id)).length;
-            const sectionPercent = sectionLessons.length > 0 ? Math.round((sectionCompleted / sectionLessons.length) * 100) : 0;
-            return `
-              <div class="section-progress-item">
-                <div class="section-progress-header">
-                  <span class="section-progress-name">${icon(section.icon, 16)} ${section.title}</span>
-                  <span class="section-progress-count">${sectionCompleted}/${sectionLessons.length}</span>
-                </div>
-                <div class="goal-progress">
-                  <div class="goal-progress-fill" style="width: ${sectionPercent}%; background: #a855f7; box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);"></div>
-                </div>
-              </div>
-            `;
-          }).join('')}
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">MAX STREAK RECORD</span>
+          <span class="gauge-digits">${stats.longestStreak}</span>
+          <span class="gauge-unit">DAYS</span>
         </div>
       </div>
 
-      <!-- Achievements -->
-      <div class="section-card">
-        <h2 class="section-card-title">${icon('award', 18)} Achievements</h2>
-        <div class="achievements-grid">
+      <!-- Rotary Mastery Dials (Ref image style) -->
+      <div class="section-card hardware-chassis-panel">
+        <div class="section-card-header">
+          <div class="section-title-group">
+            <span class="header-led status-blue"></span>
+            <h2 class="section-card-title">CURRICULUM CHANNEL MASTERY DIALS</h2>
+          </div>
+        </div>
+
+        <div class="dials-row">
+          <!-- Python Dial -->
+          <div class="knob-assembly mini-assembly">
+            <div class="skeuo-knob knob-medium" style="--rotation: ${-135 + (pythonPct/100)*270}deg;">
+              <div class="knob-face"><div class="knob-notch"></div></div>
+            </div>
+            <div class="knob-readout-bezel">
+              <span class="knob-readout-val">${pythonPct}</span>
+              <span class="knob-readout-unit">%</span>
+            </div>
+            <div class="knob-label-sub">CH 1: PYTHON (${completedPythonLessons}/${totalPythonLessons})</div>
+          </div>
+
+          <!-- SQL Dial -->
+          <div class="knob-assembly mini-assembly">
+            <div class="skeuo-knob knob-medium" style="--rotation: ${-135 + (sqlPct/100)*270}deg;">
+              <div class="knob-face"><div class="knob-notch"></div></div>
+            </div>
+            <div class="knob-readout-bezel">
+              <span class="knob-readout-val">${sqlPct}</span>
+              <span class="knob-readout-unit">%</span>
+            </div>
+            <div class="knob-label-sub">CH 2: SQL (${completedSQLLessons}/${totalSQLLessons})</div>
+          </div>
+
+          <!-- DSA Dial -->
+          <div class="knob-assembly mini-assembly">
+            <div class="skeuo-knob knob-medium" style="--rotation: ${-135 + (dsaPct/100)*270}deg;">
+              <div class="knob-face"><div class="knob-notch"></div></div>
+            </div>
+            <div class="knob-readout-bezel">
+              <span class="knob-readout-val">${dsaPct}</span>
+              <span class="knob-readout-unit">%</span>
+            </div>
+            <div class="knob-label-sub">CH 3: DSA (${completedDSALessons}/${totalDSALessons})</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stamped Achievements Plaque Matrix -->
+      <div class="section-card hardware-chassis-panel">
+        <div class="section-card-header">
+          <div class="section-title-group">
+            <span class="header-led status-green"></span>
+            <h2 class="section-card-title">CERTIFIED OPERATOR BADGES</h2>
+          </div>
+        </div>
+
+        <div class="achievements-matrix-grid">
           ${achievements.map(a => `
-            <div class="achievement-badge ${a.unlocked ? '' : 'locked'}">
-              <div class="achievement-icon">${a.icon}</div>
-              <div class="achievement-name">${a.name}</div>
-              <div class="achievement-desc">${a.description}</div>
+            <div class="achievement-plaque tactile-practice-item ${a.unlocked ? 'unlocked' : 'locked'}">
+              <span class="plaque-diode ${a.unlocked ? 'status-green' : 'status-idle'}"></span>
+              <div class="plaque-icon-box">${a.icon}</div>
+              <div class="plaque-info">
+                <div class="plaque-name">${a.name}</div>
+                <div class="plaque-desc">${a.description}</div>
+              </div>
+              <span class="plaque-status-tag">${a.unlocked ? 'COMMITTED' : 'LOCKED'}</span>
             </div>
           `).join('')}
         </div>
@@ -449,81 +374,65 @@ function renderStatsPanel(container, gameState, curriculum) {
     </div>
   `;
 
-  // ---- Log Out Event Listener ----
   container.querySelector('#btn-logout')?.addEventListener('click', async () => {
+    playSound('switch');
     try {
       await signOut(auth);
     } catch (err) {
-      console.error('[PyMaster] Failed to sign out:', err);
+      console.error('[PyMaster] Logout error:', err);
     }
   });
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   3. Helpers & Calculators
-   ────────────────────────────────────────────────────────────────────────── */
-
 function getAchievements(stats) {
   return [
-    { icon: icon('target', 24), name: 'First Step', description: 'Complete your first lesson', unlocked: stats.completedLessons >= 1 },
-    { icon: icon('flame', 24), name: 'On Fire', description: '3-day streak', unlocked: stats.longestStreak >= 3 },
-    { icon: icon('zap', 24), name: 'Week Warrior', description: '7-day streak', unlocked: stats.longestStreak >= 7 },
-    { icon: icon('check-circle', 24), name: 'Perfectionist', description: '5 perfect completions', unlocked: stats.perfectCount >= 5 },
-    { icon: icon('book', 24), name: 'Bookworm', description: 'Complete 10 lessons', unlocked: stats.completedLessons >= 10 },
-    { icon: icon('trophy', 24), name: 'Half Way', description: 'Complete 50 lessons', unlocked: stats.completedLessons >= 50 },
-    { icon: icon('gem', 24), name: 'XP Hunter', description: 'Earn 500 XP', unlocked: stats.totalXP >= 500 },
-    { icon: icon('sparkle', 24), name: 'Rising Star', description: 'Earn 1000 XP', unlocked: stats.totalXP >= 1000 },
-    { icon: icon('crown', 24), name: 'Python Master', description: 'Complete 100 lessons', unlocked: stats.completedLessons >= 100 },
-    { icon: icon('dragon', 24), name: 'Legendary', description: 'Earn 5000 XP', unlocked: stats.totalXP >= 5000 },
-    { icon: icon('coins', 24), name: 'Gem Collector', description: 'Collect 50 gems', unlocked: stats.gems >= 50 },
-    { icon: icon('flame', 24), name: 'Unstoppable', description: '30-day streak', unlocked: stats.longestStreak >= 30 },
+    { icon: icon('target', 20), name: 'First Trace', description: 'Commit first lesson', unlocked: stats.completedLessons >= 1 },
+    { icon: icon('flame', 20), name: 'Thermistor Active', description: '3-day continuity streak', unlocked: stats.longestStreak >= 3 },
+    { icon: icon('zap', 20), name: 'Weekly Waveform', description: '7-day continuity streak', unlocked: stats.longestStreak >= 7 },
+    { icon: icon('check-circle', 20), name: 'Zero Fault Run', description: '5 perfect submissions', unlocked: stats.perfectCount >= 5 },
+    { icon: icon('book', 20), name: 'Architecture 10', description: 'Complete 10 modules', unlocked: stats.completedLessons >= 10 },
+    { icon: icon('trophy', 20), name: 'Milestone 50', description: 'Complete 50 modules', unlocked: stats.completedLessons >= 50 },
+    { icon: icon('gem', 20), name: 'Bus Yield 500', description: 'Accumulate 500 XP', unlocked: stats.totalXP >= 500 },
+    { icon: icon('sparkle', 20), name: 'Core Yield 1000', description: 'Accumulate 1000 XP', unlocked: stats.totalXP >= 1000 },
+    { icon: icon('crown', 20), name: 'Hardware Master', description: 'Complete 100 modules', unlocked: stats.completedLessons >= 100 },
+    { icon: icon('dragon', 20), name: 'Apex Spectrum', description: 'Accumulate 5000 XP', unlocked: stats.totalXP >= 5000 },
+    { icon: icon('coins', 20), name: 'Gem Reserve 50', description: 'Bank 50 gems', unlocked: stats.gems >= 50 },
+    { icon: icon('flame', 20), name: 'Unbroken Continuity', description: '30-day streak record', unlocked: stats.longestStreak >= 30 },
   ];
 }
 
 function getRank(xp) {
-  if (xp >= 5000) return 'Dragon';
-  if (xp >= 3000) return 'Master';
-  if (xp >= 1500) return 'Expert';
-  if (xp >= 500) return 'Advanced';
-  if (xp >= 100) return 'Intermediate';
-  return 'Beginner';
+  if (xp >= 5000) return 'Principal System Architect';
+  if (xp >= 3000) return 'Lead Runtime Engineer';
+  if (xp >= 1500) return 'Senior Systems Analyst';
+  if (xp >= 500) return 'Intermediate Operator';
+  if (xp >= 100) return 'Junior Technician';
+  return 'Trainee Operator';
 }
 
 function getJoinDate() {
   const stored = localStorage.getItem('pymaster_join_date');
   if (stored) return stored;
-  const today = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const today = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   localStorage.setItem('pymaster_join_date', today);
   return today;
 }
 
-/**
- * Translate Firebase Auth error codes into reader-friendly messages.
- *
- * @param {string} code
- * @returns {string}
- */
 function _translateFirebaseError(code) {
   switch (code) {
     case 'auth/invalid-email':
-      return 'The email address is badly formatted.';
+      return 'The email address is improperly structured.';
     case 'auth/user-disabled':
-      return 'This user account has been disabled.';
+      return 'This operator profile has been disabled.';
     case 'auth/user-not-found':
-      return 'There is no user record corresponding to this identifier.';
+      return 'No operator record matches these credentials.';
     case 'auth/wrong-password':
-      return 'The password entered is incorrect.';
+      return 'Access key mismatch. Access denied.';
     case 'auth/email-already-in-use':
-      return 'An account already exists with this email address.';
+      return 'Operator record already provisioned for this address.';
     case 'auth/weak-password':
-      return 'The password must be at least 6 characters long.';
-    case 'auth/operation-not-allowed':
-      return 'Email/password accounts are not enabled in this project.';
-    case 'auth/popup-blocked':
-      return 'The sign-in popup was blocked by the browser. Please allow popups for this site.';
-    case 'auth/unauthorized-domain':
-      return 'This domain is not authorized for Google Sign-In. Please add this Vercel domain (py-master-by-meet.vercel.app) to the "Authorized domains" list in your Firebase Console (Authentication > Settings).';
+      return 'Key length must meet minimum 6-character entropy threshold.';
     default:
-      return code || 'An error occurred during authentication. Please try again.';
+      return code || 'Authentication subsystem error. Retry momentarily.';
   }
 }

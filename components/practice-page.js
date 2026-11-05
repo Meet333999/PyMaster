@@ -1,11 +1,13 @@
-// ========================================
-// Practice Page — Random Challenges
-// ========================================
+// ==========================================================================
+// PyMaster — Skeuomorphic Practice Deck
+// Channel matrix with hardware filters, digital gauges, and tactile cards
+// ==========================================================================
 
 import { getAllLessons } from '../data/curriculum.js';
 import { getAllSQLLessons } from '../data/sql-curriculum.js';
 import { getAllDSALessons } from '../data/dsa-curriculum.js';
 import { icon } from './icons.js';
+import { playSound } from '../engine/haptics.js';
 
 let activeTab = 'python'; // 'python' | 'sql' | 'dsa'
 
@@ -25,108 +27,128 @@ export function renderPracticePage(container, curriculum, gameState, onLessonCli
   const challenges = allLessons.filter(l => l.type === 'challenge');
   const completedLessons = gameState.getCompletedLessons();
 
-  // Separate into completed and uncompleted
   const uncompletedChallenges = challenges.filter(c => !completedLessons.has(c.id));
   const completedChallenges = challenges.filter(c => completedLessons.has(c.id));
 
-  // Pick random challenges for practice
   const practiceSet = [
     ...shuffleArray(uncompletedChallenges).slice(0, 5),
     ...shuffleArray(completedChallenges).slice(0, 3),
   ];
 
   const handleChallengeClick = (lessonId) => {
+    playSound('click');
     const isSql = lessonId.startsWith('sql_');
     const isDsa = lessonId.startsWith('dsa_');
     onLessonClick(lessonId, isSql, isDsa);
   };
 
   container.innerHTML = `
-    <div class="page-container">
-      <div class="page-header">
-        <h1 class="page-title">${icon('code', 20)} Practice</h1>
-        <p class="page-subtitle">Sharpen your ${activeTab === 'sql' ? 'SQL' : (activeTab === 'dsa' ? 'DSA' : 'Python')} skills with random challenges</p>
+    <div class="page-container hardware-deck-layout">
+      <!-- Stamped Header Plate -->
+      <div class="page-header hardware-faceplate">
+        <div class="faceplate-screw screw-left" aria-hidden="true"></div>
+        <div class="page-header-content">
+          <div class="unit-brand">PRACTICE HARNESS // ON-DEMAND EVALUATION</div>
+          <h1 class="page-title">${icon('code', 20)} WORKBENCH</h1>
+          <p class="page-subtitle">Selective stress-testing on isolated algorithmic and database routines</p>
+        </div>
+        <div class="faceplate-screw screw-right" aria-hidden="true"></div>
       </div>
 
-      <!-- Tab Switcher -->
+      <!-- Segmented Pill Switcher (Ref Image Style) -->
       <div class="practice-tabs-container">
-        <div class="practice-tabs">
-          <button class="practice-tab ${activeTab === 'python' ? 'active' : ''}" id="tab-practice-python">
-            <span class="tab-icon">${icon('terminal', 14)}</span> Python
+        <div class="segmented-pill-container" role="tablist">
+          <button class="segmented-pill-option ${activeTab === 'python' ? 'active' : ''}" id="tab-practice-python" role="tab">
+            <span class="tab-icon">${icon('terminal', 14)}</span>
+            <span>PYTHON CORE</span>
           </button>
-          <button class="practice-tab ${activeTab === 'sql' ? 'active' : ''}" id="tab-practice-sql">
-            <span class="tab-icon">${icon('database', 14)}</span> SQL
+          <button class="segmented-pill-option ${activeTab === 'sql' ? 'active' : ''}" id="tab-practice-sql" role="tab">
+            <span class="tab-icon">${icon('database', 14)}</span>
+            <span>SQL RELATIONAL</span>
           </button>
-          <button class="practice-tab ${activeTab === 'dsa' ? 'active' : ''}" id="tab-practice-dsa">
-            <span class="tab-icon">${icon('git-branch', 14)}</span> DSA
+          <button class="segmented-pill-option ${activeTab === 'dsa' ? 'active' : ''}" id="tab-practice-dsa" role="tab">
+            <span class="tab-icon">${icon('git-branch', 14)}</span>
+            <span>DSA STRUCTURES</span>
           </button>
         </div>
       </div>
 
-      <!-- Quick Stats -->
-      <div class="practice-stats">
-        <div class="practice-stat">
-          <span class="practice-stat-value">${challenges.length}</span>
-          <span class="practice-stat-label">Total Challenges</span>
+      <!-- Hardware Digital Gauge Strip -->
+      <div class="practice-stats-strip">
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">TOTAL SUITE</span>
+          <span class="gauge-digits">${challenges.length}</span>
+          <span class="gauge-unit">ROUTINES</span>
         </div>
-        <div class="practice-stat">
-          <span class="practice-stat-value">${completedChallenges.length}</span>
-          <span class="practice-stat-label">Completed</span>
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">VERIFIED</span>
+          <span class="gauge-digits status-green-text">${completedChallenges.length}</span>
+          <span class="gauge-unit">SOLVED</span>
         </div>
-        <div class="practice-stat">
-          <span class="practice-stat-value">${uncompletedChallenges.length}</span>
-          <span class="practice-stat-label">Remaining</span>
+        <div class="hardware-gauge-card">
+          <span class="gauge-tag">REMAINING</span>
+          <span class="gauge-digits">${uncompletedChallenges.length}</span>
+          <span class="gauge-unit">UNSOLVED</span>
         </div>
       </div>
 
-      <!-- Practice Challenges -->
-      <div class="section-card">
+      <!-- Recommended Practice Challenges Grid -->
+      <div class="section-card hardware-chassis-panel">
         <div class="section-card-header">
-          <h2 class="section-card-title">${icon('zap', 18)} Recommended Challenges</h2>
-          <button class="btn-secondary" id="btn-refresh-practice">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="1 4 1 10 7 10"></polyline>
-              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-            </svg>
-            Refresh
+          <div class="section-title-group">
+            <span class="header-led status-blue"></span>
+            <h2 class="section-card-title">RECOMMENDED CHALLENGE VECTORS</h2>
+          </div>
+          <button class="tactile-btn btn-secondary" id="btn-refresh-practice">
+            ${icon('refresh', 14)}
+            <span>Reshuffle Deck</span>
           </button>
         </div>
+
         <div class="practice-list">
           ${practiceSet.length > 0 ? practiceSet.map(challenge => {
             const isCompleted = completedLessons.has(challenge.id);
             return `
-              <div class="practice-card ${isCompleted ? 'completed' : ''}" data-lesson-id="${challenge.id}">
+              <div class="practice-card tactile-practice-item ${isCompleted ? 'completed' : ''}" data-lesson-id="${challenge.id}">
                 <div class="practice-card-left">
-                  <div class="practice-card-icon">${isCompleted ? icon('check-circle', 16) : icon('zap', 16)}</div>
+                  <span class="practice-diode ${isCompleted ? 'status-green' : 'status-idle'}"></span>
                   <div class="practice-card-info">
                     <h3 class="practice-card-title">${challenge.title}</h3>
-                    <p class="practice-card-desc">${truncate(challenge.challenge?.description || '', 80)}</p>
+                    <p class="practice-card-desc">${truncate(challenge.challenge?.description || '', 95)}</p>
                   </div>
                 </div>
                 <div class="practice-card-right">
-                  <span class="difficulty-badge difficulty-${challenge.difficulty}">${capitalizeFirst(challenge.difficulty)}</span>
-                  <span class="xp-badge">+${challenge.xp} XP</span>
+                  <span class="hardware-pill difficulty-${challenge.difficulty}">${challenge.difficulty.toUpperCase()}</span>
+                  <span class="hardware-pill xp-badge">+${challenge.xp} XP</span>
+                  <button class="tactile-btn launch-btn">RUN →</button>
                 </div>
               </div>
             `;
-          }).join('') : '<p class="empty-state">No challenges available yet. Start your journey first!</p>'}
+          }).join('') : '<p class="empty-state">No routines registered in this domain.</p>'}
         </div>
       </div>
 
-      <!-- By Difficulty -->
-      <div class="section-card">
-        <h2 class="section-card-title">${icon('bar-chart', 18)} By Difficulty</h2>
-        <div class="difficulty-breakdown">
+      <!-- Difficulty Spectrum -->
+      <div class="section-card hardware-chassis-panel">
+        <div class="section-card-header">
+          <div class="section-title-group">
+            <span class="header-led status-green"></span>
+            <h2 class="section-card-title">DIFFICULTY SPECTRUM DISTRIBUTION</h2>
+          </div>
+        </div>
+
+        <div class="difficulty-breakdown-rack">
           ${['easy', 'medium', 'hard'].map(diff => {
             const total = challenges.filter(c => c.difficulty === diff).length;
             const done = challenges.filter(c => c.difficulty === diff && completedLessons.has(c.id)).length;
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
             return `
-              <div class="difficulty-row">
-                <span class="difficulty-badge difficulty-${diff}">${capitalizeFirst(diff)}</span>
-                <div class="goal-progress" style="flex: 1; margin: 0 12px;">
-                  <div class="goal-progress-fill" style="width: ${total > 0 ? (done/total*100) : 0}%"></div>
+              <div class="difficulty-channel-strip">
+                <span class="difficulty-label difficulty-${diff}">${diff.toUpperCase()}</span>
+                <div class="strip-vu-track" style="flex: 1; margin: 0 16px;">
+                  <div class="strip-vu-fill" style="width: ${pct}%;"></div>
                 </div>
-                <span class="difficulty-count">${done}/${total}</span>
+                <span class="difficulty-readout">${done}/${total} (${pct}%)</span>
               </div>
             `;
           }).join('')}
@@ -144,21 +166,25 @@ export function renderPracticePage(container, curriculum, gameState, onLessonCli
   });
 
   container.querySelector('#tab-practice-python')?.addEventListener('click', () => {
+    playSound('snap');
     activeTab = 'python';
     renderPracticePage(container, curriculum, gameState, onLessonClick);
   });
 
   container.querySelector('#tab-practice-sql')?.addEventListener('click', () => {
+    playSound('snap');
     activeTab = 'sql';
     renderPracticePage(container, curriculum, gameState, onLessonClick);
   });
 
   container.querySelector('#tab-practice-dsa')?.addEventListener('click', () => {
+    playSound('snap');
     activeTab = 'dsa';
     renderPracticePage(container, curriculum, gameState, onLessonClick);
   });
 
   container.querySelector('#btn-refresh-practice')?.addEventListener('click', () => {
+    playSound('click');
     renderPracticePage(container, curriculum, gameState, onLessonClick);
   });
 }
@@ -175,8 +201,4 @@ function shuffleArray(arr) {
 function truncate(str, len) {
   if (str.length <= len) return str;
   return str.slice(0, len) + '...';
-}
-
-function capitalizeFirst(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }
