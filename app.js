@@ -11,7 +11,7 @@ import { getAllLessons } from './data/curriculum.js';
 import { getAllSQLLessons } from './data/sql-curriculum.js';
 import { getAllDSALessons } from './data/dsa-curriculum.js';
 
-import { renderSidebar } from './components/sidebar.js';
+import { renderSidebar, renderMobileBottomNav } from './components/sidebar.js';
 import { renderTopbar, updateTopbar } from './components/topbar.js';
 import { renderJourneyMap } from './components/journey-map.js';
 import { renderLessonView } from './components/lesson-view.js';
@@ -72,8 +72,10 @@ async function navigate(route) {
     const mainContent = document.getElementById('main-content');
     const rightPanel = document.getElementById('right-panel');
 
-    // Update sidebar active state
+    // Update sidebar & mobile bottom nav active state
     renderSidebar(document.getElementById('sidebar'), page, (r) => navigate(r));
+    const fullRouteStr = param ? `${page}/${param}` : page;
+    renderMobileBottomNav(document.getElementById('mobile-bottom-nav'), fullRouteStr, (r) => navigate(r));
 
     // Show/hide right panel based on route and collapse grid column
     const showRightPanel = page === 'journey' || page === 'sql-journey' || page === 'dsa-journey';

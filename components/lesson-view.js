@@ -58,8 +58,18 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
 
     container.innerHTML = `
       <div class="lesson-container">
+        <!-- Mobile Bay Switcher: THEORY vs EXERCISE/QUIZ -->
+        <div class="mobile-bay-switcher segmented-pill-container" role="tablist">
+          <button class="segmented-pill-option active" id="btn-lesson-bay-theory" role="tab" aria-selected="true">
+            <span>THEORY SPEC</span>
+          </button>
+          <button class="segmented-pill-option" id="btn-lesson-bay-exercise" role="tab" aria-selected="false">
+            <span>${hasQuiz ? 'EVAL QUIZ' : 'VERIFICATION'}</span>
+          </button>
+        </div>
+
         <!-- ── Left Panel: Technical Specification Manual ── -->
-        <div class="lesson-left hardware-chassis-panel">
+        <div class="lesson-left hardware-chassis-panel" id="lesson-bay-left">
           <!-- Hardware Header Bar -->
           <div class="lesson-header hardware-header-bar">
             <div class="header-nav-group">
@@ -125,15 +135,50 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
                 <pre class="code-block-body"><code>${escapeHtml(theory.codeExample)}</code></pre>
               </div>
             ` : ''}
+
+            <!-- Mobile Quick Action to jump to Quiz/Workbench -->
+            <div class="mobile-code-action-strip">
+              <button class="tactile-btn btn-primary" id="mobile-switch-to-exercise-btn">
+                <span>PROCEED TO ${hasQuiz ? 'EVAL QUIZ' : 'VERIFICATION'}</span>
+                <span>→</span>
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- ── Right Panel: Hardware Verification & Quiz Console ── -->
-        <div class="lesson-right hardware-chassis-panel">
+        <div class="lesson-right hardware-chassis-panel" id="lesson-bay-right">
           ${hasQuiz ? renderQuizPanel(lesson.quiz) : renderCompletePanel()}
         </div>
       </div>
     `;
+
+    // Mobile Bay Switcher Logic
+    const bayTheoryBtn = container.querySelector('#btn-lesson-bay-theory');
+    const bayExerciseBtn = container.querySelector('#btn-lesson-bay-exercise');
+    const mobileToExerciseBtn = container.querySelector('#mobile-switch-to-exercise-btn');
+    const lessonContainer = container.querySelector('.lesson-container');
+
+    function setLessonMobileBay(bay) {
+      playSound('click');
+      if (bay === 'exercise') {
+        lessonContainer?.classList.add('mobile-show-exercise');
+        bayTheoryBtn?.classList.remove('active');
+        bayExerciseBtn?.classList.add('active');
+        bayTheoryBtn?.setAttribute('aria-selected', 'false');
+        bayExerciseBtn?.setAttribute('aria-selected', 'true');
+      } else {
+        lessonContainer?.classList.remove('mobile-show-exercise');
+        bayExerciseBtn?.classList.remove('active');
+        bayTheoryBtn?.classList.add('active');
+        bayTheoryBtn?.setAttribute('aria-selected', 'true');
+        bayExerciseBtn?.setAttribute('aria-selected', 'false');
+      }
+    }
+
+    bayTheoryBtn?.addEventListener('click', () => setLessonMobileBay('theory'));
+    bayExerciseBtn?.addEventListener('click', () => setLessonMobileBay('exercise'));
+    mobileToExerciseBtn?.addEventListener('click', () => setLessonMobileBay('exercise'));
 
     // Event listeners
     container.querySelector('#lesson-back-btn')?.addEventListener('click', () => {

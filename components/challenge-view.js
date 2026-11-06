@@ -44,8 +44,18 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
 
   container.innerHTML = `
     <div class="challenge-container">
+      <!-- Mobile Bay Switcher (Visible only on mobile <= 768px) -->
+      <div class="mobile-bay-switcher segmented-pill-container" role="tablist">
+        <button class="segmented-pill-option active" id="btn-bay-spec" role="tab" aria-selected="true">
+          <span>SPECIFICATION</span>
+        </button>
+        <button class="segmented-pill-option" id="btn-bay-editor" role="tab" aria-selected="false">
+          <span>CODE & RUN</span>
+        </button>
+      </div>
+
       <!-- ── Left Bay: Engineering Brief & Logic Hints ── -->
-      <div class="challenge-left hardware-chassis-panel">
+      <div class="challenge-left hardware-chassis-panel" id="challenge-bay-left">
         <div class="challenge-header hardware-header-bar">
           <div class="header-nav-group">
             <button class="tactile-btn back-btn" id="challenge-back-btn" title="Back to Matrix">
@@ -111,11 +121,19 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
               `).join('')}
             </div>
           </div>
+
+          <!-- Mobile Quick Action to jump to Code Editor -->
+          <div class="mobile-code-action-strip">
+            <button class="tactile-btn btn-primary" id="mobile-switch-to-editor-btn">
+              <span>PROCEED TO CODE & RUN</span>
+              <span>→</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- ── Right Bay: Code Editor & Oscilloscope Test Harness ── -->
-      <div class="challenge-right hardware-chassis-panel">
+      <div class="challenge-right hardware-chassis-panel" id="challenge-bay-right">
         <!-- Editor Wrapper -->
         <div class="editor-wrapper" id="editor-wrapper"></div>
 
@@ -210,6 +228,34 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
         }
       });
     });
+
+    // Mobile Bay Switcher Logic
+    const baySpecBtn = container.querySelector('#btn-bay-spec');
+    const bayEditorBtn = container.querySelector('#btn-bay-editor');
+    const mobileToEditorBtn = container.querySelector('#mobile-switch-to-editor-btn');
+    const challengeContainer = container.querySelector('.challenge-container');
+
+    function setMobileBay(bay) {
+      playSound('click');
+      if (bay === 'editor') {
+        challengeContainer?.classList.add('mobile-show-editor');
+        baySpecBtn?.classList.remove('active');
+        bayEditorBtn?.classList.add('active');
+        baySpecBtn?.setAttribute('aria-selected', 'false');
+        bayEditorBtn?.setAttribute('aria-selected', 'true');
+        window.dispatchEvent(new Event('resize'));
+      } else {
+        challengeContainer?.classList.remove('mobile-show-editor');
+        bayEditorBtn?.classList.remove('active');
+        baySpecBtn?.classList.add('active');
+        baySpecBtn?.setAttribute('aria-selected', 'true');
+        bayEditorBtn?.setAttribute('aria-selected', 'false');
+      }
+    }
+
+    baySpecBtn?.addEventListener('click', () => setMobileBay('spec'));
+    bayEditorBtn?.addEventListener('click', () => setMobileBay('editor'));
+    mobileToEditorBtn?.addEventListener('click', () => setMobileBay('editor'));
 
     // Keyboard shortcut: Ctrl+Enter
     document.removeEventListener('keydown', keydownHandler);

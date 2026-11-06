@@ -40,12 +40,22 @@ export function renderTopbar(container, state) {
 
   container.id = TOPBAR_ID;
   container.innerHTML = `
-    <!-- Left Rack Header: Hardware Identifier -->
-    <div class="topbar-unit-id" title="Hardware Diagnostic Console">
-      <div class="unit-status-led" title="Power: Online"></div>
-      <div class="unit-label-group">
-        <span class="unit-brand">PYMASTER</span>
-        <span class="unit-model">SYS-9000 // CORE RUNTIME</span>
+    <!-- Left Rack Header: Hardware Identifier & Mobile Menu Toggle -->
+    <div class="topbar-left-group">
+      <button class="tactile-btn mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Routing Matrix" title="Toggle Routing Matrix">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="topbar-unit-id" title="Hardware Diagnostic Console">
+        <div class="unit-status-led" title="Power: Online"></div>
+        <div class="unit-label-group">
+          <span class="unit-brand">PYMASTER</span>
+          <span class="unit-model">SYS-9000 // CORE RUNTIME</span>
+        </div>
       </div>
     </div>
 
@@ -122,6 +132,17 @@ export function renderTopbar(container, state) {
     themeToggle.classList.toggle('on', newTheme === 'light');
     const label = themeToggle.querySelector('.rocker-state-label');
     if (label) label.textContent = newTheme === 'light' ? 'LIGHT' : 'DARK';
+  });
+
+  const mobileMenuToggle = container.querySelector('#mobile-menu-toggle');
+  mobileMenuToggle?.addEventListener('click', () => {
+    playSound('click');
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) {
+      const isOpen = sidebar.classList.toggle('mobile-open');
+      if (backdrop) backdrop.classList.toggle('active', isOpen);
+    }
   });
 
   const soundToggle = container.querySelector('#topbar-sound-toggle');

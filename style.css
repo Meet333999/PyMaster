@@ -537,6 +537,36 @@ code, pre, .font-mono {
   z-index: 10;
 }
 
+.topbar-left-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+.mobile-close-btn {
+  display: none;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+.mobile-bay-switcher {
+  display: none;
+}
+
+.mobile-code-action-strip {
+  display: none;
+}
+
 .topbar-unit-id {
   display: flex;
   align-items: center;
@@ -2760,4 +2790,549 @@ code, pre, .font-mono {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   19. Responsive Design & Mobile Hardware Adaptations
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Tablet Breakpoint (<= 1100px) ── */
+@media (max-width: 1100px) {
+  .app-container {
+    grid-template-columns: var(--sidebar-width) 1fr !important;
+    grid-template-areas:
+      "sidebar topbar"
+      "sidebar main" !important;
+  }
+
+  .right-panel {
+    display: none !important;
+  }
+
+  .challenge-container {
+    grid-template-columns: 360px 1fr !important;
+    gap: 12px !important;
+    padding: 12px !important;
+  }
+
+  .lesson-container {
+    gap: 12px !important;
+    padding: 12px !important;
+  }
+}
+
+/* ── Mobile Breakpoint (<= 768px) ── */
+@media (max-width: 768px) {
+  .app-container {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    width: 100vw !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  /* Mobile Backdrop Overlay */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Slide-out Mobile Hardware Drawer */
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 280px !important;
+    max-width: 84vw !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    z-index: 999 !important;
+    transform: translateX(-100%);
+    transition: transform 0.26s var(--ease-tactile);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.55);
+    background: var(--panel-bg);
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+
+  .mobile-close-btn {
+    display: inline-flex !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-left: auto !important;
+    margin-right: 6px !important;
+  }
+
+  /* Mobile Topbar */
+  .topbar {
+    height: 52px !important;
+    min-height: 52px !important;
+    padding: 0 10px !important;
+    flex-shrink: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .topbar-left-group {
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .topbar-unit-id {
+    gap: 6px !important;
+  }
+
+  .unit-brand {
+    font-size: 0.82rem !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .unit-model {
+    display: none !important;
+  }
+
+  .topbar-controls {
+    gap: 8px !important;
+  }
+
+  .rack-screw-separator {
+    display: none !important;
+  }
+
+  /* Hide secondary switches and meters on mobile topbar */
+  .topbar-controls .hardware-switch-group:has(#topbar-sound-toggle) {
+    display: none !important;
+  }
+
+  .topbar-meter-bezel:has([data-stat="gems"]) {
+    display: none !important;
+  }
+
+  .meter-lcd-display {
+    padding: 3px 6px !important;
+    gap: 4px !important;
+  }
+
+  .meter-channel-tag {
+    padding: 3px 4px !important;
+    font-size: 0.58rem !important;
+  }
+
+  .meter-lcd-digits {
+    font-size: 0.75rem !important;
+  }
+
+  .meter-lcd-unit {
+    font-size: 0.55rem !important;
+  }
+
+  .rocker-switch {
+    width: 44px !important;
+    height: 24px !important;
+  }
+
+  .rocker-thumb {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .rocker-state-label {
+    display: none !important;
+  }
+
+  .hardware-switch-label {
+    display: none !important;
+  }
+
+  .topbar-avatar-dial .avatar-dial-bezel {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  /* Main Workspace Chassis */
+  .main-content {
+    flex: 1 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 0 !important;
+  }
+
+  /* Mobile Bottom Navigation Dock */
+  .mobile-bottom-nav {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    width: 100% !important;
+    background: var(--panel-bg) !important;
+    border-top: 1px solid var(--chassis-border) !important;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15) !important;
+    flex-shrink: 0 !important;
+    z-index: 50 !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-bottom-nav.hidden {
+    display: none !important;
+  }
+
+  .mobile-nav-btn {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    flex: 1 !important;
+    height: 100% !important;
+    background: none !important;
+    border: none !important;
+    color: var(--text-secondary) !important;
+    cursor: pointer !important;
+    position: relative !important;
+    padding: 4px 0 !important;
+    transition: color 0.12s ease !important;
+    outline: none !important;
+  }
+
+  .mobile-nav-btn:active {
+    transform: scale(0.94) !important;
+  }
+
+  .mobile-nav-btn.active {
+    color: var(--text-primary) !important;
+  }
+
+  .mobile-nav-led {
+    width: 4px !important;
+    height: 4px !important;
+    border-radius: 50% !important;
+    background: var(--led-idle) !important;
+    margin-bottom: 2px !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .mobile-nav-btn.active .mobile-nav-led {
+    background: var(--led-blue-bright) !important;
+    box-shadow: 0 0 6px var(--led-blue-bright) !important;
+  }
+
+  .mobile-nav-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .mobile-nav-label {
+    font-family: var(--font-mono) !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+  }
+
+  /* Right Diagnostics Panel */
+  .right-panel {
+    display: none !important;
+  }
+
+  /* Mobile Bay Switcher */
+  .mobile-bay-switcher {
+    display: flex !important;
+    width: 100% !important;
+    margin-bottom: 4px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .mobile-bay-switcher .segmented-pill-option {
+    flex: 1 !important;
+    padding: 8px 12px !important;
+    font-size: 0.72rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .mobile-code-action-strip {
+    display: flex !important;
+    padding: 12px 14px !important;
+    margin-top: 10px !important;
+  }
+
+  .mobile-code-action-strip .tactile-btn {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    font-weight: 800 !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+
+  /* Challenge Container on Mobile */
+  .challenge-container {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 8px !important;
+    gap: 6px !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .challenge-container:not(.mobile-show-editor) #challenge-bay-left {
+    display: flex !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+  }
+
+  .challenge-container:not(.mobile-show-editor) #challenge-bay-right {
+    display: none !important;
+  }
+
+  .challenge-container.mobile-show-editor #challenge-bay-left {
+    display: none !important;
+  }
+
+  .challenge-container.mobile-show-editor #challenge-bay-right {
+    display: flex !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+  }
+
+  /* Lesson Container on Mobile */
+  .lesson-container {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 8px !important;
+    gap: 6px !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .lesson-container:not(.mobile-show-exercise) #lesson-bay-left {
+    display: flex !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+  }
+
+  .lesson-container:not(.mobile-show-exercise) #lesson-bay-right {
+    display: none !important;
+  }
+
+  .lesson-container.mobile-show-exercise #lesson-bay-left {
+    display: none !important;
+  }
+
+  .lesson-container.mobile-show-exercise #lesson-bay-right {
+    display: flex !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+  }
+
+  /* Journey Map Mobile */
+  .journey-container {
+    padding: 14px 10px 24px 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  .journey-inner {
+    max-width: 100% !important;
+    gap: 24px !important;
+  }
+
+  .section-header.hardware-faceplate {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+
+  .section-icon-box {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .section-subheading {
+    font-size: 0.58rem !important;
+  }
+
+  .section-title-text {
+    font-size: 0.85rem !important;
+  }
+
+  .section-meta-badge {
+    padding: 3px 6px !important;
+    font-size: 0.58rem !important;
+  }
+
+  .faceplate-screw {
+    width: 7px !important;
+    height: 7px !important;
+  }
+
+  .socket-inner {
+    width: 54px !important;
+    height: 54px !important;
+  }
+
+  .node-caption {
+    font-size: 0.68rem !important;
+    max-width: 130px !important;
+  }
+
+  /* Hardware Deck Layouts on Mobile */
+  .hardware-deck-layout {
+    padding: 12px 10px 24px 10px !important;
+    gap: 14px !important;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .auth-card {
+    padding: 18px 14px !important;
+    max-width: 100% !important;
+  }
+
+  .practice-tabs-container {
+    overflow-x: auto !important;
+    padding-bottom: 4px !important;
+  }
+
+  .practice-tabs-container .segmented-pill-container {
+    min-width: 280px !important;
+  }
+
+  .tactile-practice-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .practice-card-right {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  /* Modal Mobile */
+  .hardware-modal-chassis {
+    width: calc(100vw - 24px) !important;
+    max-width: 400px !important;
+    padding: 18px 14px !important;
+  }
+
+  .modal-actions {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .modal-actions .tactile-btn {
+    width: 100% !important;
+  }
+
+  /* Hardware Header Bars */
+  .hardware-header-bar {
+    padding: 0 10px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    gap: 8px !important;
+  }
+
+  .lesson-title {
+    font-size: 0.92rem !important;
+  }
+
+  .lesson-breadcrumb {
+    font-size: 0.58rem !important;
+  }
+
+  .header-nav-group .nav-prev-btn {
+    padding: 0 6px !important;
+    font-size: 0.65rem !important;
+    height: 28px !important;
+  }
+
+  .tactile-btn.back-btn {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .challenge-stats {
+    gap: 4px !important;
+  }
+
+  .hardware-pill {
+    font-size: 0.58rem !important;
+    padding: 3px 6px !important;
+  }
+
+  /* Editor Toolbar Mobile */
+  .editor-toolbar {
+    padding: 8px 10px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .editor-specs-pill {
+    font-size: 0.6rem !important;
+  }
+
+  .tactile-run-btn {
+    padding: 8px 14px !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* ── Small Phones (<= 400px) ── */
+@media (max-width: 400px) {
+  .topbar-controls .topbar-meter-bezel {
+    display: none !important;
+  }
+
+  .lesson-breadcrumb {
+    display: none !important;
+  }
+
+  .lesson-title {
+    font-size: 0.85rem !important;
+  }
+
+  .section-header .faceplate-screw {
+    display: none !important;
+  }
 }

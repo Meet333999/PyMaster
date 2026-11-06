@@ -57,6 +57,12 @@ export function renderSidebar(container, currentRoute, onNavigate) {
           <span class="logo-subtext">CONSOLE DECK</span>
         </div>
       </a>
+      <button class="tactile-btn mobile-close-btn" id="sidebar-close-btn" aria-label="Close Routing Matrix" title="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div class="mounting-screw top-right" aria-hidden="true"></div>
     </div>
 
@@ -78,6 +84,29 @@ export function renderSidebar(container, currentRoute, onNavigate) {
     container.classList.add('sidebar');
   }
 
+  function closeDrawer() {
+    container.classList.remove('mobile-open');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (backdrop) backdrop.classList.remove('active');
+  }
+
+  // Close drawer button
+  const closeBtn = container.querySelector('#sidebar-close-btn');
+  closeBtn?.addEventListener('click', () => {
+    playSound('click');
+    closeDrawer();
+  });
+
+  // Close drawer on backdrop click
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (backdrop && !backdrop._hasListener) {
+    backdrop.addEventListener('click', () => {
+      playSound('click');
+      closeDrawer();
+    });
+    backdrop._hasListener = true;
+  }
+
   // Event delegation for nav clicks with audio click feedback
   const nav = container.querySelector('.sidebar-nav');
   if (nav) {
@@ -89,6 +118,7 @@ export function renderSidebar(container, currentRoute, onNavigate) {
       if (!route) return;
 
       playSound('click');
+      closeDrawer();
 
       nav.querySelectorAll('.sidebar-item').forEach((el) => {
         el.classList.toggle('active', el === item);
@@ -107,9 +137,73 @@ export function renderSidebar(container, currentRoute, onNavigate) {
     logo.addEventListener('click', (e) => {
       e.preventDefault();
       playSound('click');
+      closeDrawer();
       if (typeof onNavigate === 'function') {
         onNavigate('journey');
       }
     });
   }
+}
+
+/**
+ * Render or update the mobile bottom navigation dock.
+ *
+ * @param {HTMLElement} container   — DOM element for bottom nav
+ * @param {string}     currentRoute — active route
+ * @param {Function}   onNavigate   — navigation callback
+ */
+export function renderMobileBottomNav(container, currentRoute, onNavigate) {
+  if (!container) return;
+
+  const isChallengeOrLesson = currentRoute.startsWith('lesson/') ||
+                              currentRoute.startsWith('sql-lesson/') ||
+                              currentRoute.startsWith('quiz/');
+
+  if (isChallengeOrLesson) {
+    container.classList.add('hidden');
+    return;
+  } else {
+    container.classList.remove('hidden');
+  }
+
+  const BOTTOM_TABS = [
+    { route: 'journey',     icon: icon('terminal', 18),   label: 'Python' },
+    { route: 'sql-journey', icon: icon('database', 18),   label: 'SQL' },
+    { route: 'dsa-journey', icon: icon('git-branch', 18), label: 'DSA' },
+    { route: 'practice',    icon: icon('code', 18),       label: 'Practice' },
+    { route: '__menu__',    icon: icon('layers', 18),     label: 'Matrix' },
+  ];
+
+  container.innerHTML = BOTTOM_TABS.map((tab) => {
+    const isActive = currentRoute === tab.route;
+    return `
+      <button class="mobile-nav-btn ${isActive ? 'active' : ''}" data-route="${tab.route}" aria-label="${tab.label}">
+        <span class="mobile-nav-led ${isActive ? 'active' : ''}"></span>
+        <span class="mobile-nav-icon">${tab.icon}</span>
+        <span class="mobile-nav-label">${tab.label}</span>
+      </button>
+    `;
+  }).join('');
+
+  container.onclick = (e) => {
+    const btn = e.target.closest('.mobile-nav-btn');
+    if (!btn) return;
+    const route = btn.dataset.route;
+    if (!route) return;
+
+    playSound('click');
+
+    if (route === '__menu__') {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (sidebar) {
+        const isOpen = sidebar.classList.toggle('mobile-open');
+        if (backdrop) backdrop.classList.toggle('active', isOpen);
+      }
+    } else {
+      if (typeof onNavigate === 'function') {
+        onNavigate(route);
+      }
+    }
+  };
 }
