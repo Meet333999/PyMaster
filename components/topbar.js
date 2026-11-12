@@ -40,7 +40,7 @@ export function renderTopbar(container, state) {
 
   container.id = TOPBAR_ID;
   container.innerHTML = `
-    <!-- Left Group: Mobile Menu & Current Status -->
+    <!-- Left Group: Mobile Menu & Clean Branding -->
     <div class="topbar-left-group">
       <button class="tactile-btn mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Navigation" title="Toggle Navigation">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
@@ -50,12 +50,8 @@ export function renderTopbar(container, state) {
         </svg>
       </button>
 
-      <div class="topbar-unit-id" title="Code Level Runtime">
-        <div class="unit-status-dot" title="Status: Online"></div>
-        <div class="unit-label-group">
-          <span class="unit-brand">CODE LEVEL</span>
-          <span class="unit-model">INTERACTIVE ENVIRONMENT</span>
-        </div>
+      <div class="topbar-mobile-brand">
+        <span class="unit-brand">CODE LEVEL</span>
       </div>
     </div>
 

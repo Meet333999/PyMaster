@@ -7,9 +7,9 @@ import { gameState } from './engine/state.js';
 import { initPyodide } from './engine/pyodide-runner.js';
 import { initSQL } from './engine/sql-runner.js';
 import { getInitialTheme, getCurrentTheme, setTheme } from './engine/theme.js';
-import { getAllLessons } from './data/curriculum.js';
-import { getAllSQLLessons } from './data/sql-curriculum.js';
-import { getAllDSALessons } from './data/dsa-curriculum.js';
+import { curriculum, getAllLessons, getLessonById, getChapterForLesson, getSectionForLesson } from './data/curriculum.js';
+import { sqlCurriculum, getAllSQLLessons, getSQLLessonById, getSQLChapterForLesson, getSQLSectionForLesson } from './data/sql-curriculum.js';
+import { dsaCurriculum, getAllDSALessons, getDSALessonById, getDSAChapterForLesson, getDSASectionForLesson } from './data/dsa-curriculum.js';
 
 import { renderSidebar, renderMobileBottomNav } from './components/sidebar.js';
 import { renderTopbar, updateTopbar } from './components/topbar.js';
@@ -54,9 +54,6 @@ function parseRoute() {
 async function navigate(route) {
   if (typeof route === 'string') {
     const cleanRoute = route.startsWith('#') ? route.slice(1) : route;
-    if (gameState.isSyncing()) {
-      await gameState.waitForSync();
-    }
     if (window.location.hash.slice(1) === cleanRoute) {
       navigate(parseRoute());
     } else {
@@ -69,12 +66,12 @@ async function navigate(route) {
   const currentNavId = app.navId;
   hideModal();
 
+  const mainContent = document.getElementById('main-content');
+  const rightPanel = document.getElementById('right-panel');
+
   try {
     const { page, param } = route || parseRoute();
     app.currentRoute = page;
-
-    const mainContent = document.getElementById('main-content');
-    const rightPanel = document.getElementById('right-panel');
 
     // Update sidebar & mobile bottom nav active state
     renderSidebar(document.getElementById('sidebar'), page, (r) => navigate(r));
@@ -98,20 +95,13 @@ async function navigate(route) {
       }
     }
 
-    // Clear main content with fade transition
-    mainContent.classList.add('fade-out');
-    await new Promise((r) => setTimeout(r, 120));
-
     if (currentNavId !== app.navId) {
       return;
     }
 
-    mainContent.classList.remove('fade-out');
-
     // Render the right view
     switch (page) {
       case 'journey': {
-        const { curriculum } = await import('./data/curriculum.js');
         renderJourneyMap(mainContent, curriculum, gameState, (lessonId) => {
           navigate(`lesson/${lessonId}`);
         });
@@ -119,7 +109,6 @@ async function navigate(route) {
       }
 
       case 'sql-journey': {
-        const { sqlCurriculum } = await import('./data/sql-curriculum.js');
         renderJourneyMap(mainContent, sqlCurriculum, gameState, (lessonId) => {
           navigate(`sql-lesson/${lessonId}`);
         });
@@ -127,7 +116,6 @@ async function navigate(route) {
       }
 
       case 'dsa-journey': {
-        const { dsaCurriculum } = await import('./data/dsa-curriculum.js');
         renderJourneyMap(mainContent, dsaCurriculum, gameState, (lessonId) => {
           navigate(`dsa-lesson/${lessonId}`);
         });
@@ -139,7 +127,6 @@ async function navigate(route) {
           window.location.hash = 'journey';
           return;
         }
-        const { getLessonById, getChapterForLesson, getSectionForLesson } = await import('./data/curriculum.js');
         const lesson = getLessonById(param);
         if (!lesson) {
           window.location.hash = 'journey';
@@ -175,7 +162,6 @@ async function navigate(route) {
           window.location.hash = 'sql-journey';
           return;
         }
-        const { getSQLLessonById, getSQLChapterForLesson, getSQLSectionForLesson } = await import('./data/sql-curriculum.js');
         const lesson = getSQLLessonById(param);
         if (!lesson) {
           window.location.hash = 'sql-journey';
@@ -211,7 +197,6 @@ async function navigate(route) {
           window.location.hash = 'dsa-journey';
           return;
         }
-        const { getDSALessonById, getDSAChapterForLesson, getDSASectionForLesson } = await import('./data/dsa-curriculum.js');
         const lesson = getDSALessonById(param);
         if (!lesson) {
           window.location.hash = 'dsa-journey';
@@ -243,7 +228,6 @@ async function navigate(route) {
       }
 
       case 'practice': {
-        const { curriculum } = await import('./data/curriculum.js');
         renderPracticePage(mainContent, curriculum, gameState, (lessonId, isSql, isDsa) => {
           if (isDsa) navigate(`dsa-lesson/${lessonId}`);
           else if (isSql) navigate(`sql-lesson/${lessonId}`);
@@ -262,7 +246,6 @@ async function navigate(route) {
         break;
 
       case 'profile': {
-        const { curriculum } = await import('./data/curriculum.js');
         renderProfilePage(mainContent, gameState, curriculum);
         break;
       }
@@ -277,6 +260,10 @@ async function navigate(route) {
 
   } catch (err) {
     console.error('[PyMaster] Navigation error:', err);
+  } finally {
+    if (mainContent) {
+      mainContent.classList.remove('fade-out');
+    }
   }
 }
 
@@ -418,9 +405,7 @@ async function init() {
     updateTopbar(gameState);
     if (app.currentRoute === 'profile') {
       const mainContent = document.getElementById('main-content');
-      import('./data/curriculum.js').then(({ curriculum }) => {
-        renderProfilePage(mainContent, gameState, curriculum);
-      });
+      renderProfilePage(mainContent, gameState, curriculum);
     }
   });
 
@@ -481,19 +466,23 @@ async function init() {
     navigate(parseRoute());
   });
 
+  // Start route navigation immediately so views mount behind loading animation
+  const navPromise = navigate(parseRoute());
+
   // Hide loading screen smoothly
   const loadingScreen = document.getElementById('loading-screen');
   if (loadingScreen) {
-    await new Promise((r) => setTimeout(r, 1200));
+    await Promise.all([
+      navPromise,
+      new Promise((r) => setTimeout(r, 700))
+    ]);
     loadingScreen.style.opacity = '0';
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 320));
     loadingScreen.style.display = 'none';
     if (animInstance) {
       animInstance.destroy();
     }
   }
-
-  navigate(parseRoute());
 }
 
 // Start App

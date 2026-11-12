@@ -144,17 +144,14 @@ export function renderProgressPanel(container, state) {
 
         <div class="runtime-specs-grid">
           <div class="spec-row">
-            <span class="engine-dot-active"></span>
             <span class="spec-name">Pyodide Python 3.11</span>
             <span class="spec-status-ok">WASM Ready</span>
           </div>
           <div class="spec-row">
-            <span class="engine-dot-active"></span>
             <span class="spec-name">SQLite In-Memory</span>
             <span class="spec-status-ok">Active</span>
           </div>
           <div class="spec-row">
-            <span class="engine-dot-active"></span>
             <span class="spec-name">State Storage</span>
             <span class="spec-status-ok">Synced</span>
           </div>

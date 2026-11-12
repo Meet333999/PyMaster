@@ -73,11 +73,10 @@ export function renderSidebar(container, currentRoute, onNavigate) {
       ${navItemsHTML}
     </nav>
 
-    <!-- Bottom Engine Status -->
+    <!-- Bottom Workspace Foot -->
     <div class="sidebar-foot">
-      <div class="engine-status-pill" title="Pyodide & SQLite Engine Ready">
-        <span class="engine-status-dot"></span>
-        <span class="engine-status-text">Engine Ready</span>
+      <div class="engine-status-pill" title="Curriculum Runtime">
+        <span class="engine-status-text">v2.4 · WASM</span>
       </div>
     </div>
   `;
