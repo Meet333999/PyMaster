@@ -75,7 +75,7 @@ export function renderQuizView(container, lesson, section, chapter, callbacks) {
               <div class="quiz-progress-track">
                 <div class="quiz-progress-fill" style="width: ${quizAnswered ? '100' : '50'}%"></div>
               </div>
-              <span class="quiz-step-tag">${quizAnswered ? 'Completed' : 'Active'}</span>
+              <span class="quiz-step-tag ${quizAnswered ? 'completed' : ''}">${quizAnswered ? 'Completed' : 'Active'}</span>
             </div>
 
             <div class="quiz-question-card modern-content-card">
@@ -108,7 +108,7 @@ export function renderQuizView(container, lesson, section, chapter, callbacks) {
               </div>
 
               ${quizAnswered ? `
-                <div class="quiz-explanation visible">
+                <div class="quiz-explanation visible ${selectedOption === quiz.correct ? 'pass' : 'fail'}">
                   <div class="explanation-tag">
                     <span class="explanation-indicator ${selectedOption === quiz.correct ? 'pass' : 'fail'}"></span>
                     <span>${selectedOption === quiz.correct ? 'Answer Verified' : 'Incorrect — Review Concept'}</span>

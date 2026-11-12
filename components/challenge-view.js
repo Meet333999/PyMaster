@@ -101,7 +101,7 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
             </div>
             <div class="hints-list" id="hints-list">
               ${(challenge.hints || []).map((hint, idx) => `
-                <div class="hint-item modern-content-card ${hintsOpen.has(idx) ? 'open' : ''}" data-hint-idx="${idx}">
+                <div class="hint-item tactile-drawer modern-content-card ${hintsOpen.has(idx) ? 'open' : ''}" data-hint-idx="${idx}">
                   <button class="hint-header">
                     <span class="hint-pip">0${idx + 1}</span>
                     <span class="hint-label">Hint ${idx + 1}</span>
