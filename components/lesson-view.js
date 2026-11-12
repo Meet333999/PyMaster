@@ -1,6 +1,6 @@
 // ==========================================================================
-// PyMaster — Skeuomorphic Lesson View Deck
-// Dual-panel hardware layout: Technical manual + Verification terminal
+// Code Level / PyMaster — Modern Lesson View
+// Clean dual-panel layout: Structured Learning Manual + Verification Quiz
 // ==========================================================================
 
 import { icon } from './icons.js';
@@ -58,38 +58,38 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
 
     container.innerHTML = `
       <div class="lesson-container">
-        <!-- Mobile Bay Switcher: THEORY vs EXERCISE/QUIZ -->
+        <!-- Mobile Bay Switcher: THEORY vs QUIZ -->
         <div class="mobile-bay-switcher segmented-pill-container" role="tablist">
           <button class="segmented-pill-option active" id="btn-lesson-bay-theory" role="tab" aria-selected="true">
-            <span>THEORY SPEC</span>
+            <span>LESSON CONTENT</span>
           </button>
           <button class="segmented-pill-option" id="btn-lesson-bay-exercise" role="tab" aria-selected="false">
-            <span>${hasQuiz ? 'EVAL QUIZ' : 'VERIFICATION'}</span>
+            <span>${hasQuiz ? 'KNOWLEDGE CHECK' : 'VERIFICATION'}</span>
           </button>
         </div>
 
-        <!-- ── Left Panel: Technical Specification Manual ── -->
-        <div class="lesson-left hardware-chassis-panel" id="lesson-bay-left">
-          <!-- Hardware Header Bar -->
-          <div class="lesson-header hardware-header-bar">
+        <!-- ── Left Panel: Lesson Specification Manual ── -->
+        <div class="lesson-left modern-card-panel" id="lesson-bay-left">
+          <!-- Lesson Header Bar -->
+          <div class="lesson-header modern-header-bar">
             <div class="header-nav-group">
-              <button class="tactile-btn back-btn" id="lesson-back-btn" title="Return to Matrix">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button class="tactile-btn back-btn" id="lesson-back-btn" title="Back to Curriculum">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12"></line>
                   <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
               </button>
               ${onPrevious ? `
                 <button class="tactile-btn nav-prev-btn" id="lesson-header-prev-btn" title="Previous Level">
-                  <span>←&nbsp;PREV</span>
+                  <span>← Prev</span>
                 </button>
               ` : ''}
             </div>
             <div class="lesson-header-info">
-              <span class="lesson-breadcrumb">${section.title.toUpperCase()} // ${chapter.title.toUpperCase()}</span>
+              <span class="lesson-breadcrumb">${section.title} > ${chapter.title}</span>
               <h1 class="lesson-title">${lesson.title}</h1>
             </div>
-            <div class="module-spec-tag">DOC-SPEC</div>
+            <span class="lesson-type-badge">${lesson.type ? lesson.type.toUpperCase() : 'THEORY'}</span>
           </div>
 
           <!-- Theory Content Module -->
@@ -97,11 +97,11 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
             <div class="theory-title-row">
               <div class="theory-heading-group">
                 <h2 class="theory-heading">${lesson.title}</h2>
-                <span class="theory-subtag">SPECIFICATION OVERVIEW</span>
+                <span class="theory-subtag">Concept & Usage</span>
               </div>
 
-              <!-- Segmented Pill Control: Full | TL;DR (Ref Image Style) -->
-              <div class="segmented-pill-container" role="radiogroup" aria-label="Documentation Detail">
+              <!-- Segmented Pill Control: Standard | TL;DR -->
+              <div class="segmented-pill-container" role="radiogroup" aria-label="Reading Mode">
                 <button class="segmented-pill-option ${!showTldr ? 'active' : ''}" id="btn-show-full" role="radio" aria-checked="${!showTldr}">
                   Standard
                 </button>
@@ -111,43 +111,44 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
               </div>
             </div>
 
-            <!-- Recessed Theory Content Cavity -->
-            <div class="theory-content skeuo-inset-well">
+            <!-- Theory Content Well -->
+            <div class="theory-content modern-content-card">
               ${showTldr && theory.tldr
                 ? `<div class="tldr-box"><p>${theory.tldr}</p></div>`
                 : formatTheoryContent(theory.content || '')}
             </div>
 
             ${theory.codeExample ? `
-              <!-- Recessed Code Sample Block -->
-              <div class="code-block skeuo-terminal-screen">
+              <!-- Syntax Code Specimen Card -->
+              <div class="code-block modern-code-card">
                 <div class="code-block-header">
                   <div class="terminal-dots">
                     <span class="dot"></span>
                     <span class="dot"></span>
                     <span class="dot"></span>
                   </div>
-                  <span class="terminal-title">CODE_SPECIMEN.py</span>
-                  <button class="tactile-btn code-copy-btn" id="btn-copy-example">
-                    ${icon('clipboard', 12)} Copy
+                  <span class="terminal-title">example.py</span>
+                  <button class="tactile-btn code-copy-btn" id="btn-copy-example" title="Copy code">
+                    ${icon('clipboard', 13)}
+                    <span>Copy</span>
                   </button>
                 </div>
                 <pre class="code-block-body"><code>${escapeHtml(theory.codeExample)}</code></pre>
               </div>
             ` : ''}
 
-            <!-- Mobile Quick Action to jump to Quiz/Workbench -->
+            <!-- Mobile Quick Action to jump to Quiz -->
             <div class="mobile-code-action-strip">
               <button class="tactile-btn btn-primary" id="mobile-switch-to-exercise-btn">
-                <span>PROCEED TO ${hasQuiz ? 'EVAL QUIZ' : 'VERIFICATION'}</span>
+                <span>PROCEED TO ${hasQuiz ? 'QUIZ' : 'COMPLETION'}</span>
                 <span>→</span>
               </button>
             </div>
           </div>
         </div>
 
-        <!-- ── Right Panel: Hardware Verification & Quiz Console ── -->
-        <div class="lesson-right hardware-chassis-panel" id="lesson-bay-right">
+        <!-- ── Right Panel: Quiz / Verification Console ── -->
+        <div class="lesson-right modern-card-panel" id="lesson-bay-right">
           ${hasQuiz ? renderQuizPanel(lesson.quiz) : renderCompletePanel()}
         </div>
       </div>
@@ -180,7 +181,7 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
     bayExerciseBtn?.addEventListener('click', () => setLessonMobileBay('exercise'));
     mobileToExerciseBtn?.addEventListener('click', () => setLessonMobileBay('exercise'));
 
-    // Event listeners
+    // Back & prev button listeners
     container.querySelector('#lesson-back-btn')?.addEventListener('click', () => {
       playSound('click');
       handleBack();
@@ -191,42 +192,50 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
       handlePrevious();
     });
 
-    const tldrBtn = container.querySelector('#btn-show-tldr');
-    const fullBtn = container.querySelector('#btn-show-full');
-    tldrBtn?.addEventListener('click', () => {
-      playSound('snap');
-      showTldr = true;
-      render();
-    });
-    fullBtn?.addEventListener('click', () => {
-      playSound('snap');
-      showTldr = false;
-      render();
+    // Pill Switcher full / tldr
+    container.querySelector('#btn-show-full')?.addEventListener('click', () => {
+      if (showTldr) {
+        playSound('click');
+        showTldr = false;
+        render();
+      }
     });
 
+    container.querySelector('#btn-show-tldr')?.addEventListener('click', () => {
+      if (!showTldr) {
+        playSound('click');
+        showTldr = true;
+        render();
+      }
+    });
+
+    // Copy example button
     const copyBtn = container.querySelector('#btn-copy-example');
     copyBtn?.addEventListener('click', () => {
-      playSound('click');
-      navigator.clipboard.writeText(lesson.theory.codeExample || '');
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => { copyBtn.innerHTML = `${icon('clipboard', 12)} Copy`; }, 1500);
+      if (theory.codeExample) {
+        navigator.clipboard.writeText(theory.codeExample).then(() => {
+          playSound('click');
+          const span = copyBtn.querySelector('span');
+          if (span) span.textContent = 'Copied!';
+          setTimeout(() => {
+            if (span) span.textContent = 'Copy';
+          }, 1800);
+        });
+      }
     });
 
-    // Quiz option handlers
+    // Quiz options handling
     if (hasQuiz) {
-      container.querySelectorAll('.quiz-option').forEach(opt => {
+      const options = container.querySelectorAll('.quiz-option');
+      options.forEach(opt => {
         opt.addEventListener('click', () => {
           if (quizAnswered) return;
           playSound('click');
-          selectedOption = parseInt(opt.dataset.index);
-          container.querySelectorAll('.quiz-option').forEach(o => {
-            o.classList.remove('selected');
-            const led = o.querySelector('.option-status-led');
-            if (led) led.className = 'option-status-led status-idle';
+          selectedOption = parseInt(opt.dataset.index, 10);
+          options.forEach((o, i) => {
+            const isSelected = i === selectedOption;
+            o.classList.toggle('selected', isSelected);
           });
-          opt.classList.add('selected');
-          const myLed = opt.querySelector('.option-status-led');
-          if (myLed) myLed.className = 'option-status-led status-blue';
 
           const submitBtn = container.querySelector('#quiz-submit-btn');
           if (submitBtn) submitBtn.disabled = false;
@@ -249,14 +258,11 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
 
         const options = container.querySelectorAll('.quiz-option');
         options.forEach((opt, idx) => {
-          const led = opt.querySelector('.option-status-led');
           if (idx === correct) {
             opt.classList.add('correct');
-            if (led) led.className = 'option-status-led status-green';
           }
           if (idx === selectedOption && idx !== correct) {
             opt.classList.add('incorrect');
-            if (led) led.className = 'option-status-led status-red';
           }
           opt.style.pointerEvents = 'none';
         });
@@ -270,7 +276,7 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
           explanationEl.classList.add('visible');
         }
 
-        // Render explicit tactile Previous & Continue buttons
+        // Render explicit Previous & Continue buttons
         const actionsSlot = container.querySelector('.quiz-actions-container');
         if (actionsSlot) {
           if (isRight) {
@@ -278,12 +284,11 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
               <div class="quiz-post-actions">
                 ${onPrevious ? `
                   <button class="tactile-btn btn-secondary nav-prev-btn" id="quiz-prev-btn">
-                    <span>← PREVIOUS</span>
+                    <span>← Previous</span>
                   </button>
                 ` : ''}
                 <button class="tactile-btn submit-btn btn-continue-ready btn-success" id="quiz-continue-btn">
-                  <span class="btn-led status-green pulse-green"></span>
-                  <span>CONTINUE TO NEXT LEVEL</span>
+                  <span>Continue to Next Level</span>
                   <span class="submit-key">→</span>
                 </button>
               </div>
@@ -293,15 +298,14 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
               <div class="quiz-post-actions">
                 ${onPrevious ? `
                   <button class="tactile-btn btn-secondary nav-prev-btn" id="quiz-prev-btn">
-                    <span>← PREVIOUS</span>
+                    <span>← Previous</span>
                   </button>
                 ` : ''}
                 <button class="tactile-btn btn-secondary" id="quiz-retry-btn">
-                  <span>↺ RETRY</span>
+                  <span>↺ Retry</span>
                 </button>
                 <button class="tactile-btn submit-btn btn-continue-ready" id="quiz-continue-btn">
-                  <span class="btn-led status-blue"></span>
-                  <span>CONTINUE ANYWAY</span>
+                  <span>Continue Anyway</span>
                   <span class="submit-key">→</span>
                 </button>
               </div>
@@ -346,38 +350,33 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
   function renderQuizPanel(quiz) {
     return `
       <div class="quiz-container">
-        <!-- Hardware Header Strip with Embedded Progress Bar -->
+        <!-- Progress Bar Header -->
         <div class="quiz-panel-header">
-          <div class="quiz-header-tag">VERIFICATION MATRIX</div>
+          <div class="quiz-header-tag">KNOWLEDGE CHECK</div>
           <div class="quiz-progress-track">
             <div class="quiz-progress-fill" style="width: ${quizAnswered ? '100' : '50'}%"></div>
           </div>
-          <div class="meter-channel-tag">Q-UNIT 01</div>
+          <span class="quiz-step-tag">1 Question</span>
         </div>
 
-        <div class="quiz-question-card skeuo-inset-well">
-          <div class="question-header-row">
-            <span class="question-badge">QUERY</span>
-            <span class="question-id">VERIFY KNOWLEDGE</span>
-          </div>
+        <div class="quiz-question-card modern-content-card">
           <p class="quiz-question">${quiz.question}</p>
 
           <div class="quiz-options">
             ${quiz.options.map((opt, idx) => `
-              <div class="quiz-option tactile-option ${selectedOption === idx ? 'selected' : ''}"
+              <div class="quiz-option ${selectedOption === idx ? 'selected' : ''}"
                    data-index="${idx}"
                    role="button" tabindex="0">
                 <span class="quiz-option-number">0${idx + 1}</span>
                 <span class="quiz-option-text">${opt}</span>
-                <span class="option-status-led status-idle"></span>
               </div>
             `).join('')}
           </div>
 
           <div class="quiz-explanation ${quizAnswered ? 'visible' : ''}">
             <div class="explanation-tag">
-              <span class="explanation-diode status-blue"></span>
-              <span>TELEMETRY DECODE</span>
+              <span class="explanation-indicator"></span>
+              <span>Explanation</span>
             </div>
             <p>${quiz.explanation || ''}</p>
           </div>
@@ -385,7 +384,7 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
 
         <div class="quiz-actions-container">
           <button class="tactile-btn submit-btn" id="quiz-submit-btn" ${selectedOption === null ? 'disabled' : ''}>
-            <span>EXECUTE VERIFICATION</span>
+            <span>Submit Answer</span>
             <span class="submit-key">↵</span>
           </button>
         </div>
@@ -395,21 +394,20 @@ export function renderLessonView(container, lesson, section, chapter, callbacks)
 
   function renderCompletePanel() {
     return `
-      <div class="complete-panel skeuo-inset-well">
+      <div class="complete-panel modern-content-card">
         <div class="complete-icon-box">
           ${icon('book', 36)}
         </div>
-        <h3 class="complete-panel-title">SPECIFICATION COMPLETE</h3>
-        <p class="complete-panel-desc">All technical parameters for this section have been loaded into runtime memory.</p>
+        <h3 class="complete-panel-title">Lesson Overview Complete</h3>
+        <p class="complete-panel-desc">You have reviewed the key concepts for this topic. Ready to advance to the next step?</p>
         <div class="lesson-complete-actions">
           ${onPrevious ? `
             <button class="tactile-btn btn-secondary nav-prev-btn" id="lesson-prev-btn">
-              <span>← PREVIOUS</span>
+              <span>← Previous</span>
             </button>
           ` : ''}
           <button class="tactile-btn btn-primary btn-large btn-continue-ready btn-success" id="lesson-complete-btn">
-            <span class="btn-led status-green pulse-green"></span>
-            <span>CONTINUE TO NEXT LEVEL</span>
+            <span>Continue to Next Level</span>
             <span class="submit-key">→</span>
           </button>
         </div>

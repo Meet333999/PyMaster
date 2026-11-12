@@ -1,6 +1,6 @@
 // ==========================================================================
-// PyMaster — Skeuomorphic Challenge Console
-// Dual-bay hardware deck: Technical Spec & Oscilloscope Test Terminal
+// Code Level / PyMaster — Modern Challenge View
+// Dual-bay card layout: Task Requirements & Code Editor + Test Runner
 // ==========================================================================
 
 import { createCodeEditor, getEditorValue } from './code-editor.js';
@@ -20,6 +20,7 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
   let hintsOpen = new Set();
   let allTestsPassed = false;
   let isPerfect = false;
+  let hasFailedAttempt = false;
 
   function cleanup() {
     document.removeEventListener('keydown', keydownHandler);
@@ -47,7 +48,7 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
       <!-- Mobile Bay Switcher (Visible only on mobile <= 768px) -->
       <div class="mobile-bay-switcher segmented-pill-container" role="tablist">
         <button class="segmented-pill-option active" id="btn-bay-spec" role="tab" aria-selected="true">
-          <span>SPECIFICATION</span>
+          <span>TASK BRIEF</span>
         </button>
         <button class="segmented-pill-option" id="btn-bay-editor" role="tab" aria-selected="false">
           <span>CODE & RUN</span>
@@ -55,62 +56,56 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
       </div>
 
       <!-- ── Left Bay: Engineering Brief & Logic Hints ── -->
-      <div class="challenge-left hardware-chassis-panel" id="challenge-bay-left">
-        <div class="challenge-header hardware-header-bar">
+      <div class="challenge-left modern-card-panel" id="challenge-bay-left">
+        <div class="challenge-header modern-header-bar">
           <div class="header-nav-group">
-            <button class="tactile-btn back-btn" id="challenge-back-btn" title="Back to Matrix">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="tactile-btn back-btn" id="challenge-back-btn" title="Back to Curriculum">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
                 <polyline points="12 19 5 12 12 5"></polyline>
               </svg>
             </button>
             ${onPrevious ? `
               <button class="tactile-btn nav-prev-btn" id="header-prev-btn" title="Previous Level">
-                <span>←&nbsp;PREV</span>
+                <span>← Prev</span>
               </button>
             ` : ''}
           </div>
           <div class="challenge-header-info">
-            <span class="lesson-breadcrumb">${section.title.toUpperCase()} // ${chapter.title.toUpperCase()}</span>
+            <span class="lesson-breadcrumb">${section.title} > ${chapter.title}</span>
             <h1 class="lesson-title">${lesson.title}</h1>
           </div>
           <div class="challenge-stats">
-            <span class="hardware-pill difficulty-${lesson.difficulty}">${lesson.difficulty.toUpperCase()}</span>
-            <span class="hardware-pill xp-badge">+${lesson.xp}&nbsp;XP</span>
+            <span class="difficulty-pill difficulty-${lesson.difficulty}">${lesson.difficulty ? lesson.difficulty.toUpperCase() : 'BEGINNER'}</span>
+            <span class="xp-badge">+${lesson.xp} XP</span>
           </div>
         </div>
 
         <div class="challenge-body">
           <!-- Specification Section -->
-          <div class="challenge-section skeuo-inset-well">
+          <div class="challenge-section modern-content-card">
             <div class="spec-header-row">
-              <span class="spec-tag">SYSTEM BRIEF</span>
-              <span class="spec-id">TASK-${lesson.id.toUpperCase()}</span>
+              <span class="spec-tag">Task Overview</span>
+              <span class="spec-id">#${lesson.id}</span>
             </div>
             <div class="challenge-description">
               ${formatDescription(challenge.description)}
             </div>
-            <div class="spec-action-row">
-              <button class="tactile-btn explain-btn" id="btn-explain">
-                ${icon('lightbulb', 14)}
-                <span>Technical Overview</span>
-              </button>
-            </div>
           </div>
 
-          <!-- Hardware Hints Module -->
+          <!-- Logic Hints Module -->
           <div class="hints-section">
             <div class="hints-module-header">
-              <span class="hints-tag">DIAGNOSTIC GUIDES</span>
-              <span class="hints-count">${challenge.hints ? challenge.hints.length : 0} AVAILABLE</span>
+              <span class="hints-tag">HINTS</span>
+              <span class="hints-count">${challenge.hints ? challenge.hints.length : 0} Available</span>
             </div>
             <div class="hints-list" id="hints-list">
               ${(challenge.hints || []).map((hint, idx) => `
-                <div class="hint-item tactile-drawer ${hintsOpen.has(idx) ? 'open' : ''}" data-hint-idx="${idx}">
+                <div class="hint-item modern-content-card ${hintsOpen.has(idx) ? 'open' : ''}" data-hint-idx="${idx}">
                   <button class="hint-header">
-                    <span class="hint-pip">#0${idx + 1}</span>
-                    <span class="hint-label">LOGIC HINT ${idx + 1}</span>
-                    <svg class="hint-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <span class="hint-pip">0${idx + 1}</span>
+                    <span class="hint-label">Hint ${idx + 1}</span>
+                    <svg class="hint-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                       <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                   </button>
@@ -132,35 +127,36 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
         </div>
       </div>
 
-      <!-- ── Right Bay: Code Editor & Oscilloscope Test Harness ── -->
-      <div class="challenge-right hardware-chassis-panel" id="challenge-bay-right">
+      <!-- ── Right Bay: Code Editor & Test Harness ── -->
+      <div class="challenge-right modern-card-panel" id="challenge-bay-right">
         <!-- Editor Wrapper -->
         <div class="editor-wrapper" id="editor-wrapper"></div>
 
-        <!-- Hardware Test Console / Oscilloscope Display -->
+        <!-- Test Console & Results Panel -->
         <div class="test-cases-panel">
           <div class="test-tabs-rack">
             <div class="segmented-pill-container">
               <button class="segmented-pill-option ${activeTab === 'testcases' ? 'active' : ''}" id="tab-testcases">
-                <span>TEST SUITE</span>
+                <span>Test Suite</span>
                 ${testResults ? (allTestsPassed
-                  ? '<span class="status-diode status-green"></span>'
-                  : '<span class="status-diode status-red"></span>')
+                  ? '<span class="status-indicator pass"></span>'
+                  : '<span class="status-indicator fail"></span>')
                 : ''}
               </button>
               <button class="segmented-pill-option ${activeTab === 'console' ? 'active' : ''}" id="tab-console">
-                <span>TERMINAL LOG</span>
+                <span>Output Log</span>
               </button>
             </div>
 
-            <div class="oscilloscope-status-readout">
-              <span class="scope-led ${isRunning ? 'pulse-blue status-blue' : (testResults ? (allTestsPassed ? 'status-green' : 'status-red') : 'status-idle')}"></span>
-              <span class="scope-state-text">${isRunning ? 'EXEC HARNESS' : (testResults ? (allTestsPassed ? 'PASS: 100%' : 'ASSERT FAIL') : 'STANDBY')}</span>
+            <div class="test-status-readout">
+              <span class="scope-status-pill ${isRunning ? 'running' : (testResults ? (allTestsPassed ? 'pass' : 'fail') : 'idle')}">
+                ${isRunning ? 'Running...' : (testResults ? (allTestsPassed ? 'Passed 100%' : 'Assert Failed') : 'Ready')}
+              </span>
             </div>
           </div>
 
-          <!-- Recessed Oscilloscope Screen -->
-          <div class="oscilloscope-screen skeuo-oscilloscope-display" id="test-content">
+          <!-- Output Content Screen -->
+          <div class="oscilloscope-screen" id="test-content">
             ${activeTab === 'testcases' ? renderTestCases() : renderConsole()}
           </div>
         </div>
@@ -211,7 +207,6 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
     });
 
     container.querySelector('#btn-run-code')?.addEventListener('click', handleRunCode);
-    container.querySelector('#btn-explain')?.addEventListener('click', handleExplain);
 
     // Hints accordion
     container.querySelectorAll('.hint-header').forEach(btn => {
@@ -265,96 +260,67 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
   async function handleRunCode() {
     if (isRunning) return;
 
-    const runBtn = container.querySelector('#btn-run-code');
-    if (!runBtn) return;
+    if (!isPyodideReady()) {
+      alert('Python environment is initializing. Please wait a moment...');
+      return;
+    }
 
-    playSound('switch');
     isRunning = true;
-    runBtn.classList.add('running');
-    const runLed = runBtn.querySelector('.run-led-diode');
-    if (runLed) runLed.className = 'run-led-diode pulse-blue status-blue';
+    updateRunButton(true);
+    playSound('compile');
 
-    updateTabs();
-
-    const code = getEditorValue();
+    const userCode = getEditorValue();
+    gameState.saveCode(lesson.id, userCode);
 
     try {
-      if (!isPyodideReady()) {
-        consoleOutput = '[ENGINE ERROR] Python Pyodide runtime initializing... please wait.';
-        activeTab = 'console';
-        updateTabs();
-        return;
+      // 1. Run user code in Pyodide
+      const runResult = await runPython(userCode);
+      consoleOutput = runResult.stdout || '';
+      if (runResult.error) {
+        consoleOutput += (consoleOutput ? '\n' : '') + runResult.error;
       }
 
-      let actualOutputs = [];
-      let firstError = null;
-      let firstStdout = '';
-
-      if (challenge.testCases && challenge.testCases.length > 0) {
-        for (let i = 0; i < challenge.testCases.length; i++) {
-          const tc = challenge.testCases[i];
-          const tcResult = await runPython(code, tc.input || '');
-          if (i === 0) {
-            firstError = tcResult.error;
-            firstStdout = tcResult.stdout;
-          }
-          if (tcResult.error) {
-            firstError = tcResult.error;
-            firstStdout = tcResult.stdout;
-            break;
-          }
-          actualOutputs.push(tcResult.stdout);
-        }
-      } else {
-        const tcResult = await runPython(code, '');
-        firstError = tcResult.error;
-        firstStdout = tcResult.stdout;
-        actualOutputs.push(tcResult.stdout);
+      // 2. Validate against challenge test cases
+      const validationResults = await runAllTests(userCode, challenge.testCases, 'python');
+      testResults = validationResults;
+      allTestsPassed = validationResults.every(r => r.passed);
+      if (!allTestsPassed) {
+        hasFailedAttempt = true;
       }
+      isPerfect = !hasFailedAttempt && !gameState.isLessonCompleted(lesson.id) && allTestsPassed;
 
-      consoleOutput = firstError || firstStdout;
-
-      if (!firstError) {
-        testResults = runAllTests(challenge.testCases, actualOutputs);
-        allTestsPassed = testResults.every(t => t.passed);
-        activeTab = 'testcases';
-
-        if (allTestsPassed) {
-          playSound('pass');
-          isPerfect = !hintsOpen.size;
-          // Mark completed in state immediately, but do NOT pop modal automatically
-          gameState.completeLesson(lesson.id, lesson.xp, isPerfect);
-        } else {
-          playSound('fail');
-        }
+      // 3. Audio & state feedback
+      if (allTestsPassed) {
+        playSound('pass');
       } else {
-        testResults = null;
-        allTestsPassed = false;
-        activeTab = 'console';
         playSound('fail');
       }
+
+      activeTab = 'testcases';
+      updateTabs();
+
     } catch (err) {
-      consoleOutput = `Unhandled Exception: ${err.message}`;
-      testResults = null;
-      allTestsPassed = false;
+      consoleOutput = `Execution Error: ${err.message}`;
       activeTab = 'console';
-      playSound('fail');
+      updateTabs();
     } finally {
       isRunning = false;
-      if (runBtn) {
-        runBtn.classList.remove('running');
-        const led = runBtn.querySelector('.run-led-diode');
-        if (led) led.className = 'run-led-diode';
-      }
-      updateTabs();
-      bindPassedActionEvents();
+      updateRunButton(false);
     }
   }
 
-  function handleExplain() {
-    consoleOutput = `=== TASK SPECIFICATION // RUNTIME TELEMETRY ===\nModule: ${lesson.title}\nDomain: ${section.title}\nDifficulty: ${lesson.difficulty.toUpperCase()}\nAllocated XP: ${lesson.xp}\nTarget Functionality: Code validation under pyodide WASM environment.`;
-    activeTab = 'console';
-    updateTabs();
+  function updateRunButton(running) {
+    const runBtn = container.querySelector('#btn-run-code');
+    if (!runBtn) return;
+    runBtn.disabled = running;
+    const label = runBtn.querySelector('.run-btn-label');
+    if (label) {
+      label.textContent = running ? 'RUNNING...' : 'EXECUTE CODE';
+    }
+    if (!running) {
+      updateToolbarNavigation();
+      bindPassedActionEvents();
+    }
   }
 
   function updateTabs() {
@@ -365,18 +331,17 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
       tabConsole.classList.toggle('active', activeTab === 'console');
     }
 
-    const scopeState = container.querySelector('.scope-state-text');
-    const scopeLed = container.querySelector('.scope-led');
-    if (scopeState && scopeLed) {
+    const scopeState = container.querySelector('.scope-status-pill');
+    if (scopeState) {
       if (isRunning) {
-        scopeState.textContent = 'RUNNING...';
-        scopeLed.className = 'scope-led status-blue pulse-blue';
+        scopeState.textContent = 'Running...';
+        scopeState.className = 'scope-status-pill running';
       } else if (testResults) {
-        scopeState.textContent = allTestsPassed ? 'PASS: 100%' : 'ASSERT FAIL';
-        scopeLed.className = `scope-led ${allTestsPassed ? 'status-green' : 'status-red'}`;
+        scopeState.textContent = allTestsPassed ? 'Passed 100%' : 'Assert Failed';
+        scopeState.className = `scope-status-pill ${allTestsPassed ? 'pass' : 'fail'}`;
       } else {
-        scopeState.textContent = 'STANDBY';
-        scopeLed.className = 'scope-led status-idle';
+        scopeState.textContent = 'Ready';
+        scopeState.className = 'scope-status-pill idle';
       }
     }
 
@@ -404,12 +369,11 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
       navRack.innerHTML = `
         ${onPrevious ? `
           <button class="tactile-btn btn-secondary nav-btn-prev" id="btn-toolbar-prev" title="Previous Level">
-            <span>← PREVIOUS</span>
+            <span>← Previous</span>
           </button>
         ` : ''}
         <button class="tactile-btn btn-continue-ready btn-success nav-btn-next" id="btn-toolbar-next" title="Advance to Next Level">
-          <span class="btn-led status-green pulse-green"></span>
-          <span>GO TO NEXT LEVEL</span>
+          <span>Go to Next Level</span>
           <span class="submit-key">→</span>
         </button>
       `;
@@ -443,32 +407,28 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
   function renderTestCases() {
     if (!testResults) {
       return `
-        <div class="oscilloscope-graticule-bg"></div>
         <div class="test-placeholder">
-          <div class="scope-crosshairs"></div>
-          <span class="placeholder-caption">HARNESS READY // CLICK EXECUTE OR PRESS CTRL+ENTER</span>
+          <span class="placeholder-caption">Click Execute Code or press Ctrl+Enter to test your solution</span>
         </div>
       `;
     }
 
     return `
-      <div class="oscilloscope-graticule-bg"></div>
       <div class="test-results-rack">
         ${allTestsPassed ? `
           <div class="test-suite-success-strip">
             <div class="success-strip-message">
-              <span class="status-diode status-green pulse-green"></span>
-              <span class="success-strip-txt">ALL SPECIFICATION CONSTRAINTS VERIFIED (PASS: 100%)</span>
+              <span class="status-indicator pass"></span>
+              <span class="success-strip-txt">All test assertions passed successfully!</span>
             </div>
             <div class="success-strip-actions">
               ${onPrevious ? `
                 <button class="tactile-btn btn-secondary nav-prev-btn" id="btn-banner-prev">
-                  <span>← PREVIOUS</span>
+                  <span>← Previous</span>
                 </button>
               ` : ''}
               <button class="tactile-btn btn-continue-ready btn-success nav-next-btn" id="btn-banner-next">
-                <span class="btn-led status-green pulse-green"></span>
-                <span>GO TO NEXT LEVEL</span>
+                <span>Go to Next Level</span>
                 <span class="submit-key">→</span>
               </button>
             </div>
@@ -478,17 +438,19 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
         ${testResults.map((result, idx) => `
           <div class="test-result-card ${result.passed ? 'pass' : 'fail'}">
             <div class="test-card-header">
-              <span class="test-diode ${result.passed ? 'status-green' : 'status-red'}"></span>
-              <span class="test-card-label">ASSERTION #${idx + 1}</span>
-              <span class="test-status-pill ${result.passed ? 'pass' : 'fail'}">${result.passed ? 'PASS' : 'FAIL'}</span>
+              <span class="test-status-badge ${result.passed ? 'pass' : 'fail'}">
+                ${result.passed ? '✓' : '✗'}
+              </span>
+              <span class="test-card-label">Test Case #${idx + 1}</span>
+              <span class="test-status-pill ${result.passed ? 'pass' : 'fail'}">${result.passed ? 'PASSED' : 'FAILED'}</span>
             </div>
             <div class="test-card-body">
               <div class="test-io-col">
-                <span class="io-tag">OUTPUT:</span>
+                <span class="io-tag">Your Output:</span>
                 <pre class="io-val">${escapeHtml(result.actual || '')}</pre>
               </div>
               <div class="test-io-col expected">
-                <span class="io-tag">EXPECTED:</span>
+                <span class="io-tag">Expected:</span>
                 <pre class="io-val">${escapeHtml(result.expected || '')}</pre>
               </div>
             </div>
@@ -500,12 +462,7 @@ export function renderChallengeView(container, lesson, section, chapter, callbac
 
   function renderConsole() {
     return `
-      <div class="oscilloscope-graticule-bg"></div>
       <div class="console-output-well">
-        <div class="console-term-header">
-          <span class="term-status-dot"></span>
-          <span class="term-title">TTY // STDOUT & STDERR</span>
-        </div>
         <pre class="console-term-body">${consoleOutput ? escapeHtml(consoleOutput) : 'Terminal stdout idle...'}</pre>
       </div>
     `;

@@ -53,11 +53,15 @@ function parseRoute() {
 // ---- Router ----
 async function navigate(route) {
   if (typeof route === 'string') {
-    window.location.hash = route;
+    const cleanRoute = route.startsWith('#') ? route.slice(1) : route;
     if (gameState.isSyncing()) {
       await gameState.waitForSync();
     }
-    window.location.reload();
+    if (window.location.hash.slice(1) === cleanRoute) {
+      navigate(parseRoute());
+    } else {
+      window.location.hash = cleanRoute;
+    }
     return;
   }
 

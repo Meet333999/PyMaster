@@ -1,7 +1,7 @@
 /* ==========================================================================
-   PyMaster — Skeuomorphic Right Progress Deck & Hardware Telemetry
-   Features realistic rotary dials, vertical meters, engine diagnostics,
-   and daily objectives. Zero fake bots or marketing promo cards.
+   Code Level / PyMaster — Modern Right Progress Deck & Analytics
+   Blends Code Level's course progress indicators with the reference image's
+   glassmorphic analytics cards, circular completion gauge, and daily benchmarks.
    ========================================================================== */
 
 import { icon } from './icons.js';
@@ -45,162 +45,123 @@ export function renderProgressPanel(container, state) {
   const sqlPercent = Math.min(100, Math.round((completedSQL / totalSQL) * 100));
   const dsaPercent = Math.min(100, Math.round((completedDSA / totalDSA) * 100));
 
-  // Calculate knob rotation angle (-135deg to +135deg)
-  const knobAngle = -135 + (masterPercent / 100) * 270;
+  // Circular gauge circumference for r=38
+  const circumference = 2 * Math.PI * 38;
+  const strokeDashoffset = circumference - (masterPercent / 100) * circumference;
 
   container.innerHTML = `
     <div class="progress-panel-rack">
-      <!-- ── Hardware Header Faceplate ── -->
-      <div class="rack-unit-header">
-        <div class="mounting-screw top-left" aria-hidden="true"></div>
-        <div class="rack-unit-title">
-          <span class="rack-unit-id-badge">TELEMETRY</span>
-          <span class="rack-unit-name">SYSTEM DIAGNOSTICS</span>
-        </div>
-        <div class="mounting-screw top-right" aria-hidden="true"></div>
-      </div>
-
-      <!-- ── Module 1: Rotary Master Progress Dial (Like the LEVEL knob in ref image) ── -->
-      <div class="hardware-module-card rotary-master-module">
-        <div class="module-title-bar">
-          <span class="module-tag">SYS-LVL</span>
-          <span class="module-heading">CURRICULUM MASTERY</span>
-        </div>
-
-        <div class="knob-assembly">
-          <!-- Stepped Radial Tick Marks -->
-          <div class="knob-ticks-ring" aria-hidden="true">
-            <span class="tick tick-min">0%</span>
-            <span class="tick tick-mid">50%</span>
-            <span class="tick tick-max">100%</span>
-          </div>
-
-          <!-- Rotary Knob Body -->
-          <div class="skeuo-knob knob-large" id="master-progress-knob" style="--rotation: ${knobAngle}deg;" title="Overall Mastery: ${masterPercent}%">
-            <div class="knob-face">
-              <div class="knob-notch"></div>
-            </div>
-          </div>
-
-          <!-- Readout Bezel -->
-          <div class="knob-readout-bezel">
-            <span class="knob-readout-val">${masterPercent}</span>
-            <span class="knob-readout-unit">%</span>
-          </div>
-          <div class="knob-label-sub">TOTAL COMPLETION</div>
+      <!-- ── Panel Header ── -->
+      <div class="analytics-deck-header">
+        <div class="deck-title-group">
+          <span class="deck-tag">ANALYTICS</span>
+          <h3 class="deck-heading">Course Mastery</h3>
         </div>
       </div>
 
-      <!-- ── Module 2: Channel Level Faders / VU Meters (Python, SQL, DSA) ── -->
-      <div class="hardware-module-card channel-meters-module">
-        <div class="module-title-bar">
-          <span class="module-tag">CH-METERS</span>
-          <span class="module-heading">MODULE PROGRESS</span>
+      <!-- ── Card 1: Circular Progress Mastery ── -->
+      <div class="modern-card-panel mastery-card">
+        <div class="mastery-gauge-wrap">
+          <svg class="mastery-gauge-svg" width="100" height="100" viewBox="0 0 100 100">
+            <circle class="gauge-bg" cx="50" cy="50" r="38" />
+            <circle class="gauge-fill" cx="50" cy="50" r="38"
+              style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${strokeDashoffset};" />
+          </svg>
+          <div class="mastery-gauge-center">
+            <span class="mastery-val">${masterPercent}%</span>
+          </div>
+        </div>
+        <div class="mastery-info-col">
+          <span class="mastery-subtag">TOTAL PROGRESS</span>
+          <span class="mastery-count">${totalCompleted} of ${totalLessons} Lessons</span>
+          <span class="mastery-status-pill">${masterPercent >= 100 ? 'Mastered' : 'In Progress'}</span>
+        </div>
+      </div>
+
+      <!-- ── Card 2: Course Progress (Code Level Style) ── -->
+      <div class="modern-card-panel course-progress-card">
+        <div class="card-title-bar">
+          <span class="card-section-tag">TRACKS</span>
+          <span class="card-section-heading">Curriculum Progress</span>
         </div>
 
-        <div class="channel-strips-rack">
-          <!-- Channel 1: Python -->
-          <div class="channel-strip">
-            <div class="strip-header">
-              <span class="strip-channel-name">CH 1: PYTHON</span>
-              <span class="strip-val">${completedPython}/${totalPython}</span>
+        <div class="course-track-list">
+          <!-- Python Track -->
+          <div class="course-track-item">
+            <div class="track-info-row">
+              <span class="track-name">Python</span>
+              <span class="track-numbers">${completedPython} / ${totalPython}</span>
             </div>
-            <div class="strip-vu-track">
-              <div class="strip-vu-fill" style="width: ${pythonPercent}%;"></div>
-            </div>
-            <div class="strip-scale">
-              <span>-24</span><span>-12</span><span>-6</span><span>0dB</span>
+            <div class="track-bar-track">
+              <div class="track-bar-fill" style="width: ${pythonPercent}%;"></div>
             </div>
           </div>
 
-          <!-- Channel 2: SQL -->
-          <div class="channel-strip">
-            <div class="strip-header">
-              <span class="strip-channel-name">CH 2: SQL</span>
-              <span class="strip-val">${completedSQL}/${totalSQL}</span>
+          <!-- SQL Track -->
+          <div class="course-track-item">
+            <div class="track-info-row">
+              <span class="track-name">SQL</span>
+              <span class="track-numbers">${completedSQL} / ${totalSQL}</span>
             </div>
-            <div class="strip-vu-track">
-              <div class="strip-vu-fill" style="width: ${sqlPercent}%;"></div>
-            </div>
-            <div class="strip-scale">
-              <span>-24</span><span>-12</span><span>-6</span><span>0dB</span>
+            <div class="track-bar-track">
+              <div class="track-bar-fill" style="width: ${sqlPercent}%;"></div>
             </div>
           </div>
 
-          <!-- Channel 3: DSA -->
-          <div class="channel-strip">
-            <div class="strip-header">
-              <span class="strip-channel-name">CH 3: DSA</span>
-              <span class="strip-val">${completedDSA}/${totalDSA}</span>
+          <!-- DSA Track -->
+          <div class="course-track-item">
+            <div class="track-info-row">
+              <span class="track-name">DSA</span>
+              <span class="track-numbers">${completedDSA} / ${totalDSA}</span>
             </div>
-            <div class="strip-vu-track">
-              <div class="strip-vu-fill" style="width: ${dsaPercent}%;"></div>
-            </div>
-            <div class="strip-scale">
-              <span>-24</span><span>-12</span><span>-6</span><span>0dB</span>
+            <div class="track-bar-track">
+              <div class="track-bar-fill" style="width: ${dsaPercent}%;"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ── Module 3: Daily Objectives (Real State) ── -->
-      <div class="hardware-module-card daily-goals-module">
-        <div class="module-title-bar">
-          <span class="module-tag">OBJECTIVES</span>
-          <span class="module-heading">DAILY BENCHMARKS</span>
+      <!-- ── Card 3: Daily Objectives ── -->
+      <div class="modern-card-panel daily-goals-card">
+        <div class="card-title-bar">
+          <span class="card-section-tag">OBJECTIVES</span>
+          <span class="card-section-heading">Daily Benchmarks</span>
         </div>
 
-        <div class="daily-goals-rack">
+        <div class="daily-goals-list">
           ${_renderGoalItem('perfect', 'Perfect Executions (1st Try)', dailyGoals.perfectCompletions)}
           ${_renderGoalItem('exercise', 'Challenges Solved Today', dailyGoals.exercises)}
           ${_renderGoalItem('xp', 'Target Daily XP Points', dailyGoals.xp)}
         </div>
       </div>
 
-      <!-- ── Module 4: Engine Status Diagnostics ── -->
-      <div class="hardware-module-card engine-diag-module">
-        <div class="module-title-bar">
-          <span class="module-tag">RUNTIME</span>
-          <span class="module-heading">ENGINE STATUS</span>
+      <!-- ── Card 4: Runtime Environment ── -->
+      <div class="modern-card-panel engine-diag-card">
+        <div class="card-title-bar">
+          <span class="card-section-tag">ENVIRONMENT</span>
+          <span class="card-section-heading">Runtime Engines</span>
         </div>
 
         <div class="runtime-specs-grid">
           <div class="spec-row">
-            <span class="spec-led status-green" title="Active"></span>
-            <span class="spec-name">Pyodide 0.24.1</span>
-            <span class="spec-value">WASM // OK</span>
+            <span class="engine-dot-active"></span>
+            <span class="spec-name">Pyodide Python 3.11</span>
+            <span class="spec-status-ok">WASM Ready</span>
           </div>
           <div class="spec-row">
-            <span class="spec-led status-green" title="Active"></span>
-            <span class="spec-name">SQLite3 Core</span>
-            <span class="spec-value">IN-MEMORY</span>
+            <span class="engine-dot-active"></span>
+            <span class="spec-name">SQLite In-Memory</span>
+            <span class="spec-status-ok">Active</span>
           </div>
           <div class="spec-row">
-            <span class="spec-led status-green" title="Active"></span>
+            <span class="engine-dot-active"></span>
             <span class="spec-name">State Storage</span>
-            <span class="spec-value">SYNC ACTIVE</span>
+            <span class="spec-status-ok">Synced</span>
           </div>
         </div>
       </div>
-
-      <!-- ── Rack Footplate ── -->
-      <div class="rack-unit-footer">
-        <div class="mounting-screw bottom-left" aria-hidden="true"></div>
-        <div class="rack-unit-serial">UNIT S/N: PM-9082-HW</div>
-        <div class="mounting-screw bottom-right" aria-hidden="true"></div>
-      </div>
     </div>
   `;
-
-  // Attach interactive click on master knob
-  const knob = container.querySelector('#master-progress-knob');
-  if (knob) {
-    knob.addEventListener('click', () => {
-      playSound('knob');
-      knob.classList.add('knob-spin-pulse');
-      setTimeout(() => knob.classList.remove('knob-spin-pulse'), 400);
-    });
-  }
 }
 
 /**
@@ -211,7 +172,6 @@ export function updateProgressPanel(state) {
   const panel = document.getElementById(PANEL_ID);
   if (!panel) return;
 
-  // Perform full re-render to keep all dials, meters, and goals in sync
   renderProgressPanel(panel, state);
 }
 
@@ -222,14 +182,16 @@ function _renderGoalItem(id, title, goal) {
   const percent = Math.min(100, Math.round((current / target) * 100));
 
   return `
-    <div class="hardware-goal-item ${isComplete ? 'completed' : ''}" data-goal="${id}">
+    <div class="goal-item ${isComplete ? 'completed' : ''}" data-goal="${id}">
       <div class="goal-header-row">
-        <span class="goal-led ${isComplete ? 'status-green' : 'status-idle'}"></span>
+        <span class="goal-check-circle ${isComplete ? 'done' : ''}">
+          ${isComplete ? '✓' : ''}
+        </span>
         <span class="goal-title">${title}</span>
         <span class="goal-numbers">${current}/${target}</span>
       </div>
-      <div class="goal-slot-track">
-        <div class="goal-slot-fill" style="width: ${percent}%;"></div>
+      <div class="goal-bar-track">
+        <div class="goal-bar-fill" style="width: ${percent}%;"></div>
       </div>
     </div>
   `;

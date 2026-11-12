@@ -1,7 +1,7 @@
 /* ==========================================================================
-   PyMaster — Skeuomorphic Modal & Hardware Verification Stamp
-   Presents completion verification with physical stamped plaque aesthetics
-   and mechanical tactile feedback.
+   Code Level / PyMaster — Modern Completion & Achievement Modal
+   Clean glassmorphic dialog with XP rewards, continue action,
+   and outside-click dismiss.
    ========================================================================== */
 
 import { icon } from './icons.js';
@@ -22,36 +22,28 @@ export function showCompletionModal(lessonTitle, xpEarned, onContinue) {
 
   const html = `
     <div class="modal-overlay" data-modal-overlay>
-      <div class="modal-content hardware-modal-chassis">
-        <div class="mounting-screw top-left" aria-hidden="true"></div>
-        <div class="mounting-screw top-right" aria-hidden="true"></div>
-
-        <div class="modal-header-strip">
-          <span class="modal-diode status-green pulse-green"></span>
-          <span class="modal-system-tag">RUNTIME VERIFICATION // SUCCESS</span>
+      <div class="modal-content modern-modal-card">
+        <div class="modal-spark-badge">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
         </div>
 
-        <div class="modal-plaque skeuo-inset-well">
-          <div class="plaque-stamp-badge">
-            ${icon('award', 28)}
-          </div>
-          <div class="modal-title">SPECIFICATION COMPLETED</div>
-          <div class="modal-body">${_escapeHtml(lessonTitle)}</div>
+        <div class="modal-header-group">
+          <span class="modal-kicker">LEVEL COMPLETED</span>
+          <h2 class="modal-title">${_escapeHtml(lessonTitle)}</h2>
         </div>
 
-        <div class="xp-earned-bezel">
-          <span class="xp-token-icon">${icon('zap', 16)}</span>
-          <span class="xp-token-digits">+${xpEarned} XP</span>
-          <span class="xp-token-unit">COMMITTED</span>
+        <div class="modal-xp-card">
+          <span class="xp-icon-spark">${icon('zap', 18)}</span>
+          <span class="xp-value">+${xpEarned} XP</span>
+          <span class="xp-label">Reward Added</span>
         </div>
 
         <button class="tactile-btn btn-modal-continue" data-modal-continue>
-          <span>CONTINUE EXECUTION</span>
-          <span class="key-indicator">↵</span>
+          <span>Continue</span>
+          <span class="key-indicator">→</span>
         </button>
-
-        <div class="mounting-screw bottom-left" aria-hidden="true"></div>
-        <div class="mounting-screw bottom-right" aria-hidden="true"></div>
       </div>
     </div>
   `;
@@ -68,34 +60,25 @@ export function showCompletionModal(lessonTitle, xpEarned, onContinue) {
  */
 export function showAchievementModal(title, description, achievementIcon = '') {
   playSound('pass');
-  const displayIcon = achievementIcon || icon('award', 36);
+  const displayIcon = achievementIcon || icon('award', 32);
 
   const html = `
     <div class="modal-overlay" data-modal-overlay>
-      <div class="modal-content hardware-modal-chassis">
-        <div class="mounting-screw top-left" aria-hidden="true"></div>
-        <div class="mounting-screw top-right" aria-hidden="true"></div>
-
-        <div class="modal-header-strip">
-          <span class="modal-diode status-blue pulse-blue"></span>
-          <span class="modal-system-tag">HARDWARE CERTIFICATION // UNLOCKED</span>
+      <div class="modal-content modern-modal-card">
+        <div class="modal-spark-badge trophy-accent">
+          ${displayIcon}
         </div>
 
-        <div class="modal-plaque skeuo-inset-well">
-          <div class="plaque-stamp-badge trophy-accent">
-            ${displayIcon}
-          </div>
-          <div class="modal-title">${_escapeHtml(title)}</div>
-          <div class="modal-body">${_escapeHtml(description)}</div>
+        <div class="modal-header-group">
+          <span class="modal-kicker">ACHIEVEMENT UNLOCKED</span>
+          <h2 class="modal-title">${_escapeHtml(title)}</h2>
+          <p class="modal-body">${_escapeHtml(description)}</p>
         </div>
 
         <button class="tactile-btn btn-modal-continue" data-modal-continue>
-          <span>CONFIRM RECEIPT</span>
+          <span>Awesome!</span>
           <span class="key-indicator">↵</span>
         </button>
-
-        <div class="mounting-screw bottom-left" aria-hidden="true"></div>
-        <div class="mounting-screw bottom-right" aria-hidden="true"></div>
       </div>
     </div>
   `;
@@ -148,7 +131,7 @@ function _showModal(html, onContinue) {
   const overlay = _modalRoot.querySelector('[data-modal-overlay]');
   if (overlay) {
     overlay.addEventListener('click', (e) => {
-      if (!e.target.closest('.hardware-modal-chassis')) {
+      if (!e.target.closest('.modern-modal-card')) {
         playSound('click');
         hideModal();
         // Clicking outside popup closes popup and does nothing (no navigation)

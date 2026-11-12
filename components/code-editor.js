@@ -20,48 +20,46 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
   const monacoThemeName = currentTheme === 'light' ? 'pymaster-skeuo-light' : 'pymaster-skeuo-dark';
 
   container.innerHTML = `
-    <div class="editor-container hardware-chassis-panel">
-      <!-- Hardware Rack Header Strip -->
+    <div class="editor-container modern-card-panel">
+      <!-- Editor Header Strip -->
       <div class="editor-header">
         <div class="editor-tabs-group">
           <div class="editor-tab active">
             <span class="editor-tab-icon">${editorTabIcon}</span>
-            <span class="editor-tab-text">${editorTabLabel} EXEC</span>
-            <span class="tab-active-dot"></span>
+            <span class="editor-tab-text">${editorLanguage === 'sql' ? 'solution.sql' : 'solution.py'}</span>
           </div>
         </div>
 
         <div class="editor-actions">
-          <button class="tactile-icon-btn" id="btn-copy-code" title="Copy code to clipboard">
+          <button class="tactile-icon-btn" id="btn-copy-code" title="Copy code">
             ${icon('clipboard', 14)}
           </button>
-          <button class="tactile-icon-btn" id="btn-reset-code" title="Reset buffer to template">
+          <button class="tactile-icon-btn" id="btn-reset-code" title="Reset to starter code">
             ${icon('refresh', 14)}
           </button>
         </div>
       </div>
 
-      <!-- Recessed Editor Bezel Cavity -->
+      <!-- Editor Canvas Well -->
       <div class="editor-bezel-well">
         <div class="editor-body" id="${editorId}"></div>
       </div>
 
-      <!-- Bottom Hardware Execution Toolbar -->
+      <!-- Bottom Execution Toolbar -->
       <div class="editor-toolbar">
         <div class="editor-specs-pill">
-          <span class="spec-dot pulse-blue"></span>
-          <span class="spec-txt">${editorLanguage.toUpperCase()} 3.11 WASM</span>
+          <span class="spec-dot"></span>
+          <span class="spec-txt">${editorLanguage === 'sql' ? 'SQLite 3 (WASM)' : 'Python 3.11 (WASM)'}</span>
         </div>
 
         <div class="editor-buttons-rack">
           <button class="tactile-run-btn" id="btn-run-code">
-            <span class="run-led-diode"></span>
             <span class="run-icon">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
               </svg>
             </span>
-            <span class="run-label">${editorLanguage === 'sql' ? 'EXECUTE QUERY' : 'EXECUTE CODE'}</span>
+            <span class="run-label run-btn-label">${editorLanguage === 'sql' ? 'EXECUTE SQL' : 'EXECUTE CODE'}</span>
             <span class="run-shortcut">Ctrl+↵</span>
           </button>
         </div>

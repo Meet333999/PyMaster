@@ -1,6 +1,6 @@
 // ==========================================================================
-// PyMaster — Skeuomorphic SQL Challenge Console
-// Dual-bay hardware deck: Schema & Database Harness + Query Terminal
+// Code Level / PyMaster — Modern SQL Challenge View
+// Dual-bay card layout: Relational Schema & SQL Editor + Query Harness
 // ==========================================================================
 
 import { createCodeEditor, getEditorValue } from './code-editor.js';
@@ -20,6 +20,7 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
   let hintsOpen = new Set();
   let allTestsPassed = false;
   let isPerfect = false;
+  let hasFailedAttempt = false;
 
   function cleanup() {
     document.removeEventListener('keydown', keydownHandler);
@@ -47,7 +48,7 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
       <!-- Mobile Bay Switcher (Visible only on mobile <= 768px) -->
       <div class="mobile-bay-switcher segmented-pill-container" role="tablist">
         <button class="segmented-pill-option active" id="btn-bay-spec" role="tab" aria-selected="true">
-          <span>SPECIFICATION</span>
+          <span>SCHEMA & BRIEF</span>
         </button>
         <button class="segmented-pill-option" id="btn-bay-editor" role="tab" aria-selected="false">
           <span>SQL & RUN</span>
@@ -55,72 +56,69 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
       </div>
 
       <!-- ── Left Bay: SQL Schema & Problem Spec ── -->
-      <div class="challenge-left hardware-chassis-panel" id="challenge-bay-left">
-        <div class="challenge-header hardware-header-bar">
+      <div class="challenge-left modern-card-panel" id="challenge-bay-left">
+        <div class="challenge-header modern-header-bar">
           <div class="header-nav-group">
-            <button class="tactile-btn back-btn" id="challenge-back-btn" title="Back to Matrix">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="tactile-btn back-btn" id="challenge-back-btn" title="Back to Curriculum">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
                 <polyline points="12 19 5 12 12 5"></polyline>
               </svg>
             </button>
             ${onPrevious ? `
               <button class="tactile-btn nav-prev-btn" id="header-prev-btn" title="Previous Level">
-                <span>←&nbsp;PREV</span>
+                <span>← Prev</span>
               </button>
             ` : ''}
           </div>
           <div class="challenge-header-info">
-            <span class="lesson-breadcrumb">${section.title.toUpperCase()} // ${chapter.title.toUpperCase()}</span>
+            <span class="lesson-breadcrumb">${section.title} > ${chapter.title}</span>
             <h1 class="lesson-title">${lesson.title}</h1>
           </div>
           <div class="challenge-stats">
-            <span class="hardware-pill difficulty-${lesson.difficulty}">${lesson.difficulty.toUpperCase()}</span>
-            <span class="hardware-pill xp-badge">+${lesson.xp}&nbsp;XP</span>
+            <span class="difficulty-pill difficulty-${lesson.difficulty}">${lesson.difficulty ? lesson.difficulty.toUpperCase() : 'BEGINNER'}</span>
+            <span class="xp-badge">+${lesson.xp} XP</span>
           </div>
         </div>
 
         <div class="challenge-body">
-          <div class="challenge-section skeuo-inset-well">
+          <div class="challenge-section modern-content-card">
             <div class="spec-header-row">
-              <span class="spec-tag">RELATIONAL BRIEF</span>
-              <span class="spec-id">SQL-${lesson.id.toUpperCase()}</span>
+              <span class="spec-tag">SQL Query Task</span>
+              <span class="spec-id">#${lesson.id}</span>
             </div>
             <div class="challenge-description">
               ${formatDescription(challenge.description)}
             </div>
 
             ${challenge.setupSQL ? `
-              <div class="sql-schema-preview skeuo-terminal-screen">
+              <div class="sql-schema-preview modern-code-card">
                 <div class="sql-schema-title-bar">
-                  <span class="schema-dot"></span>
-                  <span class="schema-heading">RELATIONAL DDL SCHEMA</span>
+                  <span class="terminal-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                  </span>
+                  <span class="schema-heading">Database Schema</span>
                 </div>
                 <pre class="sql-schema-code"><code>${escapeHtml(challenge.setupSQL)}</code></pre>
               </div>
             ` : ''}
-
-            <div class="spec-action-row">
-              <button class="tactile-btn explain-btn" id="btn-explain">
-                ${icon('database', 14)}
-                <span>Technical Overview</span>
-              </button>
-            </div>
           </div>
 
           <!-- Hints List -->
           <div class="hints-section">
             <div class="hints-module-header">
-              <span class="hints-tag">QUERY HINTS</span>
-              <span class="hints-count">${challenge.hints ? challenge.hints.length : 0} AVAILABLE</span>
+              <span class="hints-tag">HINTS</span>
+              <span class="hints-count">${challenge.hints ? challenge.hints.length : 0} Available</span>
             </div>
             <div class="hints-list" id="hints-list">
               ${(challenge.hints || []).map((hint, idx) => `
-                <div class="hint-item tactile-drawer ${hintsOpen.has(idx) ? 'open' : ''}" data-hint-idx="${idx}">
+                <div class="hint-item modern-content-card ${hintsOpen.has(idx) ? 'open' : ''}" data-hint-idx="${idx}">
                   <button class="hint-header">
-                    <span class="hint-pip">#0${idx + 1}</span>
-                    <span class="hint-label">SQL HINT ${idx + 1}</span>
-                    <svg class="hint-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <span class="hint-pip">0${idx + 1}</span>
+                    <span class="hint-label">Hint ${idx + 1}</span>
+                    <svg class="hint-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                       <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                   </button>
@@ -143,31 +141,32 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
       </div>
 
       <!-- ── Right Bay: SQL Editor & Test Harness ── -->
-      <div class="challenge-right hardware-chassis-panel" id="challenge-bay-right">
+      <div class="challenge-right modern-card-panel" id="challenge-bay-right">
         <div class="editor-wrapper" id="editor-wrapper"></div>
 
         <div class="test-cases-panel">
           <div class="test-tabs-rack">
             <div class="segmented-pill-container">
               <button class="segmented-pill-option ${activeTab === 'testcases' ? 'active' : ''}" id="tab-testcases">
-                <span>ROW VERIFICATION</span>
+                <span>Row Verification</span>
                 ${testResults ? (allTestsPassed
-                  ? '<span class="status-diode status-green"></span>'
-                  : '<span class="status-diode status-red"></span>')
+                  ? '<span class="status-indicator pass"></span>'
+                  : '<span class="status-indicator fail"></span>')
                 : ''}
               </button>
               <button class="segmented-pill-option ${activeTab === 'console' ? 'active' : ''}" id="tab-console">
-                <span>TERMINAL LOG</span>
+                <span>Output Log</span>
               </button>
             </div>
 
-            <div class="oscilloscope-status-readout">
-              <span class="scope-led ${isRunning ? 'pulse-blue status-blue' : (testResults ? (allTestsPassed ? 'status-green' : 'status-red') : 'status-idle')}"></span>
-              <span class="scope-state-text">${isRunning ? 'RUNNING QUERY...' : (testResults ? (allTestsPassed ? 'QUERY MATCH' : 'ROW MISMATCH') : 'STANDBY')}</span>
+            <div class="test-status-readout">
+              <span class="scope-status-pill ${isRunning ? 'running' : (testResults ? (allTestsPassed ? 'pass' : 'fail') : 'idle')}">
+                ${isRunning ? 'Running Query...' : (testResults ? (allTestsPassed ? 'Passed 100%' : 'Mismatch') : 'Ready')}
+              </span>
             </div>
           </div>
 
-          <div class="oscilloscope-screen skeuo-oscilloscope-display" id="test-content">
+          <div class="oscilloscope-screen" id="test-content">
             ${activeTab === 'testcases' ? renderTestCases() : renderConsole()}
           </div>
         </div>
@@ -180,7 +179,7 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
   const editorWrapper = container.querySelector('#editor-wrapper');
   createCodeEditor(editorWrapper, initialCode, {
     language: 'sql',
-    tabLabel: 'SQLite',
+    showAskAI: false,
     onChange: (code) => {
       gameState.saveCode(lesson.id, code);
     }
@@ -189,7 +188,7 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
   function keydownHandler(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
-      handleRunCode();
+      handleRunSQL();
     }
   }
 
@@ -218,10 +217,9 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
       updateTabs();
     });
 
-    container.querySelector('#btn-run-code')?.addEventListener('click', handleRunCode);
-    container.querySelector('#btn-explain')?.addEventListener('click', handleExplain);
+    container.querySelector('#btn-run-code')?.addEventListener('click', handleRunSQL);
 
-    // Hints
+    // Hints accordion
     container.querySelectorAll('.hint-header').forEach(btn => {
       btn.addEventListener('click', () => {
         playSound('click');
@@ -265,109 +263,75 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
     bayEditorBtn?.addEventListener('click', () => setMobileBay('editor'));
     mobileToEditorBtn?.addEventListener('click', () => setMobileBay('editor'));
 
-    // Keyboard shortcut
+    // Keyboard shortcut: Ctrl+Enter
     document.removeEventListener('keydown', keydownHandler);
     document.addEventListener('keydown', keydownHandler);
   }
 
-  async function handleRunCode() {
+  async function handleRunSQL() {
     if (isRunning) return;
 
-    const runBtn = container.querySelector('#btn-run-code');
-    if (!runBtn) return;
+    if (!isSQLReady()) {
+      alert('SQL database engine is initializing. Please wait a moment...');
+      return;
+    }
 
-    playSound('switch');
     isRunning = true;
-    runBtn.classList.add('running');
-    const runLed = runBtn.querySelector('.run-led-diode');
-    if (runLed) runLed.className = 'run-led-diode pulse-blue status-blue';
+    updateRunButton(true);
+    playSound('compile');
 
-    updateTabs();
-
-    const code = getEditorValue();
+    const userCode = getEditorValue();
+    gameState.saveCode(lesson.id, userCode);
 
     try {
-      if (!isSQLReady()) {
-        consoleOutput = '[ENGINE ERROR] SQLite WebAssembly runtime initializing... please wait.';
-        activeTab = 'console';
-        updateTabs();
-        return;
+      // 1. Run user query in SQLite WASM with challenge setup schema
+      const runResult = await runSQL(challenge.setupSQL || '', userCode);
+      consoleOutput = runResult.stdout || '';
+      if (runResult.error) {
+        consoleOutput += (consoleOutput ? '\n' : '') + runResult.error;
       }
 
-      let actualOutputs = [];
-      let firstError = null;
-      let firstStdout = '';
-
-      if (challenge.testCases && challenge.testCases.length > 0) {
-        for (let i = 0; i < challenge.testCases.length; i++) {
-          const tc = challenge.testCases[i];
-          const setupSql = challenge.setupSQL || '';
-          const fullQuery = setupSql ? `${setupSql}\n${code}` : code;
-          const tcResult = await runSQL(fullQuery);
-          if (i === 0) {
-            firstError = tcResult.error;
-            firstStdout = tcResult.stdout;
-          }
-          if (tcResult.error) {
-            firstError = tcResult.error;
-            firstStdout = tcResult.stdout;
-            break;
-          }
-          actualOutputs.push(tcResult.stdout);
-        }
-      } else {
-        const setupSql = challenge.setupSQL || '';
-        const fullQuery = setupSql ? `${setupSql}\n${code}` : code;
-        const tcResult = await runSQL(fullQuery);
-        firstError = tcResult.error;
-        firstStdout = tcResult.stdout;
-        actualOutputs.push(tcResult.stdout);
+      // 2. Validate against challenge test cases
+      const validationResults = await runAllTests(userCode, challenge.testCases, 'sql', challenge.setupSQL);
+      testResults = validationResults;
+      allTestsPassed = validationResults.every(r => r.passed);
+      if (!allTestsPassed) {
+        hasFailedAttempt = true;
       }
+      isPerfect = !hasFailedAttempt && !gameState.isLessonCompleted(lesson.id) && allTestsPassed;
 
-      consoleOutput = firstError || firstStdout;
-
-      if (!firstError) {
-        testResults = runAllTests(challenge.testCases, actualOutputs);
-        allTestsPassed = testResults.every(t => t.passed);
-        activeTab = 'testcases';
-
-        if (allTestsPassed) {
-          playSound('pass');
-          isPerfect = !hintsOpen.size;
-          // Mark completed in state immediately, but do NOT pop modal automatically
-          gameState.completeLesson(lesson.id, lesson.xp, isPerfect);
-        } else {
-          playSound('fail');
-        }
+      // 3. Audio & state feedback
+      if (allTestsPassed) {
+        playSound('pass');
       } else {
-        testResults = null;
-        allTestsPassed = false;
-        activeTab = 'console';
         playSound('fail');
       }
+
+      activeTab = 'testcases';
+      updateTabs();
+
     } catch (err) {
-      consoleOutput = `Unhandled SQL Exception: ${err.message}`;
-      testResults = null;
-      allTestsPassed = false;
+      consoleOutput = `SQL Execution Error: ${err.message}`;
       activeTab = 'console';
-      playSound('fail');
+      updateTabs();
     } finally {
       isRunning = false;
-      if (runBtn) {
-        runBtn.classList.remove('running');
-        const led = runBtn.querySelector('.run-led-diode');
-        if (led) led.className = 'run-led-diode';
-      }
-      updateTabs();
-      bindPassedActionEvents();
+      updateRunButton(false);
     }
   }
 
-  function handleExplain() {
-    playSound('click');
-    consoleOutput = `[SQL TECHNICAL SPECIFICATION]\n${challenge.description}\n\n[SCHEMA DEFINITION]\n${challenge.setupSQL || 'No DDL setup provided'}`;
-    activeTab = 'console';
-    updateTabs();
+  function updateRunButton(running) {
+    const runBtn = container.querySelector('#btn-run-code');
+    if (!runBtn) return;
+    runBtn.disabled = running;
+    const label = runBtn.querySelector('.run-btn-label');
+    if (label) {
+      label.textContent = running ? 'RUNNING...' : 'EXECUTE SQL';
+    }
+    if (!running) {
+      updateToolbarNavigation();
+      bindPassedActionEvents();
+    }
   }
 
   function updateTabs() {
@@ -378,18 +342,17 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
       tabConsole.classList.toggle('active', activeTab === 'console');
     }
 
-    const scopeState = container.querySelector('.scope-state-text');
-    const scopeLed = container.querySelector('.scope-led');
-    if (scopeState && scopeLed) {
+    const scopeState = container.querySelector('.scope-status-pill');
+    if (scopeState) {
       if (isRunning) {
-        scopeState.textContent = 'RUNNING QUERY...';
-        scopeLed.className = 'scope-led status-blue pulse-blue';
+        scopeState.textContent = 'Running Query...';
+        scopeState.className = 'scope-status-pill running';
       } else if (testResults) {
-        scopeState.textContent = allTestsPassed ? 'QUERY MATCH' : 'ROW MISMATCH';
-        scopeLed.className = `scope-led ${allTestsPassed ? 'status-green' : 'status-red'}`;
+        scopeState.textContent = allTestsPassed ? 'Passed 100%' : 'Mismatch';
+        scopeState.className = `scope-status-pill ${allTestsPassed ? 'pass' : 'fail'}`;
       } else {
-        scopeState.textContent = 'STANDBY';
-        scopeLed.className = 'scope-led status-idle';
+        scopeState.textContent = 'Ready';
+        scopeState.className = 'scope-status-pill idle';
       }
     }
 
@@ -417,12 +380,11 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
       navRack.innerHTML = `
         ${onPrevious ? `
           <button class="tactile-btn btn-secondary nav-btn-prev" id="btn-toolbar-prev" title="Previous Level">
-            <span>← PREVIOUS</span>
+            <span>← Previous</span>
           </button>
         ` : ''}
         <button class="tactile-btn btn-continue-ready btn-success nav-btn-next" id="btn-toolbar-next" title="Advance to Next Level">
-          <span class="btn-led status-green pulse-green"></span>
-          <span>GO TO NEXT LEVEL</span>
+          <span>Go to Next Level</span>
           <span class="submit-key">→</span>
         </button>
       `;
@@ -456,32 +418,28 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
   function renderTestCases() {
     if (!testResults) {
       return `
-        <div class="oscilloscope-graticule-bg"></div>
         <div class="test-placeholder">
-          <div class="scope-crosshairs"></div>
-          <span class="placeholder-caption">RELATIONAL HARNESS READY // EXECUTE QUERY TO VERIFY ROWS</span>
+          <span class="placeholder-caption">Click Execute SQL or press Ctrl+Enter to test your query</span>
         </div>
       `;
     }
 
     return `
-      <div class="oscilloscope-graticule-bg"></div>
       <div class="test-results-rack">
         ${allTestsPassed ? `
           <div class="test-suite-success-strip">
             <div class="success-strip-message">
-              <span class="status-diode status-green pulse-green"></span>
-              <span class="success-strip-txt">ALL QUERY ASSERTIONS VERIFIED (PASS: 100%)</span>
+              <span class="status-indicator pass"></span>
+              <span class="success-strip-txt">All SQL query requirements met (Pass: 100%)</span>
             </div>
             <div class="success-strip-actions">
               ${onPrevious ? `
                 <button class="tactile-btn btn-secondary nav-prev-btn" id="btn-banner-prev">
-                  <span>← PREVIOUS</span>
+                  <span>← Previous</span>
                 </button>
               ` : ''}
               <button class="tactile-btn btn-continue-ready btn-success nav-next-btn" id="btn-banner-next">
-                <span class="btn-led status-green pulse-green"></span>
-                <span>GO TO NEXT LEVEL</span>
+                <span>Go to Next Level</span>
                 <span class="submit-key">→</span>
               </button>
             </div>
@@ -491,17 +449,19 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
         ${testResults.map((result, idx) => `
           <div class="test-result-card ${result.passed ? 'pass' : 'fail'}">
             <div class="test-card-header">
-              <span class="test-diode ${result.passed ? 'status-green' : 'status-red'}"></span>
-              <span class="test-card-label">RESULT SET #${idx + 1}</span>
-              <span class="test-status-pill ${result.passed ? 'pass' : 'fail'}">${result.passed ? 'PASS' : 'FAIL'}</span>
+              <span class="test-status-badge ${result.passed ? 'pass' : 'fail'}">
+                ${result.passed ? '✓' : '✗'}
+              </span>
+              <span class="test-card-label">Test Case #${idx + 1}</span>
+              <span class="test-status-pill ${result.passed ? 'pass' : 'fail'}">${result.passed ? 'PASSED' : 'FAILED'}</span>
             </div>
             <div class="test-card-body">
               <div class="test-io-col">
-                <span class="io-tag">OUTPUT:</span>
+                <span class="io-tag">Output Rows:</span>
                 <pre class="io-val">${escapeHtml(result.actual || '')}</pre>
               </div>
               <div class="test-io-col expected">
-                <span class="io-tag">EXPECTED:</span>
+                <span class="io-tag">Expected Rows:</span>
                 <pre class="io-val">${escapeHtml(result.expected || '')}</pre>
               </div>
             </div>
@@ -513,12 +473,7 @@ export function renderSQLChallengeView(container, lesson, section, chapter, call
 
   function renderConsole() {
     return `
-      <div class="oscilloscope-graticule-bg"></div>
       <div class="console-output-well">
-        <div class="console-term-header">
-          <span class="term-status-dot"></span>
-          <span class="term-title">SQL RELATIONAL TERMINAL LOG</span>
-        </div>
         <pre class="console-term-body">${consoleOutput ? escapeHtml(consoleOutput) : 'SQL stdout idle...'}</pre>
       </div>
     `;

@@ -1,6 +1,6 @@
 // ==========================================================================
-// PyMaster — Skeuomorphic Standalone Quiz Terminal
-// Hardware evaluation console with mechanical push keys and verification LEDs
+// Code Level / PyMaster — Modern Standalone Quiz View
+// Evaluation card deck with clean question cards, numbered options & CTA
 // ==========================================================================
 
 import { icon } from './icons.js';
@@ -45,72 +45,63 @@ export function renderQuizView(container, lesson, section, chapter, callbacks) {
   function render() {
     container.innerHTML = `
       <div class="quiz-page-container">
-        <!-- Hardware Header Bar -->
-        <div class="quiz-page-header hardware-header-bar">
+        <!-- Header Bar -->
+        <div class="quiz-page-header modern-header-bar">
           <div class="header-nav-group">
-            <button class="tactile-btn back-btn" id="quiz-back-btn" title="Back to Matrix">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="tactile-btn back-btn" id="quiz-back-btn" title="Back to Curriculum">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
                 <polyline points="12 19 5 12 12 5"></polyline>
               </svg>
             </button>
             ${onPrevious ? `
               <button class="tactile-btn nav-prev-btn" id="quiz-header-prev-btn" title="Previous Level">
-                <span>←&nbsp;PREV</span>
+                <span>← Prev</span>
               </button>
             ` : ''}
           </div>
           <div class="quiz-page-header-info">
-            <span class="lesson-breadcrumb">${section.title.toUpperCase()} // ${chapter.title.toUpperCase()}</span>
+            <span class="lesson-breadcrumb">${section.title} > ${chapter.title}</span>
             <h1 class="lesson-title">${lesson.title}</h1>
           </div>
-          <span class="hardware-pill xp-badge">+${lesson.xp}&nbsp;XP</span>
+          <span class="xp-badge">+${lesson.xp} XP</span>
         </div>
 
-        <!-- Standalone Hardware Quiz Chassis -->
+        <!-- Standalone Quiz Card -->
         <div class="quiz-page-body">
-          <div class="quiz-container standalone hardware-chassis-panel">
-            <div class="quiz-console-strip">
-              <div class="quiz-channel-tag">EVAL-UNIT 01</div>
+          <div class="quiz-container standalone modern-card-panel">
+            <div class="quiz-panel-header">
+              <div class="quiz-header-tag">KNOWLEDGE CHECK</div>
               <div class="quiz-progress-track">
                 <div class="quiz-progress-fill" style="width: ${quizAnswered ? '100' : '50'}%"></div>
               </div>
-              <div class="meter-channel-tag">${quizAnswered ? 'COMPLETE' : 'ACTIVE'}</div>
+              <span class="quiz-step-tag">${quizAnswered ? 'Completed' : 'Active'}</span>
             </div>
 
-            <div class="quiz-question-card skeuo-inset-well">
-              <div class="question-header-row">
-                <span class="question-badge">INTERROGATION</span>
-                <span class="question-id">VERIFY KNOWLEDGE</span>
-              </div>
+            <div class="quiz-question-card modern-content-card">
               <p class="quiz-question">${quiz.question}</p>
 
               <div class="quiz-options">
                 ${quiz.options.map((opt, idx) => {
                   let statusClass = '';
-                  let diodeClass = 'status-idle';
                   if (selectedOption === idx) {
                     statusClass = 'selected';
-                    diodeClass = 'status-blue';
                   }
                   if (quizAnswered) {
                     if (idx === quiz.correct) {
                       statusClass = 'correct';
-                      diodeClass = 'status-green';
                     } else if (idx === selectedOption) {
                       statusClass = 'incorrect';
-                      diodeClass = 'status-red';
                     }
                   }
 
                   return `
-                    <div class="quiz-option tactile-option ${statusClass}"
+                    <div class="quiz-option ${statusClass}"
                          data-index="${idx}"
                          role="button"
                          tabindex="0">
                       <span class="quiz-option-number">0${idx + 1}</span>
                       <span class="quiz-option-text">${opt}</span>
-                      <span class="option-status-led ${diodeClass}"></span>
                     </div>
                   `;
                 }).join('')}
@@ -119,8 +110,8 @@ export function renderQuizView(container, lesson, section, chapter, callbacks) {
               ${quizAnswered ? `
                 <div class="quiz-explanation visible">
                   <div class="explanation-tag">
-                    <span class="explanation-diode ${selectedOption === quiz.correct ? 'status-green' : 'status-red'}"></span>
-                    <span>${selectedOption === quiz.correct ? 'ASSERTION VERIFIED' : 'LOGIC CONFLICT DETECTED'}</span>
+                    <span class="explanation-indicator ${selectedOption === quiz.correct ? 'pass' : 'fail'}"></span>
+                    <span>${selectedOption === quiz.correct ? 'Answer Verified' : 'Incorrect — Review Concept'}</span>
                   </div>
                   <p>${quiz.explanation || ''}</p>
                 </div>
@@ -131,19 +122,18 @@ export function renderQuizView(container, lesson, section, chapter, callbacks) {
               <div class="quiz-post-actions">
                 ${onPrevious ? `
                   <button class="tactile-btn btn-secondary nav-prev-btn" id="quiz-btn-prev">
-                    <span>← PREVIOUS</span>
+                    <span>← Previous</span>
                   </button>
                 ` : ''}
                 <button class="tactile-btn submit-btn btn-continue-ready btn-success" id="quiz-submit-btn">
-                  <span class="btn-led status-green pulse-green"></span>
-                  <span>CONTINUE TO NEXT LEVEL</span>
+                  <span>Continue to Next Level</span>
                   <span class="submit-key">→</span>
                 </button>
               </div>
             ` : `
               <button class="tactile-btn submit-btn" id="quiz-submit-btn"
                       ${selectedOption === null ? 'disabled' : ''}>
-                <span>EXECUTE VERIFICATION</span>
+                <span>Submit Answer</span>
                 <span class="submit-key">↵</span>
               </button>
             `}
@@ -171,21 +161,24 @@ export function renderQuizView(container, lesson, section, chapter, callbacks) {
       handlePrevious();
     });
 
-    container.querySelectorAll('.quiz-option').forEach(opt => {
+    const options = container.querySelectorAll('.quiz-option');
+    options.forEach(opt => {
       opt.addEventListener('click', () => {
         if (quizAnswered) return;
         playSound('click');
-        selectedOption = parseInt(opt.dataset.index);
+        selectedOption = parseInt(opt.dataset.index, 10);
         render();
       });
     });
 
-    container.querySelector('#quiz-submit-btn')?.addEventListener('click', () => {
+    const submitBtn = container.querySelector('#quiz-submit-btn');
+    submitBtn?.addEventListener('click', () => {
       if (quizAnswered) {
         playSound('click');
         handleComplete();
         return;
       }
+
       if (selectedOption === null) return;
       quizAnswered = true;
 

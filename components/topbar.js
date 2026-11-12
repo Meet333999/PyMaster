@@ -1,7 +1,7 @@
 /* ==========================================================================
-   PyMaster — Skeuomorphic Topbar Console Header
-   Displays physical hardware counters, rocker switches (Theme, Sound),
-   and status LEDs with mechanical tactile feedback.
+   Code Level / PyMaster — Modern Topbar Header
+   Clean navigation header with real-time stats (Streak, XP, Gems),
+   theme switcher (Light / Dark mode), and user profile badge.
    ========================================================================== */
 
 import { icon } from './icons.js';
@@ -40,87 +40,75 @@ export function renderTopbar(container, state) {
 
   container.id = TOPBAR_ID;
   container.innerHTML = `
-    <!-- Left Rack Header: Hardware Identifier & Mobile Menu Toggle -->
+    <!-- Left Group: Mobile Menu & Current Status -->
     <div class="topbar-left-group">
-      <button class="tactile-btn mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Routing Matrix" title="Toggle Routing Matrix">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <button class="tactile-btn mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Navigation" title="Toggle Navigation">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
       </button>
 
-      <div class="topbar-unit-id" title="Hardware Diagnostic Console">
-        <div class="unit-status-led" title="Power: Online"></div>
+      <div class="topbar-unit-id" title="Code Level Runtime">
+        <div class="unit-status-dot" title="Status: Online"></div>
         <div class="unit-label-group">
-          <span class="unit-brand">PYMASTER</span>
-          <span class="unit-model">SYS-9000 // CORE RUNTIME</span>
+          <span class="unit-brand">CODE LEVEL</span>
+          <span class="unit-model">INTERACTIVE ENVIRONMENT</span>
         </div>
       </div>
     </div>
 
-    <!-- Center / Right: Hardware Rocker Switches & Recessed Meters -->
+    <!-- Center / Right: Stats & Controls -->
     <div class="topbar-controls">
-      <!-- Theme Rocker Switch (ADV style from reference image) -->
-      <div class="hardware-switch-group" title="Toggle Light / Dark Mode">
-        <span class="hardware-switch-label">THEME</span>
-        <button class="rocker-switch ${currentTheme === 'light' ? 'on' : ''}" id="topbar-theme-toggle" aria-label="Toggle Theme">
-          <span class="rocker-track">
-            <span class="rocker-thumb"></span>
-          </span>
-          <span class="rocker-state-label">${currentTheme === 'light' ? 'LIGHT' : 'DARK'}</span>
-        </button>
+      <!-- Streak Pill -->
+      <div class="topbar-stat-pill streak-pill" title="${streak} day learning streak">
+        <span class="stat-icon-wrapper flame-icon">${icon('flame', 15)}</span>
+        <span class="stat-val" data-stat="streak">${streak}</span>
+        <span class="stat-unit">d</span>
       </div>
 
-      <!-- Sound FX Rocker Switch -->
-      <div class="hardware-switch-group" title="Toggle Mechanical Audio Feedback">
-        <span class="hardware-switch-label">HAPTICS</span>
-        <button class="rocker-switch ${soundActive ? 'on' : ''}" id="topbar-sound-toggle" aria-label="Toggle Haptics Audio">
-          <span class="rocker-track">
-            <span class="rocker-thumb"></span>
-          </span>
-          <span class="rocker-state-label">${soundActive ? 'ON' : 'MUTE'}</span>
-        </button>
+      <!-- XP Pill -->
+      <div class="topbar-stat-pill xp-pill" title="${xp} XP earned">
+        <span class="stat-icon-wrapper xp-icon">${icon('gem', 15)}</span>
+        <span class="stat-val" data-stat="xp">${_formatNumber(xp)}</span>
+        <span class="stat-unit">XP</span>
       </div>
 
-      <!-- Vertical Hardware Separator Screw -->
-      <div class="rack-screw-separator" aria-hidden="true"></div>
-
-      <!-- Hardware Digital Counter: Streak -->
-      <div class="topbar-meter-bezel" title="Consecutive day streak">
-        <div class="meter-channel-tag">STRK</div>
-        <div class="meter-lcd-display">
-          <span class="meter-led-indicator flame-led">${icon('flame', 14)}</span>
-          <span class="meter-lcd-digits" data-stat="streak">${streak}</span>
-          <span class="meter-lcd-unit">D</span>
-        </div>
+      <!-- Gems Pill -->
+      <div class="topbar-stat-pill gems-pill" title="${gems} Gems">
+        <span class="stat-icon-wrapper gems-icon">${icon('coins', 15)}</span>
+        <span class="stat-val" data-stat="gems">${_formatNumber(gems)}</span>
       </div>
 
-      <!-- Hardware Digital Counter: Total XP -->
-      <div class="topbar-meter-bezel" title="Total XP points accumulated">
-        <div class="meter-channel-tag">XP</div>
-        <div class="meter-lcd-display">
-          <span class="meter-led-indicator gem-led">${icon('gem', 14)}</span>
-          <span class="meter-lcd-digits" data-stat="xp">${_formatNumber(xp)}</span>
-          <span class="meter-lcd-unit">PTS</span>
-        </div>
-      </div>
+      <!-- Theme Switcher Pill -->
+      <button class="topbar-action-pill theme-toggle-btn" id="topbar-theme-toggle" aria-label="Toggle Light / Dark Mode" title="Toggle Theme">
+        <span class="theme-pill-icon">
+          ${currentTheme === 'light'
+            ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
+            : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
+          }
+        </span>
+        <span class="theme-pill-label">${currentTheme === 'light' ? 'Light' : 'Dark'}</span>
+      </button>
 
-      <!-- Hardware Digital Counter: Gems -->
-      <div class="topbar-meter-bezel" title="Earned Gems balance">
-        <div class="meter-channel-tag">GEMS</div>
-        <div class="meter-lcd-display">
-          <span class="meter-led-indicator gems-led">${icon('coins', 14)}</span>
-          <span class="meter-lcd-digits" data-stat="gems">${_formatNumber(gems)}</span>
-        </div>
-      </div>
+      <!-- Sound FX Toggle Pill -->
+      <button class="topbar-action-pill sound-toggle-btn ${soundActive ? 'active' : ''}" id="topbar-sound-toggle" aria-label="Toggle Audio" title="Toggle Audio FX">
+        <span class="sound-pill-icon">
+          ${soundActive
+            ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`
+            : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`
+          }
+        </span>
+        <span class="sound-pill-label">${soundActive ? 'Audio' : 'Mute'}</span>
+      </button>
 
-      <!-- Recessed Circular Avatar Dial -->
-      <button class="topbar-avatar-dial" title="User Profile (${username})" data-stat="avatar" aria-label="Profile">
+      <!-- Profile Avatar Dial -->
+      <a href="#profile" class="topbar-avatar-dial" title="Profile: ${username}" data-stat="avatar" aria-label="Profile">
         <div class="avatar-dial-bezel">
           ${avatarHTML}
         </div>
-      </button>
+      </a>
     </div>
   `;
 
@@ -129,9 +117,7 @@ export function renderTopbar(container, state) {
   themeToggle?.addEventListener('click', () => {
     playSound('switch');
     const newTheme = toggleTheme();
-    themeToggle.classList.toggle('on', newTheme === 'light');
-    const label = themeToggle.querySelector('.rocker-state-label');
-    if (label) label.textContent = newTheme === 'light' ? 'LIGHT' : 'DARK';
+    renderTopbar(container, state);
   });
 
   const mobileMenuToggle = container.querySelector('#mobile-menu-toggle');
@@ -148,9 +134,8 @@ export function renderTopbar(container, state) {
   const soundToggle = container.querySelector('#topbar-sound-toggle');
   soundToggle?.addEventListener('click', () => {
     const isNowOn = toggleSound();
-    soundToggle.classList.toggle('on', isNowOn);
-    const label = soundToggle.querySelector('.rocker-state-label');
-    if (label) label.textContent = isNowOn ? 'ON' : 'MUTE';
+    soundToggle.classList.toggle('active', isNowOn);
+    renderTopbar(container, state);
   });
 }
 
