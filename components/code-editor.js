@@ -106,6 +106,8 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
       },
     });
 
+    window.__pymaster_editor = editorInstance;
+
     if (typeof ResizeObserver !== 'undefined') {
       const resizeObserver = new ResizeObserver(() => {
         if (editorInstance) {

@@ -1,7 +1,7 @@
 /* ==========================================================================
-   PyMaster — Skeuomorphic Hardware Console Design System
-   Dual Dark & Light Mode // Strict Black & White with Red/Green/Blue Indicators
-   Modeled after precision audio laboratory instrumentation and tactile rack consoles.
+   PyMaster — Modern Dual-Theme Design System
+   Dual Dark & Light Mode // Navy, Warm Cream & Vibrant Coral Accents
+   Card-based architecture with floating frosted navigation & analytics decks
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -14,114 +14,128 @@
   --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace;
 
   /* Layout */
-  --sidebar-width: 220px;
-  --topbar-height: 56px;
+  --sidebar-width: 224px;
+  --topbar-height: 58px;
   --right-panel-width: 320px;
-  --panel-radius: 8px;
-  --bezel-radius: 6px;
-  --pill-radius: 100px;
+  --panel-radius: 20px;
+  --bezel-radius: 14px;
+  --pill-radius: 9999px;
 
-  /* Indicator Colors (Strict Red, Green, Blue ONLY) */
+  /* Indicator & Status Colors */
   --led-green: #10b981;
-  --led-green-glow: rgba(16, 185, 129, 0.45);
-  --led-green-bright: #22c55e;
+  --led-green-glow: rgba(16, 185, 129, 0.35);
+  --led-green-bright: #34d399;
 
   --led-red: #ef4444;
-  --led-red-glow: rgba(239, 68, 68, 0.45);
+  --led-red-glow: rgba(239, 68, 68, 0.35);
   --led-red-bright: #f87171;
 
-  --led-blue: #2563eb;
-  --led-blue-glow: rgba(37, 99, 235, 0.45);
+  --led-blue: #3b82f6;
+  --led-blue-glow: rgba(59, 130, 246, 0.35);
   --led-blue-bright: #38bdf8;
 
-  --led-idle: #505664;
+  --led-idle: rgba(148, 163, 184, 0.4);
 
   /* Transition timing */
-  --ease-tactile: cubic-bezier(0.2, 0.8, 0.25, 1);
+  --ease-tactile: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-snap: cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Dark Theme (Matte Obsidian Rack Chassis)
+   Dark Theme (Deep Midnight Navy with Cream Typography & Coral Accents)
    ────────────────────────────────────────────────────────────────────────── */
 [data-theme="dark"],
 :root:not([data-theme="light"]) {
-  /* Chassis & Surfaces */
-  --chassis-bg: #111316;
-  --panel-bg: #16191f;
-  --panel-raised: linear-gradient(145deg, #20242c, #15181d);
-  --panel-inset: #0c0d10;
-  --panel-bezel: #1c2027;
+  /* Canvas & Card Surfaces */
+  --chassis-bg: #080d1a;
+  --panel-bg: #0f172a;
+  --panel-raised: #141e33;
+  --panel-inset: #0b1222;
+  --panel-bezel: #162238;
+
+  /* Coral Accent (Strictly for action CTAs, key status highlights, active diodes) */
+  --color-coral: #ff6b6b;
+  --color-coral-hover: #ff5252;
+  --color-coral-glow: rgba(255, 107, 107, 0.35);
+  --color-coral-bg: rgba(255, 107, 107, 0.12);
 
   /* Borders & Dividers */
-  --chassis-border: #232731;
-  --groove-border: #0a0b0e;
-  --bevel-light: rgba(255, 255, 255, 0.06);
-  --bevel-dark: rgba(0, 0, 0, 0.7);
+  --chassis-border: rgba(255, 255, 255, 0.08);
+  --groove-border: rgba(255, 255, 255, 0.05);
+  --bevel-light: rgba(255, 255, 255, 0.05);
+  --bevel-dark: rgba(0, 0, 0, 0.3);
 
   /* Typography */
-  --text-primary: #f0f3f6;
-  --text-secondary: #9aa2b0;
-  --text-muted: #586170;
+  --text-primary: #f8f6f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
   --text-accent: #ffffff;
+  --text-cream: #f8f6f0;
 
-  /* Hardware Shadows */
-  --shadow-raised: 5px 5px 12px rgba(0, 0, 0, 0.6), -3px -3px 8px rgba(255, 255, 255, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  --shadow-raised-sm: 3px 3px 7px rgba(0, 0, 0, 0.5), -2px -2px 5px rgba(255, 255, 255, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  --shadow-inset: inset 2px 2px 5px rgba(0, 0, 0, 0.75), inset -1px -1px 3px rgba(255, 255, 255, 0.03);
-  --shadow-inset-deep: inset 3px 3px 8px rgba(0, 0, 0, 0.9), inset -1px -1px 2px rgba(255, 255, 255, 0.04);
-  --shadow-knob: 6px 8px 16px rgba(0, 0, 0, 0.75), -2px -2px 6px rgba(255, 255, 255, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -2px 3px rgba(0, 0, 0, 0.6);
+  /* Modern Ambient Shadows (Zero Heavy Extruded Lift-up Shadows) */
+  --shadow-raised: 0 4px 20px -2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-raised-sm: 0 2px 10px -1px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-inset-deep: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+  --shadow-knob: 0 6px 20px -2px rgba(0, 0, 0, 0.5);
 
   /* Display Screens */
-  --screen-bg: #090a0d;
-  --screen-border: #1a1d24;
-  --screen-grid: rgba(255, 255, 255, 0.04);
-  --screen-text: #f0f3f6;
+  --screen-bg: #0a0e1a;
+  --screen-border: rgba(255, 255, 255, 0.08);
+  --screen-grid: rgba(255, 255, 255, 0.03);
+  --screen-text: #f8f6f0;
 
   /* Screws & Trim */
-  --screw-head: #282c35;
-  --screw-slot: #0a0b0d;
+  --screw-head: transparent;
+  --screw-slot: transparent;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Light Theme (Matte Studio White Chassis — Direct match to Reference Photo)
+   Light Theme (Navy, Warm Cream Canvas & Coral Highlights)
    ────────────────────────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  /* Chassis & Surfaces */
-  --chassis-bg: #edf1f6;
-  --panel-bg: #f8fafc;
-  --panel-raised: linear-gradient(145deg, #ffffff, #e6ebf2);
-  --panel-inset: #e0e5ed;
-  --panel-bezel: #e8ecf2;
+  /* Canvas & Card Surfaces */
+  --chassis-bg: #faf7f2;
+  --panel-bg: #ffffff;
+  --panel-raised: #ffffff;
+  --panel-inset: #f3eee5;
+  --panel-bezel: #ede7dc;
+
+  /* Coral Accent (Strictly for action CTAs, key status highlights, active diodes) */
+  --color-coral: #ff5a5f;
+  --color-coral-hover: #e84e53;
+  --color-coral-glow: rgba(255, 90, 95, 0.3);
+  --color-coral-bg: rgba(255, 90, 95, 0.1);
 
   /* Borders & Dividers */
-  --chassis-border: #d0d6e2;
-  --groove-border: #cbd3e0;
-  --bevel-light: rgba(255, 255, 255, 0.95);
-  --bevel-dark: rgba(166, 175, 195, 0.45);
+  --chassis-border: rgba(11, 25, 44, 0.08);
+  --groove-border: rgba(11, 25, 44, 0.06);
+  --bevel-light: rgba(255, 255, 255, 0.85);
+  --bevel-dark: rgba(11, 25, 44, 0.04);
 
   /* Typography */
-  --text-primary: #11141a;
-  --text-secondary: #576070;
-  --text-muted: #848f9f;
-  --text-accent: #000000;
+  --text-primary: #0b192c;
+  --text-secondary: #475569;
+  --text-muted: #788699;
+  --text-accent: #0b192c;
+  --text-cream: #faf7f2;
 
-  /* Hardware Shadows */
-  --shadow-raised: 6px 6px 14px rgba(166, 175, 195, 0.4), -6px -6px 14px rgba(255, 255, 255, 0.95), inset 0 1px 0 #ffffff;
-  --shadow-raised-sm: 3px 3px 8px rgba(166, 175, 195, 0.35), -3px -3px 8px rgba(255, 255, 255, 0.95), inset 0 1px 0 #ffffff;
-  --shadow-inset: inset 2px 2px 5px rgba(166, 175, 195, 0.45), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
-  --shadow-inset-deep: inset 3px 3px 7px rgba(166, 175, 195, 0.6), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
-  --shadow-knob: 7px 9px 18px rgba(166, 175, 195, 0.5), -5px -5px 12px rgba(255, 255, 255, 0.95), inset 0 1px 2px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(166, 175, 195, 0.35);
+  /* Modern Ambient Shadows (Zero Heavy Extruded Lift-up Shadows) */
+  --shadow-raised: 0 4px 20px -2px rgba(11, 25, 44, 0.05), 0 1px 3px rgba(11, 25, 44, 0.04);
+  --shadow-raised-sm: 0 2px 10px -1px rgba(11, 25, 44, 0.05), 0 1px 2px rgba(11, 25, 44, 0.03);
+  --shadow-inset: inset 0 1px 3px rgba(11, 25, 44, 0.05);
+  --shadow-inset-deep: inset 0 2px 5px rgba(11, 25, 44, 0.08);
+  --shadow-knob: 0 6px 20px -2px rgba(11, 25, 44, 0.08);
 
   /* Display Screens */
-  --screen-bg: #e5ebf3;
-  --screen-border: #cbd3e0;
-  --screen-grid: rgba(0, 0, 0, 0.05);
-  --screen-text: #11141a;
+  --screen-bg: #ffffff;
+  --screen-border: rgba(11, 25, 44, 0.08);
+  --screen-grid: rgba(11, 25, 44, 0.03);
+  --screen-text: #0b192c;
 
   /* Screws & Trim */
-  --screw-head: #d5dce7;
-  --screw-slot: #9aa4b5;
+  --screw-head: transparent;
+  --screw-slot: transparent;
 }
 
 /* --------------------------------------------------------------------------
@@ -178,29 +192,13 @@ code, pre, .font-mono {
    4. Skeuomorphic Core Hardware Primitives
    -------------------------------------------------------------------------- */
 
-/* Stamped Mounting Screws */
-.mounting-screw, .faceplate-screw {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--screw-head);
-  box-shadow: inset 1px 1px 1px var(--bevel-light), inset -1px -1px 1px var(--bevel-dark), 0 1px 2px rgba(0, 0, 0, 0.2);
-  position: relative;
-  flex-shrink: 0;
-}
-.mounting-screw::after, .faceplate-screw::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 20%;
-  right: 20%;
-  height: 1.5px;
-  background: var(--screw-slot);
-  transform: translateY(-50%) rotate(42deg);
+/* Screws: Completely hidden for clean modern aesthetic */
+.mounting-screw, .faceplate-screw, .rack-screw-separator {
+  display: none !important;
 }
 
 /* Status Diodes / LEDs */
-.status-green, .status-red, .status-blue, .status-idle,
+.status-green, .status-red, .status-blue, .status-coral, .status-idle,
 .unit-status-led, .channel-status-led, .goal-led, .test-diode,
 .scope-led, .bench-diode, .post-diode, .modal-diode, .option-status-led,
 .header-led, .practice-diode, .explanation-diode, .btn-led {
@@ -209,7 +207,7 @@ code, pre, .font-mono {
   height: 8px;
   border-radius: 50%;
   background-color: var(--led-idle);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
   transition: all 0.2s ease;
 }
@@ -222,7 +220,7 @@ code, pre, .font-mono {
 .bench-diode.status-green,
 .modal-diode.status-green {
   background-color: var(--led-green);
-  box-shadow: 0 0 8px var(--led-green-glow), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 8px var(--led-green-glow);
 }
 
 .status-red,
@@ -231,7 +229,7 @@ code, pre, .font-mono {
 .bench-diode.status-red,
 .modal-diode.status-red {
   background-color: var(--led-red);
-  box-shadow: 0 0 8px var(--led-red-glow), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 8px var(--led-red-glow);
 }
 
 .status-blue,
@@ -241,7 +239,12 @@ code, pre, .font-mono {
 .modal-diode.status-blue,
 .option-status-led.status-blue {
   background-color: var(--led-blue-bright);
-  box-shadow: 0 0 8px var(--led-blue-glow), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 8px var(--led-blue-glow);
+}
+
+.status-coral {
+  background-color: var(--color-coral);
+  box-shadow: 0 0 8px var(--color-coral-glow);
 }
 
 /* LED Pulses */
@@ -251,11 +254,12 @@ code, pre, .font-mono {
 }
 .pulse-blue { animation: pulse-diode-anim 1.2s infinite ease-in-out; }
 .pulse-green { animation: pulse-diode-anim 1.5s infinite ease-in-out; }
+.pulse-coral { animation: pulse-diode-anim 1.3s infinite ease-in-out; }
 
 /* Recessed Inset Cavities / Wells */
 .skeuo-inset-well {
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
+  box-shadow: none;
   border-radius: var(--bezel-radius);
   border: 1px solid var(--chassis-border);
 }
@@ -276,7 +280,7 @@ code, pre, .font-mono {
   background: var(--panel-raised);
   border: 1px solid var(--chassis-border);
   border-radius: var(--bezel-radius);
-  padding: 12px 16px;
+  padding: 12px 18px;
   box-shadow: var(--shadow-raised-sm);
 }
 
@@ -289,23 +293,24 @@ code, pre, .font-mono {
   font-family: var(--font-sans);
   font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-primary);
   background: var(--panel-raised);
   border: 1px solid var(--chassis-border);
-  border-radius: var(--bezel-radius);
-  padding: 8px 14px;
+  border-radius: 12px;
+  padding: 8px 16px;
   box-shadow: var(--shadow-raised-sm);
   cursor: pointer;
-  transition: transform 0.08s var(--ease-tactile), box-shadow 0.08s var(--ease-tactile);
+  transition: transform 0.16s var(--ease-tactile), background-color 0.16s ease, box-shadow 0.16s ease, color 0.16s ease;
 }
 .tactile-btn:hover {
-  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-raised);
 }
 .tactile-btn:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: var(--shadow-inset);
+  transform: scale(0.96) !important;
+  box-shadow: none !important;
 }
 .tactile-btn:disabled {
   opacity: 0.4;
@@ -319,29 +324,34 @@ code, pre, .font-mono {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--bezel-radius);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
   background: var(--panel-raised);
   border: 1px solid var(--chassis-border);
   color: var(--text-secondary);
   box-shadow: var(--shadow-raised-sm);
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: transform 0.16s var(--ease-tactile), color 0.16s ease, background 0.16s ease;
 }
-.tactile-icon-btn:hover { color: var(--text-primary); filter: brightness(1.06); }
-.tactile-icon-btn:active { transform: translateY(1px); box-shadow: var(--shadow-inset); }
+.tactile-icon-btn:hover {
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+.tactile-icon-btn:active {
+  transform: scale(0.94) !important;
+}
 
-/* Segmented Pill Switches ([Fast | Slow | Auto] in reference image) */
+/* Segmented Pill Switches (Direct Match to Reference Image [Flow | Savings | Appliances]) */
 .segmented-pill-container {
   display: inline-flex;
   align-items: center;
-  padding: 3px;
+  padding: 4px;
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
+  box-shadow: none;
   border-radius: var(--pill-radius);
   border: 1px solid var(--chassis-border);
-  gap: 2px;
+  gap: 4px;
 }
 
 .segmented-pill-option {
@@ -349,30 +359,42 @@ code, pre, .font-mono {
   align-items: center;
   gap: 6px;
   font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 6px 16px;
   border-radius: var(--pill-radius);
   border: none;
   background: transparent;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s var(--ease-tactile);
 }
 
 .segmented-pill-option:hover {
-  color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+.segmented-pill-option:active {
+  transform: scale(0.96);
 }
 
 .segmented-pill-option.active {
-  background: var(--panel-raised);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-raised-sm);
+  background: var(--text-primary);
+  color: var(--chassis-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-weight: 700;
+}
+[data-theme="light"] .segmented-pill-option.active {
+  background: #0b192c;
+  color: #faf7f2;
+}
+[data-theme="dark"] .segmented-pill-option.active {
+  background: #faf7f2;
+  color: #080d1a;
 }
 
-/* Rocker Switches (ADV switch in reference image) */
+/* Rocker Switches / Modern Toggle Pills */
 .hardware-switch-group {
   display: flex;
   align-items: center;
@@ -380,7 +402,7 @@ code, pre, .font-mono {
 }
 .hardware-switch-label {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--text-muted);
@@ -392,32 +414,36 @@ code, pre, .font-mono {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 2px 4px;
+  padding: 2px;
 }
 .rocker-track {
-  width: 38px;
-  height: 20px;
+  width: 40px;
+  height: 22px;
   border-radius: var(--pill-radius);
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
   border: 1px solid var(--chassis-border);
   padding: 2px;
   display: flex;
   align-items: center;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 .rocker-thumb {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: var(--panel-raised);
-  box-shadow: var(--shadow-raised-sm);
-  border: 1px solid var(--chassis-border);
+  background: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: none;
   transform: translateX(0);
-  transition: transform 0.18s var(--ease-snap);
+  transition: transform 0.2s var(--ease-tactile);
+}
+.rocker-switch.on .rocker-track {
+  background: var(--color-coral-bg);
+  border-color: var(--color-coral);
 }
 .rocker-switch.on .rocker-thumb {
   transform: translateX(18px);
+  background: var(--color-coral);
 }
 .rocker-state-label {
   font-family: var(--font-mono);
@@ -435,48 +461,51 @@ code, pre, .font-mono {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   position: relative;
-  padding: 8px;
+  padding: 12px;
 }
 
 .knob-ticks-ring {
   position: absolute;
-  top: 10px;
-  width: 90px;
+  top: 14px;
+  width: 96px;
   display: flex;
   justify-content: space-between;
   font-family: var(--font-mono);
   font-size: 0.6rem;
+  font-weight: 700;
   color: var(--text-muted);
 }
 
 .skeuo-knob {
-  width: 72px;
-  height: 72px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
-  background: var(--panel-raised);
-  box-shadow: var(--shadow-knob);
-  border: 1px solid var(--chassis-border);
+  background: var(--panel-inset);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 2px solid var(--chassis-border);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.3s var(--ease-tactile);
+  transition: transform 0.2s var(--ease-tactile), border-color 0.2s ease;
 }
 .skeuo-knob:hover {
-  filter: brightness(1.04);
+  border-color: var(--color-coral);
+  transform: scale(1.03);
 }
 .skeuo-knob:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .knob-face {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: var(--panel-raised);
-  box-shadow: inset 0 1px 1px var(--bevel-light), inset 0 -1px 2px var(--bevel-dark);
+  background: var(--panel-bg);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--chassis-border);
   position: relative;
   transform: rotate(var(--rotation, 0deg));
   transition: transform 0.4s var(--ease-snap);
@@ -484,13 +513,13 @@ code, pre, .font-mono {
 
 .knob-notch {
   position: absolute;
-  top: 5px;
+  top: 4px;
   left: 50%;
   width: 4px;
   height: 10px;
   border-radius: 2px;
-  background: var(--text-primary);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6);
+  background: var(--color-coral);
+  box-shadow: 0 0 8px var(--color-coral-glow);
   transform: translateX(-50%);
 }
 
@@ -499,30 +528,30 @@ code, pre, .font-mono {
   align-items: baseline;
   gap: 2px;
   font-family: var(--font-mono);
-  font-weight: 700;
-  background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
-  padding: 4px 10px;
-  border-radius: var(--bezel-radius);
+  font-weight: 800;
+  background: var(--panel-raised);
+  box-shadow: var(--shadow-raised-sm);
+  padding: 4px 14px;
+  border-radius: var(--pill-radius);
   border: 1px solid var(--chassis-border);
 }
-.knob-readout-val { font-size: 1.1rem; color: var(--text-primary); }
-.knob-readout-unit { font-size: 0.7rem; color: var(--text-muted); }
+.knob-readout-val { font-size: 1.35rem; color: var(--text-primary); letter-spacing: -0.02em; }
+.knob-readout-unit { font-size: 0.75rem; color: var(--color-coral); font-weight: 800; }
 .knob-label-sub {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--text-muted);
   text-transform: uppercase;
 }
 
-.mini-assembly .skeuo-knob { width: 52px; height: 52px; }
-.mini-assembly .knob-face { width: 40px; height: 40px; }
-.mini-assembly .knob-notch { height: 7px; width: 3px; }
+.mini-assembly .skeuo-knob { width: 54px; height: 54px; }
+.mini-assembly .knob-face { width: 42px; height: 42px; }
+.mini-assembly .knob-notch { height: 8px; width: 3px; }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   6. Topbar Console Header
+   6. Topbar Modern Frosted Header
    ────────────────────────────────────────────────────────────────────────── */
 
 .topbar {
@@ -532,9 +561,17 @@ code, pre, .font-mono {
   justify-content: space-between;
   padding: 0 20px;
   background: var(--panel-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--chassis-border);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   z-index: 10;
+}
+[data-theme="light"] .topbar {
+  background: rgba(250, 247, 242, 0.92);
+}
+[data-theme="dark"] .topbar {
+  background: rgba(8, 13, 26, 0.92);
 }
 
 .topbar-left-group {
@@ -575,13 +612,13 @@ code, pre, .font-mono {
 .unit-brand {
   font-family: var(--font-sans);
   font-weight: 800;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
   color: var(--text-accent);
 }
 .unit-model {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   display: block;
 }
@@ -589,34 +626,35 @@ code, pre, .font-mono {
 .topbar-controls {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .rack-screw-separator {
-  width: 1px;
-  height: 24px;
-  background: var(--chassis-border);
-  box-shadow: 1px 0 0 var(--bevel-light);
-  margin: 0 4px;
+  display: none !important;
 }
 
-/* Recessed Digital Meters in Topbar */
+/* Modern Pill Meters in Topbar */
 .topbar-meter-bezel {
   display: flex;
   align-items: center;
-  background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
-  border-radius: var(--bezel-radius);
+  background: var(--panel-raised);
+  box-shadow: var(--shadow-raised-sm);
+  border-radius: var(--pill-radius);
   border: 1px solid var(--chassis-border);
   overflow: hidden;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+.topbar-meter-bezel:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-coral);
 }
 .meter-channel-tag {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  padding: 4px 6px;
-  background: var(--panel-bezel);
+  padding: 4px 8px;
+  background: var(--panel-inset);
   color: var(--text-muted);
   border-right: 1px solid var(--chassis-border);
 }
@@ -624,12 +662,12 @@ code, pre, .font-mono {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 4px 12px;
 }
 .meter-lcd-digits {
   font-family: var(--font-mono);
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .meter-lcd-unit {
@@ -640,28 +678,36 @@ code, pre, .font-mono {
 .meter-led-indicator {
   display: flex;
   align-items: center;
-  color: var(--text-secondary);
 }
+.flame-led { color: var(--color-coral) !important; }
+.gem-led { color: var(--led-blue-bright) !important; }
+.gems-led { color: #f59e0b !important; }
 
 .topbar-avatar-dial {
   background: none;
   border: none;
   cursor: pointer;
+  padding: 0;
 }
 .avatar-dial-bezel {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--panel-raised);
   box-shadow: var(--shadow-raised-sm);
-  border: 1px solid var(--chassis-border);
+  border: 1.5px solid var(--chassis-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 0.8rem;
+  font-weight: 800;
+  font-size: 0.82rem;
   color: var(--text-primary);
   overflow: hidden;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+.topbar-avatar-dial:hover .avatar-dial-bezel {
+  transform: scale(1.06);
+  border-color: var(--color-coral);
 }
 .topbar-avatar-img {
   width: 100%;
@@ -670,7 +716,7 @@ code, pre, .font-mono {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   7. Sidebar Channel Strip Navigation
+   7. Sidebar Channel Navigation Rail
    ────────────────────────────────────────────────────────────────────────── */
 
 .sidebar {
@@ -679,7 +725,7 @@ code, pre, .font-mono {
   flex-direction: column;
   background: var(--panel-bg);
   border-right: 1px solid var(--chassis-border);
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
   z-index: 10;
 }
 
@@ -687,7 +733,7 @@ code, pre, .font-mono {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--chassis-border);
 }
 .sidebar-rack-foot {
@@ -712,18 +758,17 @@ code, pre, .font-mono {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: var(--panel-raised);
-  box-shadow: var(--shadow-raised-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--panel-inset);
   border: 1px solid var(--chassis-border);
-  color: var(--text-primary);
+  color: var(--color-coral);
 }
 .logo-text {
   font-weight: 800;
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
   color: var(--text-accent);
 }
 .logo-subtext {
@@ -737,7 +782,7 @@ code, pre, .font-mono {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 12px;
+  padding: 14px;
   overflow-y: auto;
 }
 .rack-channel-header {
@@ -754,29 +799,43 @@ code, pre, .font-mono {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 9px 12px;
-  border-radius: var(--bezel-radius);
+  padding: 10px 14px;
+  border-radius: 14px;
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all 0.16s var(--ease-tactile);
 }
 .sidebar-item:hover {
-  background: var(--panel-raised);
+  background: var(--panel-inset);
   color: var(--text-primary);
-  border-color: var(--chassis-border);
-  box-shadow: var(--shadow-raised-sm);
+  transform: translateX(2px);
 }
 .sidebar-item.active {
-  background: var(--panel-raised);
-  color: var(--text-primary);
-  border-color: var(--chassis-border);
-  box-shadow: var(--shadow-raised-sm);
+  background: var(--text-primary);
+  color: var(--chassis-bg);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+[data-theme="light"] .sidebar-item.active {
+  background: #0b192c;
+  color: #faf7f2;
+}
+[data-theme="dark"] .sidebar-item.active {
+  background: #faf7f2;
+  color: #080d1a;
+}
+.sidebar-item.active .channel-status-led {
+  background: var(--color-coral);
+  box-shadow: 0 0 8px var(--color-coral-glow);
+}
+.sidebar-item.active .sidebar-tag {
+  color: var(--color-coral);
+  font-weight: 700;
 }
 .sidebar-tag {
   font-family: var(--font-mono);
@@ -786,14 +845,14 @@ code, pre, .font-mono {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   8. Right Panel Telemetry & VU Meters
+   8. Right Panel Telemetry & Analytics Deck (Inspired by Reference UI)
    ────────────────────────────────────────────────────────────────────────── */
 
 .right-panel {
   grid-area: right;
   background: var(--panel-bg);
   border-left: 1px solid var(--chassis-border);
-  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
   overflow-y: auto;
   z-index: 10;
 }
@@ -801,8 +860,8 @@ code, pre, .font-mono {
 .progress-panel-rack {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 14px;
+  gap: 16px;
+  padding: 18px;
 }
 
 .rack-unit-header, .rack-unit-footer {
@@ -820,13 +879,13 @@ code, pre, .font-mono {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--color-coral);
   margin-right: 6px;
 }
 .rack-unit-name {
   font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 0.75rem;
+  font-weight: 800;
+  font-size: 0.78rem;
   letter-spacing: 0.05em;
   color: var(--text-primary);
 }
@@ -839,74 +898,81 @@ code, pre, .font-mono {
 .hardware-module-card {
   background: var(--panel-raised);
   border: 1px solid var(--chassis-border);
-  border-radius: var(--bezel-radius);
+  border-radius: var(--panel-radius);
   box-shadow: var(--shadow-raised-sm);
-  padding: 12px;
+  padding: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hardware-module-card:hover {
+  box-shadow: var(--shadow-raised);
 }
 .module-title-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 .module-tag {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   font-weight: 700;
-  padding: 2px 5px;
+  padding: 2px 8px;
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
-  border-radius: 3px;
-  color: var(--text-muted);
+  box-shadow: none;
+  border-radius: var(--pill-radius);
+  color: var(--text-secondary);
+  border: 1px solid var(--chassis-border);
 }
 .module-heading {
   font-family: var(--font-sans);
   font-weight: 700;
-  font-size: 0.72rem;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
 }
 
-/* Channel Strip VU Meters */
+/* Channel Strip VU Meters / Module Progress Bars */
 .channel-strips-rack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 .channel-strip {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 .strip-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
 }
 .strip-channel-name { font-weight: 700; color: var(--text-primary); }
-.strip-val { color: var(--text-secondary); }
+.strip-val { color: var(--text-secondary); font-size: 0.68rem; font-weight: 600; }
 
 .strip-vu-track {
   height: 8px;
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
-  border-radius: 4px;
+  border-radius: var(--pill-radius);
   overflow: hidden;
   border: 1px solid var(--chassis-border);
 }
 .strip-vu-fill {
   height: 100%;
   background: var(--text-primary);
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
-  transition: width 0.4s var(--ease-tactile);
+  border-radius: var(--pill-radius);
+  transition: width 0.5s var(--ease-tactile);
+}
+[data-theme="light"] .strip-vu-fill {
+  background: #0b192c;
+}
+[data-theme="dark"] .strip-vu-fill {
+  background: #f8f6f0;
 }
 .strip-scale {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--text-muted);
+  display: none !important;
 }
 
 /* Daily Goals in Hardware Rack */
@@ -918,12 +984,15 @@ code, pre, .font-mono {
 .hardware-goal-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px;
+  gap: 6px;
+  padding: 10px 12px;
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
-  border-radius: var(--bezel-radius);
+  border-radius: 12px;
   border: 1px solid var(--chassis-border);
+  transition: transform 0.16s ease;
+}
+.hardware-goal-item:hover {
+  transform: translateX(2px);
 }
 .goal-header-row {
   display: flex;
@@ -931,7 +1000,7 @@ code, pre, .font-mono {
   gap: 8px;
 }
 .goal-title {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-primary);
   flex: 1;
@@ -940,16 +1009,18 @@ code, pre, .font-mono {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--text-secondary);
+  font-weight: 700;
 }
 .goal-slot-track {
-  height: 5px;
+  height: 6px;
   background: var(--panel-bg);
-  border-radius: 3px;
+  border-radius: var(--pill-radius);
   overflow: hidden;
 }
 .goal-slot-fill {
   height: 100%;
-  background: var(--text-primary);
+  background: var(--color-coral);
+  border-radius: var(--pill-radius);
   transition: width 0.3s ease;
 }
 .hardware-goal-item.completed .goal-slot-fill {
@@ -969,10 +1040,10 @@ code, pre, .font-mono {
   gap: 8px;
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  padding: 4px 6px;
+  padding: 6px 10px;
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
-  border-radius: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--chassis-border);
 }
 .spec-name { color: var(--text-secondary); flex: 1; }
 .spec-value { color: var(--text-primary); font-weight: 700; }
@@ -1017,33 +1088,29 @@ code, pre, .font-mono {
   gap: 12px;
   background: var(--panel-raised);
   border: 1px solid var(--chassis-border);
-  border-radius: var(--bezel-radius);
-  padding: 12px 16px;
+  border-radius: var(--panel-radius);
+  padding: 14px 20px;
   box-shadow: var(--shadow-raised-sm);
   position: relative;
   box-sizing: border-box;
 }
 
-.section-header .faceplate-screw.screw-left {
-  margin-right: 6px;
-  flex-shrink: 0;
-}
+.section-header .faceplate-screw.screw-left,
 .section-header .faceplate-screw.screw-right {
-  margin-left: 6px;
-  flex-shrink: 0;
+  display: none !important;
 }
 
 .section-icon-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--bezel-radius);
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
+  box-shadow: none;
   border: 1px solid var(--chassis-border);
-  color: var(--text-primary);
+  color: var(--color-coral);
   flex-shrink: 0;
 }
 .section-info-col {
@@ -1063,8 +1130,8 @@ code, pre, .font-mono {
   text-overflow: ellipsis;
 }
 .section-title-text {
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 800;
+  font-size: 1rem;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -1077,9 +1144,9 @@ code, pre, .font-mono {
   font-family: var(--font-mono);
   font-size: 0.65rem;
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
-  padding: 4px 8px;
-  border-radius: 4px;
+  box-shadow: none;
+  padding: 4px 10px;
+  border-radius: var(--pill-radius);
   border: 1px solid var(--chassis-border);
   color: var(--text-secondary);
   flex-shrink: 0;
@@ -1105,10 +1172,10 @@ code, pre, .font-mono {
 }
 
 .interconnect-line {
-  width: 4px;
+  width: 3px;
   height: 24px;
-  background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
+  background: var(--chassis-border);
+  box-shadow: none;
   border-radius: 2px;
   transition: background 0.2s ease;
 }
@@ -1138,12 +1205,12 @@ code, pre, .font-mono {
 }
 
 .chapter-interconnect.completed .interconnect-line {
-  background: var(--text-primary);
+  background: var(--led-green);
 }
 
 .chapter-interconnect.completed .interconnect-junction {
-  border-color: var(--text-primary);
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  border-color: var(--led-green);
+  box-shadow: 0 0 6px var(--led-green-glow);
 }
 
 .chapter-interconnect.completed .interconnect-junction::after {
@@ -1152,59 +1219,61 @@ code, pre, .font-mono {
 }
 
 .path-connector-css {
-  width: 4px;
+  width: 3px;
   height: 28px;
-  background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
+  background: var(--chassis-border);
+  box-shadow: none;
   border-radius: 2px;
 }
 .path-connector-css.completed {
-  background: var(--text-primary);
+  background: var(--led-green);
 }
 
 .path-node {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
   outline: none;
 }
 .path-node.locked {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
 .socket-inner {
-  width: 62px;
-  height: 62px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: var(--panel-raised);
-  box-shadow: var(--shadow-knob);
+  box-shadow: var(--shadow-raised-sm);
   border: 2px solid var(--chassis-border);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: transform 0.12s var(--ease-tactile);
+  transition: transform 0.16s var(--ease-tactile), border-color 0.16s ease, box-shadow 0.16s ease;
 }
 .path-node:not(.locked):hover .socket-inner {
-  filter: brightness(1.06);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-raised);
+  border-color: var(--color-coral);
 }
 .path-node:not(.locked):active .socket-inner,
 .node-press .socket-inner {
-  transform: translateY(2px) scale(0.96);
-  box-shadow: var(--shadow-inset-deep);
+  transform: scale(0.94);
+  box-shadow: none;
 }
 
 .socket-inner.completed {
-  border-color: var(--text-primary);
+  border-color: var(--led-green);
 }
 .socket-check {
   font-family: var(--font-mono);
   font-weight: 800;
-  font-size: 1.1rem;
-  color: var(--text-primary);
+  font-size: 1.15rem;
+  color: var(--led-green);
 }
 .socket-diode {
   position: absolute;
@@ -1213,18 +1282,24 @@ code, pre, .font-mono {
 }
 
 .socket-inner.current {
-  border-color: var(--led-blue-bright);
+  border-color: var(--color-coral);
+  box-shadow: 0 0 0 4px var(--color-coral-glow), var(--shadow-raised-sm);
+}
+.socket-inner.current .socket-diode {
+  background-color: var(--color-coral);
+  box-shadow: 0 0 8px var(--color-coral-glow);
 }
 .socket-number {
   font-family: var(--font-mono);
   font-weight: 800;
-  font-size: 1.1rem;
-  color: var(--text-primary);
+  font-size: 1.15rem;
+  color: var(--color-coral);
 }
 
 .socket-inner.locked {
   background: var(--panel-inset);
-  box-shadow: var(--shadow-inset);
+  box-shadow: none;
+  border-color: var(--chassis-border);
 }
 .socket-lock-icon {
   color: var(--text-muted);
@@ -1237,6 +1312,10 @@ code, pre, .font-mono {
   color: var(--text-secondary);
   text-align: center;
   max-width: 160px;
+}
+.node-caption.active {
+  color: var(--text-primary);
+  font-weight: 700;
 }
 .node-caption.active {
   color: var(--text-primary);
@@ -1607,31 +1686,69 @@ code, pre, .font-mono {
   flex: 1;
 }
 
-.btn-continue-ready {
+.btn-primary {
+  background: var(--color-coral) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 14px var(--color-coral-glow) !important;
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+  transition: transform 0.16s var(--ease-tactile), background-color 0.16s ease, box-shadow 0.16s ease !important;
+}
+.btn-primary:hover {
+  background: var(--color-coral-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px var(--color-coral-glow) !important;
+}
+.btn-primary:active {
+  transform: scale(0.96) !important;
+}
+
+.btn-secondary {
   background: var(--panel-raised) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--chassis-border) !important;
+  box-shadow: var(--shadow-raised-sm) !important;
+  border-radius: 12px !important;
+  transition: transform 0.16s var(--ease-tactile), color 0.16s ease, border-color 0.16s ease !important;
+}
+.btn-secondary:hover {
   color: var(--text-primary) !important;
-  border: 2px solid var(--text-primary) !important;
-  box-shadow: var(--shadow-raised) !important;
+  border-color: var(--text-primary) !important;
+  transform: translateY(-1px) !important;
+}
+.btn-secondary:active {
+  transform: scale(0.96) !important;
+}
+
+.btn-continue-ready {
+  background: var(--color-coral) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 16px var(--color-coral-glow) !important;
   cursor: pointer !important;
   opacity: 1 !important;
   font-weight: 800 !important;
-  letter-spacing: 0.06em !important;
-  transition: all 0.15s ease !important;
+  letter-spacing: 0.04em !important;
+  border-radius: 12px !important;
+  transition: transform 0.16s var(--ease-tactile), background-color 0.16s ease, box-shadow 0.16s ease !important;
 }
 
 .btn-continue-ready.btn-success {
-  border-color: var(--led-green) !important;
-  box-shadow: 0 0 12px var(--led-green-glow), var(--shadow-raised) !important;
+  background: var(--color-coral) !important;
+  box-shadow: 0 4px 16px var(--color-coral-glow) !important;
 }
 
 .btn-continue-ready:hover {
-  filter: brightness(1.1) !important;
+  background: var(--color-coral-hover) !important;
+  filter: brightness(1.05) !important;
   transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px var(--color-coral-glow) !important;
 }
 
 .btn-continue-ready:active {
-  transform: translateY(1.5px) !important;
-  box-shadow: var(--shadow-inset) !important;
+  transform: scale(0.96) !important;
+  box-shadow: none !important;
 }
 
 .btn-continue-ready .btn-led {
@@ -1640,6 +1757,8 @@ code, pre, .font-mono {
   border-radius: 50%;
   display: inline-block;
   margin-right: 6px;
+  background: #ffffff !important;
+  box-shadow: 0 0 6px #ffffff !important;
 }
 
 .complete-panel {
@@ -1963,29 +2082,48 @@ code, pre, .font-mono {
   gap: 12px;
 }
 
-/* Run Code Button */
+/* Run Code Button — High-Impact Coral Accent Action */
 .tactile-run-btn {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 18px;
-  border-radius: var(--bezel-radius);
-  background: var(--panel-raised);
-  border: 1px solid var(--chassis-border);
-  box-shadow: var(--shadow-raised-sm);
-  color: var(--text-primary);
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: var(--color-coral) !important;
+  border: none !important;
+  box-shadow: 0 4px 14px var(--color-coral-glow) !important;
+  color: #ffffff !important;
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   cursor: pointer;
-  transition: all 0.1s var(--ease-tactile);
+  transition: transform 0.16s var(--ease-tactile), background-color 0.16s ease, box-shadow 0.16s ease;
 }
-.tactile-run-btn:hover { filter: brightness(1.06); }
-.tactile-run-btn:active { transform: translateY(1.5px); box-shadow: var(--shadow-inset); }
-.run-led-diode { width: 8px; height: 8px; border-radius: 50%; background: var(--led-idle); }
-.tactile-run-btn.running .run-led-diode { background: var(--led-blue-bright); box-shadow: 0 0 8px var(--led-blue-glow); }
-.run-shortcut { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); }
+.tactile-run-btn:hover {
+  background: var(--color-coral-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px var(--color-coral-glow) !important;
+}
+.tactile-run-btn:active {
+  transform: scale(0.96) !important;
+  box-shadow: none !important;
+}
+.run-led-diode {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+}
+.tactile-run-btn.running .run-led-diode {
+  background: #ffffff;
+  box-shadow: 0 0 8px #ffffff;
+}
+.run-shortcut {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.85);
+}
 
 /* ──────────────────────────────────────────────────────────────────────────
    12. Oscilloscope / Test Terminal Display
@@ -2619,19 +2757,20 @@ code, pre, .font-mono {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   16. Stamped Verification Modal Plaque
+   16. Modern Completion Modal Card (Clean Glass & Card Dialog)
    ────────────────────────────────────────────────────────────────────────── */
 
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
+  background: rgba(8, 13, 26, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: modal-fade-in 0.18s ease;
+  animation: modal-fade-in 0.2s ease;
 }
 @keyframes modal-fade-in {
   from { opacity: 0; }
@@ -2642,9 +2781,9 @@ code, pre, .font-mono {
   width: 100%;
   max-width: 440px;
   background: var(--panel-bg);
-  border: 2px solid var(--chassis-border);
-  border-radius: var(--panel-radius);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--chassis-border);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -2653,7 +2792,7 @@ code, pre, .font-mono {
   gap: 16px;
   position: relative;
   transform: translateY(0);
-  animation: modal-slide-down 0.22s var(--ease-snap);
+  animation: modal-slide-down 0.24s var(--ease-snap);
 }
 @keyframes modal-slide-down {
   from { transform: translateY(-20px) scale(0.96); }
@@ -2676,19 +2815,23 @@ code, pre, .font-mono {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  background: var(--panel-inset);
+  border: 1px solid var(--chassis-border);
+  border-radius: 16px;
 }
 .plaque-stamp-badge {
-  color: var(--text-primary);
+  color: var(--color-coral);
 }
 .modal-title {
   font-size: 1.15rem;
   font-weight: 800;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   color: var(--text-primary);
 }
 .modal-body {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 .xp-earned-bezel {
@@ -2698,22 +2841,37 @@ code, pre, .font-mono {
   background: var(--panel-raised);
   box-shadow: var(--shadow-raised-sm);
   border: 1px solid var(--chassis-border);
-  padding: 6px 16px;
+  padding: 6px 18px;
   border-radius: var(--pill-radius);
   font-family: var(--font-mono);
 }
-.xp-token-digits { font-size: 1.1rem; font-weight: 800; color: var(--led-blue-bright); }
-.xp-token-unit { font-size: 0.65rem; color: var(--text-muted); }
+.xp-token-digits { font-size: 1.15rem; font-weight: 800; color: var(--color-coral); }
+.xp-token-unit { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; }
 
 .btn-modal-continue {
   width: 100%;
-  padding: 14px;
-  font-size: 0.85rem;
+  padding: 14px 20px;
+  font-size: 0.88rem;
   font-weight: 800;
+  border-radius: 14px;
+  background: var(--color-coral) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 16px var(--color-coral-glow) !important;
+  cursor: pointer;
+  transition: transform 0.16s var(--ease-tactile), background-color 0.16s ease, box-shadow 0.16s ease;
+}
+.btn-modal-continue:hover {
+  background: var(--color-coral-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--color-coral-glow) !important;
+}
+.btn-modal-continue:active {
+  transform: scale(0.96) !important;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
-   17. Simple Black & White Lottie Loading Animation
+   17. Clean Lottie Loading Animation (Zero Ground / Lift-Up Shadows)
    ────────────────────────────────────────────────────────────────────────── */
 
 .loading-screen {
@@ -2750,27 +2908,28 @@ code, pre, .font-mono {
   width: 100% !important;
   height: 100% !important;
   overflow: visible;
+  filter: none !important; /* Zero lift-up or drop shadow */
 }
 
 [data-theme="dark"] .lottie-player-wrapper svg {
-  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.8));
+  filter: none !important;
 }
 
 [data-theme="light"] .lottie-player-wrapper svg {
-  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.18));
+  filter: none !important;
 }
 
-/* Ensure the black & white loading animation adapts to dual dark and light theme */
+/* Adapt stroke to Dual Navy & Cream Theme */
 [data-theme="dark"] .lottie-player-wrapper svg path,
 [data-theme="dark"] .lottie-player-wrapper svg circle,
 [data-theme="dark"] .lottie-player-wrapper svg shape {
-  stroke: #f0f3f6 !important;
+  stroke: #f8f6f0 !important;
 }
 
 [data-theme="light"] .lottie-player-wrapper svg path,
 [data-theme="light"] .lottie-player-wrapper svg circle,
 [data-theme="light"] .lottie-player-wrapper svg shape {
-  stroke: #11141a !important;
+  stroke: #0b192c !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -2988,21 +3147,35 @@ code, pre, .font-mono {
     padding: 0 !important;
   }
 
-  /* Mobile Bottom Navigation Dock */
+  /* Mobile Floating Bottom Navigation Dock (Inspired by Reference UI) */
   .mobile-bottom-nav {
     display: flex !important;
     align-items: center !important;
-    justify-content: space-around !important;
-    height: 56px !important;
-    min-height: 56px !important;
-    width: 100% !important;
-    background: var(--panel-bg) !important;
-    border-top: 1px solid var(--chassis-border) !important;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15) !important;
-    flex-shrink: 0 !important;
-    z-index: 50 !important;
-    padding: 0 4px !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    position: fixed !important;
+    bottom: 18px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    max-width: calc(100vw - 28px) !important;
+    height: auto !important;
+    padding: 6px 12px !important;
+    border-radius: 9999px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(11, 25, 44, 0.08) !important;
+    box-shadow: 0 14px 40px -4px rgba(11, 25, 44, 0.16), 0 2px 8px rgba(11, 25, 44, 0.06) !important;
+    z-index: 1000 !important;
     box-sizing: border-box !important;
+    transition: opacity 0.2s ease, transform 0.2s var(--ease-tactile);
+  }
+
+  [data-theme="dark"] .mobile-bottom-nav {
+    background: rgba(15, 23, 42, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 16px 48px -4px rgba(0, 0, 0, 0.75), 0 2px 10px rgba(0, 0, 0, 0.5) !important;
   }
 
   .mobile-bottom-nav.hidden {
@@ -3011,42 +3184,40 @@ code, pre, .font-mono {
 
   .mobile-nav-btn {
     display: flex !important;
-    flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 2px !important;
-    flex: 1 !important;
-    height: 100% !important;
-    background: none !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 9999px !important;
+    background: transparent !important;
     border: none !important;
     color: var(--text-secondary) !important;
     cursor: pointer !important;
     position: relative !important;
-    padding: 4px 0 !important;
-    transition: color 0.12s ease !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     outline: none !important;
   }
 
   .mobile-nav-btn:active {
-    transform: scale(0.94) !important;
+    transform: scale(0.9) !important;
   }
 
   .mobile-nav-btn.active {
-    color: var(--text-primary) !important;
+    background: #0b192c !important;
+    color: #faf7f2 !important;
+    box-shadow: 0 4px 14px rgba(11, 25, 44, 0.25) !important;
+  }
+
+  [data-theme="dark"] .mobile-nav-btn.active {
+    background: #faf7f2 !important;
+    color: #080d1a !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
   }
 
   .mobile-nav-led {
-    width: 4px !important;
-    height: 4px !important;
-    border-radius: 50% !important;
-    background: var(--led-idle) !important;
-    margin-bottom: 2px !important;
-    transition: all 0.2s ease !important;
-  }
-
-  .mobile-nav-btn.active .mobile-nav-led {
-    background: var(--led-blue-bright) !important;
-    box-shadow: 0 0 6px var(--led-blue-bright) !important;
+    display: none !important;
   }
 
   .mobile-nav-icon {
@@ -3056,11 +3227,12 @@ code, pre, .font-mono {
   }
 
   .mobile-nav-label {
-    font-family: var(--font-mono) !important;
-    font-size: 0.62rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.04em !important;
-    text-transform: uppercase !important;
+    display: none !important; /* Only minimalist icons in the floating capsule dock, exactly like reference image */
+  }
+
+  /* Ensure content is not obscured by floating bottom capsule dock */
+  .journey-container, .profile-container, .goals-container, .practice-container, .telemetry-container {
+    padding-bottom: 96px !important;
   }
 
   /* Right Diagnostics Panel */
@@ -3072,7 +3244,7 @@ code, pre, .font-mono {
   .mobile-bay-switcher {
     display: flex !important;
     width: 100% !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 6px !important;
     flex-shrink: 0 !important;
   }
 
@@ -3096,6 +3268,10 @@ code, pre, .font-mono {
     font-weight: 800 !important;
     justify-content: center !important;
     gap: 8px !important;
+    background: var(--color-coral) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 14px var(--color-coral-glow) !important;
   }
 
   /* Challenge Container on Mobile */

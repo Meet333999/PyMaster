@@ -335,57 +335,57 @@ function initMonaco() {
     });
 
     require(['vs/editor/editor.main'], function () {
-      // 1. Skeuomorphic Dark Theme (Matte Obsidian)
+      // 1. Midnight Navy & Warm Cream Dark Theme with Coral accents
       monaco.editor.defineTheme('pymaster-skeuo-dark', {
         base: 'vs-dark',
         inherit: true,
         rules: [
-          { token: 'comment', foreground: '606977', fontStyle: 'italic' },
-          { token: 'keyword', foreground: 'f0f3f6', fontStyle: 'bold' },
-          { token: 'string', foreground: '10b981' },
+          { token: 'comment', foreground: '64748b', fontStyle: 'italic' },
+          { token: 'keyword', foreground: 'ff6b6b', fontStyle: 'bold' },
+          { token: 'string', foreground: '34d399' },
           { token: 'number', foreground: '38bdf8' },
-          { token: 'type', foreground: 'cbd5e1' },
-          { token: 'function', foreground: 'ffffff', fontStyle: 'bold' },
+          { token: 'type', foreground: 'f8f6f0' },
+          { token: 'function', foreground: 'f8f6f0', fontStyle: 'bold' },
           { token: 'variable', foreground: 'e2e8f0' },
           { token: 'operator', foreground: '94a3b8' },
         ],
         colors: {
-          'editor.background': '#131518',
-          'editor.foreground': '#f0f3f6',
-          'editorLineNumber.foreground': '#404652',
-          'editorLineNumber.activeForeground': '#38bdf8',
-          'editor.lineHighlightBackground': '#1b1e24',
-          'editor.selectionBackground': '#2563eb44',
-          'editorCursor.foreground': '#38bdf8',
-          'editorWidget.background': '#181b20',
-          'editorWidget.border': '#2a303c',
+          'editor.background': '#0a0e1a',
+          'editor.foreground': '#f8f6f0',
+          'editorLineNumber.foreground': '#475569',
+          'editorLineNumber.activeForeground': '#ff6b6b',
+          'editor.lineHighlightBackground': '#131c2e',
+          'editor.selectionBackground': '#ff6b6b33',
+          'editorCursor.foreground': '#ff6b6b',
+          'editorWidget.background': '#0f172a',
+          'editorWidget.border': '#1e293b',
         },
       });
 
-      // 2. Skeuomorphic Light Theme (Matte Studio White)
+      // 2. Warm Cream & Deep Navy Light Theme with Coral accents
       monaco.editor.defineTheme('pymaster-skeuo-light', {
         base: 'vs',
         inherit: true,
         rules: [
-          { token: 'comment', foreground: '6b7280', fontStyle: 'italic' },
-          { token: 'keyword', foreground: '0f172a', fontStyle: 'bold' },
-          { token: 'string', foreground: '047857' },
-          { token: 'number', foreground: '1d4ed8' },
-          { token: 'type', foreground: '334155' },
-          { token: 'function', foreground: '111827', fontStyle: 'bold' },
-          { token: 'variable', foreground: '1f2937' },
+          { token: 'comment', foreground: '788699', fontStyle: 'italic' },
+          { token: 'keyword', foreground: 'ff5a5f', fontStyle: 'bold' },
+          { token: 'string', foreground: '059669' },
+          { token: 'number', foreground: '2563eb' },
+          { token: 'type', foreground: '0b192c' },
+          { token: 'function', foreground: '0b192c', fontStyle: 'bold' },
+          { token: 'variable', foreground: '1e293b' },
           { token: 'operator', foreground: '475569' },
         ],
         colors: {
-          'editor.background': '#f4f6fa',
-          'editor.foreground': '#111827',
+          'editor.background': '#ffffff',
+          'editor.foreground': '#0b192c',
           'editorLineNumber.foreground': '#94a3b8',
-          'editorLineNumber.activeForeground': '#1d4ed8',
-          'editor.lineHighlightBackground': '#e8edf5',
-          'editor.selectionBackground': '#2563eb25',
-          'editorCursor.foreground': '#1d4ed8',
-          'editorWidget.background': '#eef1f6',
-          'editorWidget.border': '#cbd5e1',
+          'editorLineNumber.activeForeground': '#ff5a5f',
+          'editor.lineHighlightBackground': '#f4efe6',
+          'editor.selectionBackground': '#ff5a5f28',
+          'editorCursor.foreground': '#ff5a5f',
+          'editorWidget.background': '#faf7f2',
+          'editorWidget.border': '#e2dcd2',
         },
       });
 
