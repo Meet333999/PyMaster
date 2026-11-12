@@ -10,7 +10,7 @@ import { getAllSQLLessons } from '../data/sql-curriculum.js';
 import { getAllDSALessons } from '../data/dsa-curriculum.js';
 import { playSound } from '../engine/haptics.js';
 
-const PANEL_ID = 'pymaster-progress-panel';
+const PANEL_ID = 'right-panel';
 
 /**
  * Render the progress panel into the given container.
@@ -25,7 +25,9 @@ export function renderProgressPanel(container, state) {
     container.classList.add('right-panel');
   }
 
-  container.id = PANEL_ID;
+  if (!container.id) {
+    container.id = PANEL_ID;
+  }
 
   const dailyGoals = state.getDailyGoals();
   const completedLessonsSet = state.getCompletedLessons();

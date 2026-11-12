@@ -234,14 +234,33 @@ code::selection,
 }
 
 .app-container.no-right-panel #right-panel,
+.app-container.no-right-panel .right-panel,
+.app-container.no-right-panel aside.right-panel,
+.app-container.no-right-panel #pymaster-progress-panel,
 body[data-route="lesson"] #right-panel,
+body[data-route="lesson"] .right-panel,
+body[data-route="lesson"] #pymaster-progress-panel,
 body[data-route="sql-lesson"] #right-panel,
+body[data-route="sql-lesson"] .right-panel,
+body[data-route="sql-lesson"] #pymaster-progress-panel,
 body[data-route="dsa-lesson"] #right-panel,
+body[data-route="dsa-lesson"] .right-panel,
+body[data-route="dsa-lesson"] #pymaster-progress-panel,
 body[data-route="quiz"] #right-panel,
+body[data-route="quiz"] .right-panel,
+body[data-route="quiz"] #pymaster-progress-panel,
 body[data-route="practice"] #right-panel,
+body[data-route="practice"] .right-panel,
+body[data-route="practice"] #pymaster-progress-panel,
 body[data-route="goals"] #right-panel,
+body[data-route="goals"] .right-panel,
+body[data-route="goals"] #pymaster-progress-panel,
 body[data-route="leaderboard"] #right-panel,
-body[data-route="profile"] #right-panel {
+body[data-route="leaderboard"] .right-panel,
+body[data-route="leaderboard"] #pymaster-progress-panel,
+body[data-route="profile"] #right-panel,
+body[data-route="profile"] .right-panel,
+body[data-route="profile"] #pymaster-progress-panel {
   display: none !important;
 }
 

@@ -67,7 +67,8 @@ async function navigate(route) {
   hideModal();
 
   const mainContent = document.getElementById('main-content');
-  const rightPanel = document.getElementById('right-panel');
+  const rightPanel = document.getElementById('right-panel') || document.querySelector('.right-panel') || document.getElementById('pymaster-progress-panel');
+  const topbar = document.getElementById('topbar') || document.querySelector('.topbar') || document.getElementById('pymaster-topbar');
   const appContainer = document.getElementById('app');
 
   try {
@@ -347,9 +348,9 @@ function initMonaco() {
           'editorLineNumber.foreground': '#475569',
           'editorLineNumber.activeForeground': '#ff6b6b',
           'editor.lineHighlightBackground': '#131c2e',
-          'editor.selectionBackground': '#ff5a5f99',
-          'editor.selectionHighlightBackground': '#ff5a5f44',
-          'editor.inactiveSelectionBackground': '#ff5a5f55',
+          'editor.selectionBackground': '#ff5a5fe0',
+          'editor.selectionHighlightBackground': '#ff5a5f55',
+          'editor.inactiveSelectionBackground': '#ff5a5f77',
           'editorCursor.foreground': '#ff6b6b',
           'editorWidget.background': '#0f172a',
           'editorWidget.border': '#1e293b',
@@ -376,9 +377,9 @@ function initMonaco() {
           'editorLineNumber.foreground': '#94a3b8',
           'editorLineNumber.activeForeground': '#ff5a5f',
           'editor.lineHighlightBackground': '#f4efe6',
-          'editor.selectionBackground': '#ff5a5f77',
-          'editor.selectionHighlightBackground': '#ff5a5f33',
-          'editor.inactiveSelectionBackground': '#ff5a5f44',
+          'editor.selectionBackground': '#ff5a5fd0',
+          'editor.selectionHighlightBackground': '#ff5a5f44',
+          'editor.inactiveSelectionBackground': '#ff5a5f66',
           'editorCursor.foreground': '#ff5a5f',
           'editorWidget.background': '#faf7f2',
           'editorWidget.border': '#e2dcd2',

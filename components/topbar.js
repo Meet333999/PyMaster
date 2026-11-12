@@ -8,7 +8,7 @@ import { icon } from './icons.js';
 import { getCurrentTheme, toggleTheme } from '../engine/theme.js';
 import { isSoundEnabled, toggleSound, playSound } from '../engine/haptics.js';
 
-const TOPBAR_ID = 'pymaster-topbar';
+const TOPBAR_ID = 'topbar';
 
 /**
  * Render the topbar into the given container.
@@ -38,7 +38,9 @@ export function renderTopbar(container, state) {
     container.classList.add('topbar');
   }
 
-  container.id = TOPBAR_ID;
+  if (!container.id) {
+    container.id = TOPBAR_ID;
+  }
   container.innerHTML = `
     <!-- Left Group: Mobile Menu & Clean Branding -->
     <div class="topbar-left-group">
