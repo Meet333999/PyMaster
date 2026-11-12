@@ -69,77 +69,8 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
 
   const editorContainer = document.getElementById(editorId);
 
-  if (typeof monaco !== 'undefined') {
-    if (editorInstance) {
-      editorInstance.dispose();
-    }
-
-    editorInstance = monaco.editor.create(editorContainer, {
-      value: initialCode,
-      language: editorLanguage,
-      theme: monacoThemeName,
-      minimap: { enabled: false },
-      fontSize: 14,
-      fontFamily: "'JetBrains Mono', monospace",
-      lineHeight: 22,
-      padding: { top: 16, bottom: 16 },
-      scrollBeyondLastLine: false,
-      automaticLayout: true,
-      tabSize: 4,
-      insertSpaces: true,
-      wordWrap: 'on',
-      lineNumbers: 'on',
-      glyphMargin: false,
-      folding: false,
-      lineDecorationsWidth: 10,
-      lineNumbersMinChars: 3,
-      renderWhitespace: 'none',
-      overviewRulerLanes: 0,
-      hideCursorInOverviewRuler: true,
-      overviewRulerBorder: false,
-      scrollbar: {
-        vertical: 'auto',
-        horizontal: 'hidden',
-        verticalScrollbarSize: 8,
-      },
-    });
-
-    window.__pymaster_editor = editorInstance;
-
-    if (typeof ResizeObserver !== 'undefined') {
-      const resizeObserver = new ResizeObserver(() => {
-        if (editorInstance) {
-          editorInstance.layout();
-        }
-      });
-      resizeObserver.observe(editorContainer);
-      editorInstance._resizeObserver = resizeObserver;
-    }
-
-    if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
-        if (editorInstance) {
-          editorInstance.layout();
-        }
-      });
-    }
-
-    editorInstance.onDidChangeModelContent(() => {
-      if (typeof options.onChange === 'function') {
-        options.onChange(editorInstance.getValue());
-      }
-    });
-
-    // Theme change listener
-    const onThemeChange = (e) => {
-      const theme = e.detail?.theme || getCurrentTheme();
-      monaco.editor.setTheme(theme === 'light' ? 'pymaster-skeuo-light' : 'pymaster-skeuo-dark');
-    };
-    window.addEventListener('pymaster-theme-changed', onThemeChange);
-    editorInstance._themeListener = onThemeChange;
-
-  } else {
-    // Fallback: use textarea
+  function renderFallback() {
+    if (!editorContainer) return;
     editorContainer.innerHTML = `
       <textarea class="fallback-editor" id="fallback-textarea"
                 spellcheck="false"
@@ -149,7 +80,7 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
     `;
 
     const textarea = document.getElementById('fallback-textarea');
-    textarea.addEventListener('keydown', (e) => {
+    textarea?.addEventListener('keydown', (e) => {
       if (e.key === 'Tab') {
         e.preventDefault();
         const start = textarea.selectionStart;
@@ -159,11 +90,89 @@ export function createCodeEditor(container, initialCode = '', options = {}) {
       }
     });
 
-    textarea.addEventListener('input', () => {
+    textarea?.addEventListener('input', () => {
       if (typeof options.onChange === 'function') {
         options.onChange(textarea.value);
       }
     });
+  }
+
+  if (typeof monaco !== 'undefined' && monaco.editor && editorContainer) {
+    try {
+      if (editorInstance) {
+        editorInstance.dispose();
+      }
+
+      editorInstance = monaco.editor.create(editorContainer, {
+        value: initialCode,
+        language: editorLanguage,
+        theme: monacoThemeName,
+        minimap: { enabled: false },
+        fontSize: 14,
+        fontFamily: "'JetBrains Mono', monospace",
+        lineHeight: 22,
+        padding: { top: 16, bottom: 16 },
+        scrollBeyondLastLine: false,
+        automaticLayout: true,
+        roundedSelection: true,
+        tabSize: 4,
+        insertSpaces: true,
+        wordWrap: 'on',
+        lineNumbers: 'on',
+        glyphMargin: false,
+        folding: false,
+        lineDecorationsWidth: 10,
+        lineNumbersMinChars: 3,
+        renderWhitespace: 'none',
+        overviewRulerLanes: 0,
+        hideCursorInOverviewRuler: true,
+        overviewRulerBorder: false,
+        scrollbar: {
+          vertical: 'auto',
+          horizontal: 'hidden',
+          verticalScrollbarSize: 8,
+        },
+      });
+
+      window.__pymaster_editor = editorInstance;
+
+      if (typeof ResizeObserver !== 'undefined') {
+        const resizeObserver = new ResizeObserver(() => {
+          if (editorInstance) {
+            editorInstance.layout();
+          }
+        });
+        resizeObserver.observe(editorContainer);
+        editorInstance._resizeObserver = resizeObserver;
+      }
+
+      if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          if (editorInstance) {
+            editorInstance.layout();
+          }
+        });
+      }
+
+      editorInstance.onDidChangeModelContent(() => {
+        if (typeof options.onChange === 'function') {
+          options.onChange(editorInstance.getValue());
+        }
+      });
+
+      // Theme change listener
+      const onThemeChange = (e) => {
+        const theme = e.detail?.theme || getCurrentTheme();
+        monaco.editor.setTheme(theme === 'light' ? 'pymaster-skeuo-light' : 'pymaster-skeuo-dark');
+      };
+      window.addEventListener('pymaster-theme-changed', onThemeChange);
+      editorInstance._themeListener = onThemeChange;
+    } catch (monacoErr) {
+      console.warn('[PyMaster] Monaco create error, falling back to textarea:', monacoErr);
+      renderFallback();
+    }
+  } else {
+    renderFallback();
   }
 
   // Copy button

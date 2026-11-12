@@ -29,29 +29,21 @@ export function renderJourneyMap(container, curriculum, gameState, onLessonClick
   let firstUncompletedIdx = allLessons.findIndex(l => !completedLessons.has(l.id));
   if (firstUncompletedIdx === -1) firstUncompletedIdx = allLessons.length;
 
-  // Initialize default open states: the section & chapter with the current lesson are always open
-  if (!initializedDefaults) {
-    let lessonCounter = 0;
-    curriculum.sections.forEach((section, sIdx) => {
-      let sectionHasCurrent = false;
-      section.chapters.forEach((chapter, cIdx) => {
-        const chapterStart = lessonCounter;
-        const chapterEnd = lessonCounter + chapter.lessons.length;
-        if (firstUncompletedIdx >= chapterStart && firstUncompletedIdx < chapterEnd) {
-          openChapters.add(`${sIdx}-${cIdx}`);
-          sectionHasCurrent = true;
-        } else if (cIdx === 0 && sIdx === 0) {
-          openChapters.add(`${sIdx}-${cIdx}`);
-          sectionHasCurrent = true;
-        }
-        lessonCounter += chapter.lessons.length;
-      });
-      if (sectionHasCurrent || sIdx === 0) {
+  // Always ensure the section & chapter with the active current lesson are open
+  let lessonCounter = 0;
+  curriculum.sections.forEach((section, sIdx) => {
+    section.chapters.forEach((chapter, cIdx) => {
+      const chapterStart = lessonCounter;
+      const chapterEnd = lessonCounter + chapter.lessons.length;
+      if (firstUncompletedIdx >= chapterStart && firstUncompletedIdx < chapterEnd) {
+        openChapters.add(`${sIdx}-${cIdx}`);
         openSections.add(sIdx);
       }
+      lessonCounter += chapter.lessons.length;
     });
-    initializedDefaults = true;
-  }
+  });
+  if (openSections.size === 0) openSections.add(0);
+  if (openChapters.size === 0) openChapters.add('0-0');
 
   function render() {
     container.innerHTML = `
@@ -103,12 +95,13 @@ export function renderJourneyMap(container, curriculum, gameState, onLessonClick
 
     // 3. Challenge / Lesson Click Handlers
     container.querySelectorAll('.challenge-timeline-row:not(.locked)').forEach(row => {
-      row.addEventListener('click', () => {
+      row.addEventListener('click', (e) => {
+        e.stopPropagation();
         const lessonId = row.dataset.lessonId;
         if (lessonId) {
           playSound('click');
           row.classList.add('node-press');
-          setTimeout(() => onLessonClick(lessonId), 120);
+          onLessonClick(lessonId);
         }
       });
     });

@@ -68,19 +68,15 @@ async function navigate(route) {
 
   const mainContent = document.getElementById('main-content');
   const rightPanel = document.getElementById('right-panel');
+  const appContainer = document.getElementById('app');
 
   try {
-    const { page, param } = route || parseRoute();
+    const { page, param } = (typeof route === 'object' && route) ? route : parseRoute();
     app.currentRoute = page;
+    document.body.dataset.route = page;
 
-    // Update sidebar & mobile bottom nav active state
-    renderSidebar(document.getElementById('sidebar'), page, (r) => navigate(r));
-    const fullRouteStr = param ? `${page}/${param}` : page;
-    renderMobileBottomNav(document.getElementById('mobile-bottom-nav'), fullRouteStr, (r) => navigate(r));
-
-    // Show/hide right panel based on route and collapse grid column
+    // Show/hide right panel based on route and collapse grid column FIRST
     const showRightPanel = page === 'journey' || page === 'sql-journey' || page === 'dsa-journey';
-    const appContainer = document.getElementById('app');
     if (appContainer) {
       if (showRightPanel) {
         appContainer.classList.remove('no-right-panel');
@@ -94,6 +90,11 @@ async function navigate(route) {
         renderProgressPanel(rightPanel, gameState);
       }
     }
+
+    // Update sidebar & mobile bottom nav active state
+    renderSidebar(document.getElementById('sidebar'), page, (r) => navigate(r));
+    const fullRouteStr = param ? `${page}/${param}` : page;
+    renderMobileBottomNav(document.getElementById('mobile-bottom-nav'), fullRouteStr, (r) => navigate(r));
 
     if (currentNavId !== app.navId) {
       return;
@@ -346,7 +347,9 @@ function initMonaco() {
           'editorLineNumber.foreground': '#475569',
           'editorLineNumber.activeForeground': '#ff6b6b',
           'editor.lineHighlightBackground': '#131c2e',
-          'editor.selectionBackground': '#ff6b6b33',
+          'editor.selectionBackground': '#ff5a5f99',
+          'editor.selectionHighlightBackground': '#ff5a5f44',
+          'editor.inactiveSelectionBackground': '#ff5a5f55',
           'editorCursor.foreground': '#ff6b6b',
           'editorWidget.background': '#0f172a',
           'editorWidget.border': '#1e293b',
@@ -373,7 +376,9 @@ function initMonaco() {
           'editorLineNumber.foreground': '#94a3b8',
           'editorLineNumber.activeForeground': '#ff5a5f',
           'editor.lineHighlightBackground': '#f4efe6',
-          'editor.selectionBackground': '#ff5a5f28',
+          'editor.selectionBackground': '#ff5a5f77',
+          'editor.selectionHighlightBackground': '#ff5a5f33',
+          'editor.inactiveSelectionBackground': '#ff5a5f44',
           'editorCursor.foreground': '#ff5a5f',
           'editorWidget.background': '#faf7f2',
           'editorWidget.border': '#e2dcd2',
@@ -385,6 +390,40 @@ function initMonaco() {
 
       app.monacoReady = true;
       resolve(true);
+
+      // Upgrade any active fallback textarea to real Monaco editor
+      const fallbackTextarea = document.getElementById('fallback-textarea');
+      if (fallbackTextarea) {
+        const curCode = fallbackTextarea.value;
+        const editorContainer = fallbackTextarea.closest('.editor-body');
+        if (editorContainer) {
+          editorContainer.innerHTML = '';
+          const isSql = app.currentRoute?.startsWith('sql-');
+          const editorLanguage = isSql ? 'sql' : 'python';
+          try {
+            const inst = monaco.editor.create(editorContainer, {
+              value: curCode,
+              language: editorLanguage,
+              theme: currentTheme === 'light' ? 'pymaster-skeuo-light' : 'pymaster-skeuo-dark',
+              minimap: { enabled: false },
+              fontSize: 14,
+              fontFamily: "'JetBrains Mono', monospace",
+              lineHeight: 22,
+              padding: { top: 16, bottom: 16 },
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              roundedSelection: true,
+              tabSize: 4,
+              insertSpaces: true,
+              wordWrap: 'on',
+              lineNumbers: 'on',
+            });
+            window.__pymaster_editor = inst;
+          } catch (e) {
+            console.warn('[PyMaster] Deferred Monaco mount error:', e);
+          }
+        }
+      }
     });
   });
 }
